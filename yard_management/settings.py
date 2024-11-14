@@ -1,6 +1,7 @@
 import environ
 from pathlib import Path
 
+
 env = environ.Env()
 environ.Env.read_env()
 
@@ -41,7 +42,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'confi.urls'
+ROOT_URLCONF = 'yard_management.urls'
 
 TEMPLATES = [
     {
@@ -59,7 +60,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'confi.wsgi.application'
+WSGI_APPLICATION = 'yard_management.wsgi.application'
 
 
 # Database
