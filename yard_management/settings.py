@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'apps.parking',
     'apps.places',
     'apps.transactions',
+    'django.contrib.sites',
     'rest_framework',
 ]
 
