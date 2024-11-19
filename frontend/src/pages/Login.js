@@ -1,16 +1,24 @@
 import React, {useState} from 'react';
 import { Form, Input, Button, message } from 'antd';
 import './Login.css'
+import axios from 'axios';
 
 // 로그인
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = () => {
-        // 서버로 로그인 요청 보내는 곳 (지금은 아님 콘솔로 출력)
-        console.log('Username:', username);
-        console.log('Password:', password);
+    const handleSubmit = async () => {
+        // 서버로 로그인 요청 보내는 곳
+        try {
+            const response = await axios.post('http://localhost:8000/', {
+                username,
+                password,
+            });
+            alert(response.data.message);
+        } catch (error) {
+            alert("login failed");
+        }
     };
 
     return (
