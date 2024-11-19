@@ -5,19 +5,22 @@ import axios from 'axios';
 
 // 로그인
 const Login = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [form] = Form.useForm();
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         // 서버로 로그인 요청 보내는 곳
         try {
-            const response = await axios.post('http://localhost:8000/', {
-                username,
-                password,
+            const response = await axios.post('http://localhost:8000/manager/login/', {
+                username : values.username,
+                password : values.password,
             });
             alert(response.data.message);
         } catch (error) {
-            alert("login failed");
+            if (error.response && error.response.data) {
+                alert(error.response.data.message);
+            } else {
+                alert(error.message);
+            }
         }
     };
 
@@ -27,30 +30,21 @@ const Login = () => {
                 <h1 className='logo'>YMS</h1> {/* 로고 위치 지금은 텍스트로 씀 */}
                 <Form
                     name='login'
-                    initialValue={{remember: true}}
                     onFinish={handleSubmit}
                     layout='vertical'
                     className='ant-login-form' // css용
                     >
                     <Form.Item
                         name='username'
-                        rules={[ {required: true, message: 'Please enter your username!'}]}
+                        rules={[ {required: true, message: 'Please enter your id!'}]}
                     >
-                        <Input
-                            placeholder='Username'
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            /> {/* 아이디 입력 */}
+                        <Input placeholder='Username' />
                     </Form.Item>
                     <Form.Item
                         name='password'
                         rules={[ {required: true, message: 'Please enter your password!'}]}
                     >
-                        <Input.Password
-                            placeholder='Password'
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                        <Input.Password placeholder='Password' />
                     </Form.Item>
                     <Form.Item>
                         <Button type='primary' htmlType='submit' block>
