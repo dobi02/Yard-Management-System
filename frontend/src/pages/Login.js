@@ -10,8 +10,8 @@ const Login = () => {
     const handleSubmit = async (values) => {
         // 서버로 로그인 요청 보내는 곳
         try {
-            const response = await axios.post('http://localhost:8000/manager/login/', {
-                username : values.username,
+            const response = await axios.post('http://localhost:8000/login/', {
+                manager_id : values.manager_id,
                 password : values.password,
             });
             alert(response.data.message);
@@ -27,7 +27,7 @@ const Login = () => {
     return (
         <div className='login-container'>
             <div className='login-form'>
-                <h1 className='logo'>YMS</h1> {/* 로고 위치 지금은 텍스트로 씀 */}
+                <h1 className='login-logo'>YMS</h1> {/* 로고 위치 지금은 텍스트로 씀 */}
                 <Form
                     name='login'
                     onFinish={handleSubmit}
