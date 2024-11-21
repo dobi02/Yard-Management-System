@@ -1,0 +1,13 @@
+import React from 'react';
+
+import MainLayout from "../../pages/AdminLayout";
+
+const Settings = () => {
+    return (
+        <MainLayout>
+            <h1>Settings page</h1>
+        </MainLayout>
+    );
+};
+
+export default Settings;
