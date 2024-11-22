@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { Form, Input, Button, message } from 'antd';
 import './Login.css'
 import axios from 'axios';
@@ -14,12 +14,12 @@ const Login = () => {
                 manager_id : values.manager_id,
                 password : values.password,
             });
-            alert(response.data.message);
+            message.success(response.data.message);
         } catch (error) {
             if (error.response && error.response.data) {
-                alert(error.response.data.message);
+                message.error(error.response.data.message);
             } else {
-                alert(error.message);
+                message.error(error.message);
             }
         }
     };

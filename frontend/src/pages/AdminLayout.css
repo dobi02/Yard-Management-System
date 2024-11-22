@@ -1,0 +1,43 @@
+.admin-logo {
+    height: 50px;
+    margin: 16px;
+    color: #282c34;
+    font-size: 18px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* 사이트 레이아웃 배경 */
+.site-layout-background {
+    background: #fff;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* 헤더 제목 스타일 */
+.site-header-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* 선택된 메뉴 항목의 스타일 */
+.ant-menu-item-selected {
+    background-color: #282c34 !important;
+    color: #fff !important;
+}
+.ant-menu-item:active {
+    background-color: #282c34 !important; /* 클릭 시에도 검은색 유지 */
+}
+
+/* 버튼 기본 스타일 */
+.ant-btn {
+    margin-top: 10px;
+}
+
+/* Sider 열고 닫는 버튼 스타일 */
+.ant-layout-sider-trigger {
+    background-color: #282c34 !important; /* 버튼의 배경색을 변경 */
+    border-radius: 15px; /* 버튼을 둥글게 만듦 */
+}
