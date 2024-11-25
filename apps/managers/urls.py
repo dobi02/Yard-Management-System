@@ -1,6 +1,6 @@
 from django.urls import path
-from .views import login_manager
+from . import views
 
 urlpatterns = [
-    path('login/', login_manager, name='login_manager'),
+    path('login/', views.login_manager, name='login_manager'),
 ]
