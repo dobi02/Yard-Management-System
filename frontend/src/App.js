@@ -1,17 +1,16 @@
-import logo from './logo.svg';
 import './App.css';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Login from './pages/Login';
-import Dashboard from "./pages/Dashboard";
+import Main from "./pages/Admin";
+import Login from "./components/Auth/Login"
 
 
 function App() {
   return (
     <Router>
         <Routes>
+            <Route path="/admin/*" element={<Main />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/home/dashboard" element={<Dashboard />} />
         </Routes>
     </Router>
   );
