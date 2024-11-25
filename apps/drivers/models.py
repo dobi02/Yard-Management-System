@@ -3,15 +3,13 @@
 #
 #
 from django.db import models
-
 from apps.places.models import Divisions
+from django.contrib.auth.models import User
 
 
 class Drivers(models.Model):
-    driver_id = models.CharField(primary_key=True, max_length=8)
-    division_id = models.ForeignKey(Divisions, on_delete=models.CASCADE, null=False)
-    name = models.CharField(max_length=50, null=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='drivers')
+    division_id = models.ForeignKey(Divisions, on_delete=models.SET_NULL, null=True)
     phone_number = models.CharField(max_length=20)
-    password_hash = models.CharField(max_length=255, null=False)
 
 
