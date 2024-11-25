@@ -13,11 +13,12 @@ class Transactions(models.Model):
     transaction_type = models.CharField(max_length=3, null=False)
     transaction_time = models.DateField()
 
-    driver_id = models.ForeignKey(Drivers, on_delete=models.CASCADE, null=False)
-    yard_id = models.ForeignKey(Yards, on_delete=models.CASCADE, null=False)
-    truck_id = models.ForeignKey(Trucks, on_delete=models.SET_NULL, null=True)
-    chassis_id = models.ForeignKey(Chassis, on_delete=models.SET_NULL, null=True)
-    container_id = models.ForeignKey(Containers, on_delete=models.SET_NULL, null=True)
-    trailer_id = models.ForeignKey(Trailers, on_delete=models.SET_NULL, null=True)
+    driver_id = models.ForeignKey(Drivers, on_delete=models.DO_NOTHING, null=False)
+    yard_id = models.ForeignKey(Yards, on_delete=models.DO_NOTHING, null=False)
+    destination_id = models.ForeignKey(Yards, on_delete=models.DO_NOTHING, null=True)
+    truck_id = models.ForeignKey(Trucks, on_delete=models.DO_NOTHING, null=True)
+    chassis_id = models.ForeignKey(Chassis, on_delete=models.DO_NOTHING, null=True)
+    container_id = models.ForeignKey(Containers, on_delete=models.DO_NOTHING, null=True)
+    trailer_id = models.ForeignKey(Trailers, on_delete=models.DO_NOTHING, null=True)
 
 
