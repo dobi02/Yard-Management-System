@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, Row, Col, Button, Select, message, Form, Input } from 'antd';
+import React, { useEffect } from 'react';
+import { Card, Button, Select, message, Form, Input } from 'antd';
 import MainLayout from "../../pages/AdminLayout";
 import './AdminDashboard.css';
 import axios from 'axios';
@@ -9,15 +9,48 @@ const { Option } = Select;
 const AdminDashboard = () => {
     const [form] = Form.useForm(); // Form 객체 생성
 
-    const [selectedDivision, setSelectedDivision] = React.useState(null);
+    const [selectedDivision, setSelectedDivision] = React.useState(null); //
     const [selectedYard, setSelectedYard] = React.useState(null);
+    const [divisions, setDivisions] = React.useState([]); // 디비전 목록
+    const [yards, setYards] = React.useState([]); // 디비전의 야드 목록
+    const [assets, setAssets] = React.useState([]); // 야드의 장비 목록
 
-    const handleDivisionChange = (value) => {
+    // 컴포넌트 처음 렌더링할 때 디비전 목록을 불러옴
+    useEffect(() => {
+        const fetchDivisions = async () => {
+            try {
+                // 디비전 목록 호출 API
+                const response = await axios.get("http://localhost:8000/api/divisions/");
+                setDivisions(response.data); // 디비전 목록
+            } catch (error) {
+                message.error("Failed to load divisions");
+            }
+        };
+
+        fetchDivisions();
+    }, []);
+
+    // 디비전 선택 야드 불러오기
+    const handleDivisionChange = async (value) => {
         setSelectedDivision(value);
-    };
-
-    const handleYardChange = (value) => {
+        try {
+            // 디비전의 야드 목록 호출 API
+            const response = await axios.get("http://localhost:8000/");
+            setYards(response.data); // 야드 목록
+        } catch (error) {
+            message.error("Failed to load yards");
+        }
+    }
+    // 야드 선택 장비 불러오기
+    const handleYardChange = async (value) => {
         setSelectedYard(value);
+        try {
+            // 야드의 장비 호출 API
+            const response = await axios.get("http://localhost:8000/");
+            setAssets(response.data);
+        } catch (error) {
+            message.error('Failed to load assets');
+        }
     };
 
     const [equipmentType, setEquipmentType] = React.useState('trucks');
@@ -63,34 +96,50 @@ const AdminDashboard = () => {
 
     return (
         <MainLayout>
+            {/* 디비전, 야드 선택 */}
             <div className="select-container">
-                <Select defaultValue={selectedDivision} style={{width: 120, marginRight: 10}}
-                        onChange={handleDivisionChange}>
-                    <Option value="LA">LA</Option>
-                    <Option value="PHX">PHX</Option>
+                {/* 디비전 선택 */}
+                <Select
+                    placeholder="Select Division"
+                    style={{width: 150, marginRight: 10}}
+                    onChange={handleDivisionChange}
+                >
+                    {divisions.map((division) => (
+                        <Option key={division.division_id} value={division.division_id}>
+                            {division.division_id}
+                        </Option>
+                    ))}
                 </Select>
-                <Select defaultValue={selectedYard} style={{width: 120}} onChange={handleYardChange}>
-                    <Option value="LA01">LA01</Option>
-                    <Option value="LA02">LA02</Option>
+                {/* 야드 선택 */}
+                <Select
+                    placeholder="Select Yard"
+                    style={{width: 150}}
+                    onChange={handleYardChange}
+                    disabled={!selectedDivision}
+                >
+                    {yards.map((yard) => (
+                        <Option key={yard.yard_id} value={yard.yard_id}>
+                            {yard.yard_id}
+                        </Option>
+                    ))}
                 </Select>
             </div>
-            <Row gutter={[16, 16]} style={{marginTop: '16px'}}>
-                <Col span={8}>
-                    <Card title="Total Trucks" bordered={false}> {/* 총 트럭 수 카드 */}
-                        <p>27 Active in yard</p>
+
+            {/* 정보 카드 */}
+            <div className="cards-container" style={{marginTop: '16px'}}>
+                {assets.length > 0 ? (
+                    assets.map((info, index) => (
+                        <Card key={index} title={info.name} bordered={false} className="info-card">
+                            <p>{info.description}</p>
+                        </Card>
+                    ))
+                ) : (
+                    <Card title="None" bordered={false} className="info-card">
+                        <p>No assets</p>
                     </Card>
-                </Col>
-                <Col span={8}>
-                    <Card title="Available Spaces" bordered={false}> {/* 사용 가능한 공간 카드 */}
-                        <p>45 Across all sites</p>
-                    </Card>
-                </Col>
-                <Col span={8}>
-                    <Card title="Daily Operations" bordered={false}> {/* 일일 작업 카드 */}
-                        <p>152 Last 24 hours</p>
-                    </Card>
-                </Col>
-            </Row>
+                )}
+            </div>
+
             <div className="yard-layout" style={{marginTop: '30px'}}> {/* 야드 레이아웃 섹션 */}
                 <h2>Yard Layout</h2>
                 <p>Current status and occupancy of yard spaces</p>
@@ -102,12 +151,12 @@ const AdminDashboard = () => {
             </div>
 
             {/* 장비 관리 기능 */}
-            <div className="equipment-management" style={{ marginTop: '30px' }}>
+            <div className="equipment-management" style={{marginTop: '30px'}}>
                 <h2>Equipment Management</h2>
-                <div style={{ marginBottom: '20px' }}>
+                <div style={{marginBottom: '20px'}}>
                     <Select
                         defaultValue="trucks"
-                        style={{ width: 200, marginRight: 10 }}
+                        style={{width: 200, marginRight: 10}}
                         onChange={setEquipmentType}
                     >
                         <Option value="trucks">Trucks</Option>
@@ -124,15 +173,15 @@ const AdminDashboard = () => {
                 >
                     <Form.Item
                         name="id"
-                        rules={[{ required: true, message: 'Please enter an ID!' }]}
+                        rules={[{required: true, message: 'Please enter an ID!'}]}
                     >
-                        <Input placeholder="Equipment ID" />
+                        <Input placeholder="Equipment ID"/>
                     </Form.Item>
                     <Form.Item
                         name="type"
-                        rules={[{ required: true, message: 'Please enter a type!' }]}
+                        rules={[{required: true, message: 'Please enter a type!'}]}
                     >
-                        <Input placeholder="Type/Size" />
+                        <Input placeholder="Type/Size"/>
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
@@ -146,7 +195,7 @@ const AdminDashboard = () => {
                             {item.id} - {item.type}
                             <Button
                                 type="link"
-                                style={{ color: 'red' }}
+                                style={{color: 'red'}}
                                 onClick={() => handleDeleteEquipment(item.id)}
                             >
                                 Delete
