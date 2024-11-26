@@ -35,7 +35,7 @@ const AdminDashboard = () => {
         setSelectedDivision(value);
         try {
             // 디비전의 야드 목록 호출 API
-            const response = await axios.get("http://localhost:8000/");
+            const response = await axios.get(`http://localhost:8000/places/yards/${value}`);
             setYards(response.data); // 야드 목록
         } catch (error) {
             message.error("Failed to load yards");
@@ -46,7 +46,7 @@ const AdminDashboard = () => {
         setSelectedYard(value);
         try {
             // 야드의 장비 호출 API
-            const response = await axios.get("http://localhost:8000/");
+            const response = await axios.get(`http://localhost:8000/places/sites/${value}`);
             setAssets(response.data);
         } catch (error) {
             message.error('Failed to load assets');
