@@ -20,7 +20,7 @@ const AdminDashboard = () => {
         const fetchDivisions = async () => {
             try {
                 // 디비전 목록 호출 API
-                const response = await axios.get("http://localhost:8000/api/divisions/");
+                const response = await axios.get("http://localhost:8000/places/divisions/");
                 setDivisions(response.data); // 디비전 목록
             } catch (error) {
                 message.error("Failed to load divisions");
@@ -140,15 +140,7 @@ const AdminDashboard = () => {
                 )}
             </div>
 
-            <div className="yard-layout" style={{marginTop: '30px'}}> {/* 야드 레이아웃 섹션 */}
-                <h2>Yard Layout</h2>
-                <p>Current status and occupancy of yard spaces</p>
-                <Button type="default">Map View</Button> {/* 지도 보기 버튼 */}
-                <Button type="default" style={{marginLeft: '10px'}}>List View</Button> {/* 목록 보기 버튼 */}
-                <div className="yard-map-placeholder" style={{marginTop: '20px'}}> {/* 야드 맵 자리 표시자 */}
-                    Yard map visualization will be implemented here
-                </div>
-            </div>
+
 
             {/* 장비 관리 기능 */}
             <div className="equipment-management" style={{marginTop: '30px'}}>

@@ -3,18 +3,26 @@
 
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { DashboardOutlined, SettingOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import './AdminLayout.css';
 
 const { Header, Sider, Content } = Layout;
 
 const items = [
+    // dashboard
   {
     key: '/admin/dashboard',
     icon: <DashboardOutlined />,
     label: (<Link to="/admin/dashboard">Dashboard</Link>),
   },
+    // yard layout
+  {
+    key: '/admin/yardlayout',
+    icon: <EnvironmentOutlined />,
+    label: (<Link to="/admin/yardlayout">Yard Layout</Link>),
+  },
+    // settting
   {
     key: '/admin/settings',
     icon: <SettingOutlined />,
