@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Select, Button, Form, Input, Modal, message } from 'antd';
 import MainLayout from "../../pages/AdminLayout";
 import './AdminDashboard.css';
@@ -45,12 +45,11 @@ const AdminDashboard = () => {
             message.error("Failed to load yards");
         }
     }
-    // 야드 선택 장비 불러오기
-    const handleYardChange = async (value) => {
-        setSelectedYard(value);
+
+    // 선택된 야드의 장비 목록 가져오기
+    const fetchAssets = async (yardId) => {
         try {
-            // 야드의 장비 호출 API
-            const response = await axios.get(`http://localhost:8000/places/sites/${value}`);
+            const response = await axios.get(`/api/yards/${yardId}/equipment-count/`);
             setAssets(response.data);
 
             // 삭제용 장비 목록 준비
@@ -61,8 +60,14 @@ const AdminDashboard = () => {
             if (response.data.trailer) list.push({ id: 'trailer', count: response.data.trailer });
             setEquipmentList(list);
         } catch (error) {
-            message.error('Failed to load assets');
+            message.error('Failed to fetch equipment count');
         }
+    };
+
+    // 야드 선택 장비 불러오기
+    const handleYardChange = async (value) => {
+        setSelectedYard(value);
+        fetchAssets(value);
     };
 
     // 장비 추가 요청
@@ -136,7 +141,7 @@ const AdminDashboard = () => {
                 </Select>
 
                 {/* 장비 추가 버튼 */}
-                <Button type="primary" style={{ marginRight: 10 }} onClick={() => setIsAddModalOpen(true)}>
+                <Button type="primary" style={{ marginRight: 10, marginLeft: '20px' }} onClick={() => setIsAddModalOpen(true)}>
                     Add Equipment
                 </Button>
 
