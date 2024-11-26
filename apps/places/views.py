@@ -67,11 +67,11 @@ class YardsView(APIView):
 class YardDetailView(APIView):
     def get(self, request, pk):
         try:
-            yard = Yards.objects.get(pk=pk)
+            yard = Yards.objects.filter(division_id=pk)
         except Yards.DoesNotExist:
             return Response({"error": "Yard not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = YardsSerializer(yard)
+        serializer = YardsSerializer(yard, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -113,11 +113,11 @@ class SitesView(APIView):
 class SiteDetailView(APIView):
     def get(self, request, pk):
         try:
-            site = Sites.objects.get(pk=pk)
+            site = Sites.objects.filter(yard_id=pk)
         except Sites.DoesNotExist:
             return Response({"error": "Site not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = SitesSerializer(site)
+        serializer = SitesSerializer(site, many=True)
         return Response(serializer.data)
 
     def put(self, request, pk):

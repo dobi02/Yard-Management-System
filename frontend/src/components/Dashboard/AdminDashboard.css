@@ -1,3 +1,17 @@
+
+.cards-container {
+    display: flex;
+    overflow-x: auto; /* 가로 스크롤 */
+    gap: 16px;
+    padding: 16px;
+}
+
+.info-card {
+    flex-shrink: 0; /* 카드 안 줄어듦 */
+    width: 300px;
+    margin: 0 8px;
+}
+
 .ant-card {
     border-radius: 10px;
     text-align: center;
