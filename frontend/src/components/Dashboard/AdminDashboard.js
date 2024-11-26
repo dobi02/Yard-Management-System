@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Card, Button, Select, message, Form, Input } from 'antd';
+import { Card, Row, Col, Select, Button, Form, Input, Modal, message } from 'antd';
 import MainLayout from "../../pages/AdminLayout";
 import './AdminDashboard.css';
 import axios from 'axios';
@@ -14,6 +14,10 @@ const AdminDashboard = () => {
     const [divisions, setDivisions] = React.useState([]); // 디비전 목록
     const [yards, setYards] = React.useState([]); // 디비전의 야드 목록
     const [assets, setAssets] = React.useState([]); // 야드의 장비 목록
+    const [equipmentType, setEquipmentType] = React.useState('trucks');
+    const [equipmentList, setEquipmentList] = React.useState([]);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false); // 장비 추가 팝업 상태
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 장비 삭제 팝업 상태
 
     // 컴포넌트 처음 렌더링할 때 디비전 목록을 불러옴
     useEffect(() => {
@@ -48,13 +52,18 @@ const AdminDashboard = () => {
             // 야드의 장비 호출 API
             const response = await axios.get(`http://localhost:8000/places/sites/${value}`);
             setAssets(response.data);
+
+            // 삭제용 장비 목록 준비
+            const list = [];
+            if (response.data.truck) list.push({ id: 'truck', count: response.data.truck });
+            if (response.data.chassis) list.push({ id: 'chassis', count: response.data.chassis });
+            if (response.data.container) list.push({ id: 'container', count: response.data.container });
+            if (response.data.trailer) list.push({ id: 'trailer', count: response.data.trailer });
+            setEquipmentList(list);
         } catch (error) {
             message.error('Failed to load assets');
         }
     };
-
-    const [equipmentType, setEquipmentType] = React.useState('trucks');
-    const [equipmentList, setEquipmentList] = React.useState([]);
 
     // 장비 추가 요청
     const handleAddEquipment = async (values) => {
@@ -69,8 +78,9 @@ const AdminDashboard = () => {
                 yard: selectedYard, // 선택된 야드 추가
             });
             message.success('Equipment added successfully');
-            setEquipmentList([...equipmentList, response.data]);
             form.resetFields();
+            setIsAddModalOpen(false); // 팝업 닫기
+            fetchAssets(selectedYard); // 데이터 갱신
         } catch (error) {
             message.error('Failed to add equipment');
         }
@@ -88,7 +98,8 @@ const AdminDashboard = () => {
                 data: { yard: selectedYard }, // 선택된 야드 전달
             });
             message.success('Equipment deleted successfully');
-            setEquipmentList(equipmentList.filter((item) => item.id !== id));
+            setIsDeleteModalOpen(false); // 팝업 닫기
+            fetchAssets(selectedYard); // 데이터 갱신
         } catch (error) {
             message.error('Failed to delete equipment');
         }
@@ -123,6 +134,16 @@ const AdminDashboard = () => {
                         </Option>
                     ))}
                 </Select>
+
+                {/* 장비 추가 버튼 */}
+                <Button type="primary" style={{ marginRight: 10 }} onClick={() => setIsAddModalOpen(true)}>
+                    Add Equipment
+                </Button>
+
+                {/* 장비 삭제 버튼 */}
+                <Button type="danger" onClick={() => setIsDeleteModalOpen(true)}>
+                    Delete Equipment
+                </Button>
             </div>
 
             {/* 정보 카드 */}
@@ -142,60 +163,60 @@ const AdminDashboard = () => {
 
 
 
-            {/* 장비 관리 기능 */}
-            <div className="equipment-management" style={{marginTop: '30px'}}>
-                <h2>Equipment Management</h2>
-                <div style={{marginBottom: '20px'}}>
-                    <Select
-                        defaultValue="trucks"
-                        style={{width: 200, marginRight: 10}}
-                        onChange={setEquipmentType}
-                    >
-                        <Option value="trucks">Trucks</Option>
-                        <Option value="chassis">Chassis</Option>
-                        <Option value="trailers">Trailers</Option>
-                        <Option value="containers">Containers</Option>
-                    </Select>
-                </div>
-                <Form
-                    form={form}
-                    name="add-equipment"
-                    layout="inline"
-                    onFinish={handleAddEquipment}
-                >
+            {/* 장비 추가 모달 */}
+            <Modal
+                title="Add Equipment"
+                visible={isAddModalOpen}
+                onCancel={() => setIsAddModalOpen(false)}
+                footer={null}
+            >
+                <Form form={form} layout="vertical" onFinish={handleAddEquipment}>
                     <Form.Item
                         name="id"
-                        rules={[{required: true, message: 'Please enter an ID!'}]}
+                        label="Equipment ID"
+                        rules={[{ required: true, message: 'Please enter equipment ID!' }]}
                     >
-                        <Input placeholder="Equipment ID"/>
+                        <Input placeholder="Enter equipment ID" />
                     </Form.Item>
                     <Form.Item
                         name="type"
-                        rules={[{required: true, message: 'Please enter a type!'}]}
+                        label="Equipment Type"
+                        rules={[{ required: true, message: 'Please select equipment type!' }]}
                     >
-                        <Input placeholder="Type/Size"/>
+                        <Select placeholder="Select type">
+                            <Option value="truck">Truck</Option>
+                            <Option value="chassis">Chassis</Option>
+                            <Option value="container">Container</Option>
+                            <Option value="trailer">Trailer</Option>
+                        </Select>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit">
+                        <Button type="primary" htmlType="submit" block>
                             Add Equipment
                         </Button>
                     </Form.Item>
                 </Form>
-                <ul>
+            </Modal>
+
+            {/* 장비 삭제 모달 */}
+            <Modal
+                title="Delete Equipment"
+                visible={isDeleteModalOpen}
+                onCancel={() => setIsDeleteModalOpen(false)}
+                footer={null}
+            >
+                <Select
+                    placeholder="Select Equipment to Delete"
+                    style={{ width: '100%', marginBottom: 20 }}
+                    onChange={(value) => handleDeleteEquipment(value)}
+                >
                     {equipmentList.map((item) => (
-                        <li key={item.id}>
-                            {item.id} - {item.type}
-                            <Button
-                                type="link"
-                                style={{color: 'red'}}
-                                onClick={() => handleDeleteEquipment(item.id)}
-                            >
-                                Delete
-                            </Button>
-                        </li>
+                        <Option key={item.id} value={item.id}>
+                            {item.id} ({item.count} Units)
+                        </Option>
                     ))}
-                </ul>
-            </div>
+                </Select>
+            </Modal>
         </MainLayout>
     );
 };
