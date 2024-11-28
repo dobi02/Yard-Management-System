@@ -4,7 +4,7 @@ import AdminDashboard from '../components/Dashboard/AdminDashboard';
 import YardLayout from '../components/Dashboard/YardLayout'
 import Settings from "../components/Auth/Setting";
 
-const Main = () => {
+const Admin = () => {
       return (
     <div>
       <Outlet /> {/* 자식 라우트가 렌더링되는 위치 */}
@@ -18,4 +18,4 @@ const Main = () => {
   );
 };
 
-export default Main;
+export default Admin;

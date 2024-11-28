@@ -141,7 +141,7 @@ const AdminDashboard = () => {
                 </Select>
 
                 {/* 장비 추가 버튼 */}
-                <Button type="primary" style={{ marginRight: 10, marginLeft: '20px' }} onClick={() => setIsAddModalOpen(true)}>
+                <Button type="primary" style={{ marginRight: 10, marginLeft: '20px', width: '150px' }} onClick={() => setIsAddModalOpen(true)}>
                     Add Equipment
                 </Button>
 
