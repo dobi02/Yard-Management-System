@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Select, Button, Form, Input, Modal, message } from 'antd';
-import MainLayout from "../../pages/AdminLayout";
+import MainLayout from "./AdminLayout";
 import './AdminDashboard.css';
 import axios from 'axios';
 

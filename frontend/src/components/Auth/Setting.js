@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MainLayout from "../../pages/AdminLayout";
+import MainLayout from "../Dashboard/AdminLayout";
 
 const Settings = () => {
     return (

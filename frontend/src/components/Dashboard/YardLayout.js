@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
-import MainLayout from "../../pages/AdminLayout";
+import MainLayout from "./AdminLayout";
 import './YardLayout.css';
 import axios from 'axios';
 
