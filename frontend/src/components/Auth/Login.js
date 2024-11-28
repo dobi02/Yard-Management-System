@@ -10,8 +10,8 @@ const Login = () => {
     const handleSubmit = async (values) => {
         // 서버로 로그인 요청 보내는 곳
         try {
-            const response = await axios.post('http://localhost:8000/login/', {
-                manager_id : values.manager_id,
+            const response = await axios.post('http://localhost:8000/managers/api/login/', {
+                username : values.username,
                 password : values.password,
             });
             message.success(response.data.message);
@@ -35,7 +35,7 @@ const Login = () => {
                     className='ant-login-form' // css용
                     >
                     <Form.Item
-                        name='manager_id'
+                        name='username'
                         rules={[ {required: true, message: 'Please enter your id!'}]}
                     >
                         <Input placeholder='Username' />

@@ -23,4 +23,7 @@ class Transactions(models.Model):
     container_id = models.ForeignKey(Containers, on_delete=models.DO_NOTHING, null=True)
     trailer_id = models.ForeignKey(Trailers, on_delete=models.DO_NOTHING, null=True)
 
+    class Meta:
+        db_table = 'transactions'
+
 

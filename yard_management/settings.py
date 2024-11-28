@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     'apps.assets',
     'apps.drivers',
     'apps.managers',
-    'apps.parking',
     'apps.places',
     'apps.transactions',
     'django.contrib.sites',

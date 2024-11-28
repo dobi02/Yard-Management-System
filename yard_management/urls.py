@@ -21,7 +21,8 @@ urlpatterns = [
     path('', include('apps.managers.urls')),
     path('assets/', include('apps.assets.urls')),
     path('', include('apps.drivers.urls')),
-    path('', include('apps.parking.urls')),
     path('places/', include('apps.places.urls')),
     path('', include('apps.transactions.urls')),
+    path('managers/', include('apps.managers.urls')),
+    path('drivers/', include('apps.drivers.urls')),
 ]

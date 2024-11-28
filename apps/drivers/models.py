@@ -12,4 +12,7 @@ class Drivers(models.Model):
     division_id = models.ForeignKey(Divisions, on_delete=models.SET_NULL, null=True)
     phone_number = models.CharField(max_length=20)
 
+    class Meta:
+        db_table = 'drivers'
+
 
