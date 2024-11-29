@@ -17,7 +17,7 @@ const Manager = () => {
           <Route path="/yardlayout" element={<YardLayout />} /> {/* /admin/yardlayout 경로에 해당 */}
           <Route path="/transactions" element={<TransactionPage />} /> {/* /admin/transactions 경로 추가 */}
           <Route path="/settings" element={<Settings />} /> {/* /admin/settings 경로에 해당 */}
-          <Route path="/admin/test" element={<TestPage />} />
+          <Route path="/test" element={<TestPage />} />
       </Routes>
     </div>
   );
