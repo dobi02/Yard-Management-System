@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Modal, Form, Select, Checkbox, message } from 'antd';
-import MainLayout from "./AdminLayout";
+import MainLayout from "./ManagerLayout";
 import axios from 'axios';
 import './TransactionPage.css';
 

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Select, Button, Form, Input, Modal, message } from 'antd';
-import AdminLayout from "./AdminLayout";
-import './AdminDashboard.css';
+import ManagerLayout from "./ManagerLayout";
+import './ManagerDashboard.css';
 import axios from 'axios';
 
 const { Option } = Select;
 
-const AdminDashboard = () => {
+const ManagerDashboard = () => {
     const [form] = Form.useForm(); // Form 객체 생성
 
     const [selectedDivision, setSelectedDivision] = React.useState(null); //
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
     };
 
     return (
-        <AdminLayout>
+        <ManagerLayout>
             {/* 디비전, 야드 선택 */}
             <div className="select-container">
                 {/* 디비전 선택 */}
@@ -326,8 +326,8 @@ const AdminDashboard = () => {
                     ))}
                 </Select>
             </Modal>
-        </AdminLayout>
+        </ManagerLayout>
     );
 };
 
-export default AdminDashboard;
+export default ManagerDashboard;

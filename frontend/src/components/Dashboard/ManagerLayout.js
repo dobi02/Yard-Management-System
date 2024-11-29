@@ -5,39 +5,39 @@ import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
 import { DashboardOutlined, SettingOutlined, EnvironmentOutlined, RetweetOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
-import './AdminLayout.css';
+import './ManagerLayout.css';
 
 const { Header, Sider, Content } = Layout;
 
 const items = [
     // dashboard
   {
-    key: '/admin/dashboard',
+    key: '/manager/dashboard',
     icon: <DashboardOutlined />,
-    label: (<Link to="/admin/dashboard">Dashboard</Link>),
+    label: (<Link to="/manager/dashboard">Dashboard</Link>),
   },
     // yard layout
   {
-    key: '/admin/yardlayout',
+    key: '/manager/yardlayout',
     icon: <EnvironmentOutlined />,
-    label: (<Link to="/admin/yardlayout">Yard Layout</Link>),
+    label: (<Link to="/manager/yardlayout">Yard Layout</Link>),
   },
   // transaction layout
    {
-    key: '/admin/transactions',
+    key: '/manager/transactions',
     icon: <RetweetOutlined />,
-    label: (<Link to="/admin/transactions">In/Out Transactions</Link>),
+    label: (<Link to="/manager/transactions">In/Out Transactions</Link>),
   },
     // settting
   {
-    key: '/admin/settings',
+    key: '/manager/settings',
     icon: <SettingOutlined />,
-    label: (<Link to="/admin/settings">Settings</Link>),
+    label: (<Link to="/manager/settings">Settings</Link>),
   },
 ];
 
 
-const AdminLayout = ({ children }) => {
+const ManagerLayout = ({ children }) => {
   const location = useLocation(); // 현재 위치 확인
   const [collapsed, setCollapsed] = useState(false); // 사이드바 접힘 관리
 
@@ -48,13 +48,13 @@ const AdminLayout = ({ children }) => {
   return (
     <Layout style={{ minHeight: '100vh' }}> {/* 전체 레이아웃, 화면 높이를 채우도록 설정 */}
       <Sider collapsible collapsed={collapsed} onCollapse={onCollapse} style={{ background: '#fff' }}> {/* 사이드바 레이아웃, 접을 수 있도록 설정 */}
-        <div className="admin-logo">YMS</div> {/* 로고 영역 */}
+        <div className="manager-logo">YMS</div> {/* 로고 영역 */}
         <Menu mode="inline" items={items} selectedKeys={[location.pathname]} /> {/* 사이드 메뉴 */}
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" > {/* 헤더 영역 */}
           <div className="site-header-title">
-            {location.pathname === '/admin/transactions' ? 'In/Out Transactions' : 'Admin Page'}
+            {location.pathname === '/manager/transactions' ? 'In/Out Transactions' : 'Admin Page'}
           </div>
         </Header>
         <Content style={{ margin: '16px' }}> {/* 메인 콘텐츠 영역 */}
@@ -65,4 +65,4 @@ const AdminLayout = ({ children }) => {
   );
 };
 
-export default AdminLayout;
+export default ManagerLayout;
