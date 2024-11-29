@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Trucks, Chassis, Trailers, Containers
 from .serializers import TrucksSerializer, ChassisSerializer, TrailersSerializer, ContainersSerializer
+from apps.places.models import ParkingSlots
+from apps.utils import services
 
 #Patch or put?
 
@@ -14,11 +16,23 @@ class TrucksView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = TrucksSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        yard = request.data.get('yard')
+        typ = request.data.get('type')
+        slot = services.get_available_parking_slot(yard, "truck")
+
+        # serializer = TrucksSerializer(data={"type" : typ, "parked_place" : "Null"})
+        # print(serializer.is_valid())
+        # print(slot)
+        if slot:
+            serializer = TrucksSerializer(data={"type" : typ, "parked_place" : slot.slot_id})
+            if serializer.is_valid():
+
+                serializer.save()
+                slot.is_occupied = True
+                slot.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
@@ -50,11 +64,18 @@ class ChassisView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ChassisSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        yard = request.data.get('yard')
+        typ = request.data.get('type')
+        slot = services.get_available_parking_slot(yard, "chassis")
+        if slot:
+            serializer = ChassisSerializer(data={"type": typ, "parked_place": slot.slot_id})
+            if serializer.is_valid():
+                serializer.save()
+                slot.is_occupied = True
+                slot.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
@@ -86,11 +107,18 @@ class TrailersView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = TrailersSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        yard = request.data.get('yard')
+        typ = request.data.get('type')
+        slot = services.get_available_parking_slot(yard, "trailer")
+        if slot:
+            serializer = TrailersSerializer(data={"type": typ, "parked_place": slot.slot_id})
+            if serializer.is_valid():
+                serializer.save()
+                slot.is_occupied = True
+                slot.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
@@ -122,11 +150,18 @@ class ContainersView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        serializer = ContainersSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        yard = request.data.get('yard')
+        typ = request.data.get('type')
+        slot = services.get_available_parking_slot(yard, "container")
+        if slot:
+            serializer = ContainersSerializer(data={"type": typ, "parked_place": slot.slot_id})
+            if serializer.is_valid():
+                serializer.save()
+                slot.is_occupied = True
+                slot.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
