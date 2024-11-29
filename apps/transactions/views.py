@@ -4,6 +4,7 @@ from rest_framework import status
 from .models import Transactions
 from .serializers import TransactionsSerializer
 
+
 class TransactionsView(APIView):
     def get(self, request):
         transactions = Transactions.objects.all()
@@ -14,8 +15,12 @@ class TransactionsView(APIView):
         serializer = TransactionsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {"message": "Transaction created successfully.", "transaction_id": Transactions.transaction_id},
+                status=status.HTTP_201_CREATED
+            )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class TransactionDetailView(APIView):
     def get(self, request, pk):
