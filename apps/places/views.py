@@ -1,8 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Divisions, Yards, Sites
-from .serializers import DivisionsSerializer, YardsSerializer, SitesSerializer
+from .models import Divisions, Yards, Sites, ParkingSlots
+from .serializers import DivisionsSerializer, YardsSerializer, SitesSerializer, ParkingSlotsSerializer
+
 
 # Divisions Views
 class DivisionsView(APIView):
@@ -17,6 +18,7 @@ class DivisionsView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class DivisionDetailView(APIView):
     def get(self, request, pk):
@@ -40,15 +42,6 @@ class DivisionDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        try:
-            division = Divisions.objects.get(pk=pk)
-        except Divisions.DoesNotExist:
-            return Response({"error": "Division not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        division.delete()
-        return Response({"message": "Division deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
 
 # Yards Views
 class YardsView(APIView):
@@ -59,10 +52,12 @@ class YardsView(APIView):
 
     def post(self, request):
         serializer = YardsSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class YardDetailView(APIView):
     def get(self, request, pk):
@@ -103,12 +98,6 @@ class SitesView(APIView):
         serializer = SitesSerializer(sites, many=True)
         return Response(serializer.data)
 
-    def post(self, request):
-        serializer = SitesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SiteDetailView(APIView):
     def get(self, request, pk):
@@ -132,11 +121,32 @@ class SiteDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        try:
-            site = Sites.objects.get(pk=pk)
-        except Sites.DoesNotExist:
-            return Response({"error": "Site not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        site.delete()
-        return Response({"message": "Site deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+class ParkingSlotsView(APIView):
+    def get(self, request):
+        parking_slots = ParkingSlots.objects.all()
+        serializer = ParkingSlotsSerializer(parking_slots, many=True)
+        return Response(serializer.data)
+
+
+class ParkingSlotDetailView(APIView):
+    def get(self, request, pk):
+        try:
+            parking_slot = ParkingSlots.objects.get(pk=pk)
+        except ParkingSlots.DoesNotExist:
+            return Response({"error": "Parking slot not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ParkingSlotsSerializer(parking_slot)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        try:
+            parking_slot = ParkingSlots.objects.get(pk=pk)
+        except ParkingSlots.DoesNotExist:
+            return Response({"error": "Parking slot not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ParkingSlotsSerializer(parking_slot, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

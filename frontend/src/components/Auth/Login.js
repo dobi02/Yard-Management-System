@@ -73,7 +73,7 @@ const Login = () => {
                     className='ant-login-form' // css용
                     >
                     <Form.Item
-                        name='manager_id'
+                        name='username'
                         rules={[ {required: true, message: 'Please enter your id!'}]}
                     >
                         <Input placeholder='Username' />

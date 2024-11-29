@@ -1,7 +1,10 @@
 from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Drivers
+from django.contrib.auth import authenticate
+from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import DriversSerializer
 
 
@@ -49,3 +52,30 @@ class DriverDetailView(APIView):
 
         driver.delete()
         return Response({"message": "Driver deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+
+@api_view(['POST'])
+def login_driver(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    # User 모델 인증
+    user = authenticate(request, username=username, password=password)
+
+    if user is not None:
+        try:
+            # 해당 사용자가 Driver인지 확인
+            driver = Drivers.objects.get(user=user)
+
+            # JWT 토큰 생성
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                "message": "Login successful",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh)
+            }, status=status.HTTP_200_OK)
+        except Drivers.DoesNotExist:
+            return Response({"message": "Not a driver account"}, status=status.HTTP_403_FORBIDDEN)
+    else:
+        return Response({"message": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
