@@ -21,14 +21,14 @@ const Login = () => {
 
             // manager or driver 분리
             if (userType === 'manager') {
-                response = await axios.post('http://localhost:8000/login/', {
-                    manager_id: values.id,
+                response = await axios.post('http://localhost:8000/managers/api/login/', {
+                    username: values.username,
                     password: values.password,
                 });
             } else if (userType === 'driver') {
                 // 아직 없음
-                response = await axios.post('', {
-                    driver_id: values.id,
+                response = await axios.post('http://localhost:8000/drivers/api/login/', {
+                    username: values.username,
                     password: values.password,
                 });
             } else {
