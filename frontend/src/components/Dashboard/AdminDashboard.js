@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Select, Button, Form, Input, Modal, message } from 'antd';
-import MainLayout from "./AdminLayout";
+import { Card, Select, Button, Form, Input, Modal, message } from 'antd';
+import AdminLayout from "./AdminLayout";
 import './AdminDashboard.css';
 import axios from 'axios';
 
@@ -111,7 +111,7 @@ const AdminDashboard = () => {
     };
 
     return (
-        <MainLayout>
+        <AdminLayout>
             {/* 디비전, 야드 선택 */}
             <div className="select-container">
                 {/* 디비전 선택 */}
@@ -222,7 +222,7 @@ const AdminDashboard = () => {
                     ))}
                 </Select>
             </Modal>
-        </MainLayout>
+        </AdminLayout>
     );
 };
 

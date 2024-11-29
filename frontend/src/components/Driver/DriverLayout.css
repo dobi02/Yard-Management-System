@@ -1,0 +1,100 @@
+/* 전체 */
+.mobile-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+}
+
+/* 상단 바 */
+.navbar {
+  background-color: #fff;
+  border-bottom: 1px solid #282c34;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 10;
+  display: flex;
+   justify-content: flex-start;
+  align-items: center;
+  padding: 0 15px;
+}
+
+.navbar .navbar-icon {
+  color: #949494;
+  font-size: 24px;
+  cursor: pointer;
+  margin-right: 15px;
+}
+
+.navbar .menu-icon:hover {
+  color: #33A3F4;
+}
+
+
+/* 사이드 바 */
+.sidebar {
+  position: fixed;
+  top: 45px; /* height of navbar */
+  left: 0;
+  width: 75%;
+  max-width: 300px;
+  height: calc(100% - 45px);
+  background-color: #fff;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  z-index: 9;
+  transform: translateX(-100%);
+}
+/* 사이드바가 화면으로 들어오는 효과 */
+.sidebar.open {
+  transform: translateX(0);
+}
+
+/* 메인 */
+.content {
+  margin-top: 45px; /* height of navbar */
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+}
+
+/* 하단 바 */
+.tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 0;
+}
+
+.am-tabs {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #282c34;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.am-tab-bar-item {
+  font-size: 14px;
+  color: #949494;
+}
+
+.am-tab-bar-item-selected {
+  color: #282c34;
+}
+
+/* 스크롤 바? */
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-track {
+  background-color: #f5f5f5;
+}

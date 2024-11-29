@@ -1,12 +1,12 @@
 import React from 'react';
 
-import MainLayout from "../Dashboard/AdminLayout";
+import AdminLayout from "../Dashboard/AdminLayout";
 
 const Settings = () => {
     return (
-        <MainLayout>
+        <AdminLayout>
             <h1>Settings page</h1>
-        </MainLayout>
+        </AdminLayout>
     );
 };
 

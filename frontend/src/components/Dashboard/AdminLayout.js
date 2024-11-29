@@ -31,7 +31,7 @@ const items = [
 ];
 
 
-const MainLayout = ({ children }) => {
+const AdminLayout = ({ children }) => {
   const location = useLocation(); // 현재 위치 확인
   const [collapsed, setCollapsed] = useState(false); // 사이드바 접힘 관리
 
@@ -57,4 +57,4 @@ const MainLayout = ({ children }) => {
   );
 };
 
-export default MainLayout;
+export default AdminLayout;
