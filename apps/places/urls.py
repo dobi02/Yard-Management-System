@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DivisionsView, DivisionDetailView, YardsView, YardDetailView, SitesView, SiteDetailView
+from .views import DivisionsView, DivisionDetailView, YardsView, YardDetailView, SitesView, SiteDetailView, ParkingSlotDetailView, ParkingSlotsView
 
 urlpatterns = [
     # Divisions
@@ -13,4 +13,7 @@ urlpatterns = [
     # Sites
     path('sites/', SitesView.as_view(), name='sites-list'),
     path('sites/<str:pk>/', SiteDetailView.as_view(), name='site-detail'),
+
+    path('parking-slots/', ParkingSlotsView.as_view(), name='parking-slots-list'),
+    path('parking-slots/<str:pk>/', ParkingSlotDetailView.as_view(), name='parking-slot-detail'),
 ]
