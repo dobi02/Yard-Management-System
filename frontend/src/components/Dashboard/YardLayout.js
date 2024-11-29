@@ -1,13 +1,13 @@
 import React from 'react';
 import { Button } from 'antd';
-import MainLayout from "../../pages/AdminLayout";
+import AdminLayout from "./AdminLayout";
 import './YardLayout.css';
 import axios from 'axios';
 
 
 const YardLayout = () => {
     return (
-        <MainLayout>
+        <AdminLayout>
             <div className="yard-layout" style={{marginTop: '30px'}}> {/* 야드 레이아웃 섹션 */}
                 <h2>Yard Layout</h2>
                 <p>Current status and occupancy of yard spaces</p>
@@ -17,7 +17,7 @@ const YardLayout = () => {
                     Yard map visualization will be implemented here
                 </div>
             </div>
-        </MainLayout>
+        </AdminLayout>
     );
 };
 

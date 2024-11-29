@@ -1,16 +1,21 @@
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Main from "./pages/Admin";
+import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
+
 import Login from "./components/Auth/Login"
+import Admin from "./pages/Admin";
+import Driver from "./pages/Driver";
+
 
 
 function App() {
   return (
     <Router>
         <Routes>
-            <Route path="/admin/*" element={<Main />} />
+            <Route path="/" element={<Navigate to="/login" replace/>} />
             <Route path="/login" element={<Login />} />
+            <Route path="/admin/*" element={<Admin />} />
+            <Route path="/driver/*" element={<Driver />} />
         </Routes>
     </Router>
   );

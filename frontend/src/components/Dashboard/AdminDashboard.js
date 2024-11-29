@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Select, Button, Form, Input, Modal, message } from 'antd';
-import MainLayout from "../../pages/AdminLayout";
+import { Card, Select, Button, Form, Input, Modal, message } from 'antd';
+import AdminLayout from "./AdminLayout";
 import './AdminDashboard.css';
 import axios from 'axios';
 
@@ -72,22 +72,129 @@ const AdminDashboard = () => {
 
     // 장비 추가 요청
     const handleAddEquipment = async (values) => {
-        if (!selectedYard) {
-            message.error('Please select a yard first!');
-            return;
-        }
-
         try {
-            const response = await axios.post(`http://localhost:8000/api/${equipmentType}/`, {
-                ...values,
-                yard: selectedYard, // 선택된 야드 추가
-            });
-            message.success('Equipment added successfully');
+            const maxCapacity = assets.find((asset) => asset.name === equipmentType)?.maxCapacity || 0;
+            const currentCount = assets.find((asset) => asset.name === equipmentType)?.count || 0;
+
+            if (currentCount + values.quantity > maxCapacity) {
+                message.error(`Cannot add more than ${maxCapacity} units of ${equipmentType}.`);
+                return;
+            }
+
+            const payload = {
+                equipmentType: values.equipmentType,
+                type: values.type || null,
+                size: values.size || null,
+                quantity: values.quantity,
+                yard: selectedYard,
+            };
+
+            await axios.post('/api/equipment/', payload);
+            message.success('Equipment added successfully.');
+            setIsAddModalOpen(false);
             form.resetFields();
-            setIsAddModalOpen(false); // 팝업 닫기
             fetchAssets(selectedYard); // 데이터 갱신
         } catch (error) {
-            message.error('Failed to add equipment');
+            message.error('Failed to add equipment.');
+        }
+    };
+
+    const renderDynamicFields = () => {
+        switch (equipmentType) {
+            case 'chassis':
+                return (
+                    <>
+                        <Form.Item
+                            name="type"
+                            label="Chassis Type"
+                            rules={[{ required: true, message: 'Please select a chassis type!' }]}
+                        >
+                            <Select placeholder="Select chassis type">
+                                <Option value="regular">Regular</Option>
+                                <Option value="light">Light</Option>
+                                <Option value="tandem">Tandem</Option>
+                                <Option value="tri-axle">Tri Axle</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="quantity"
+                            label="Quantity"
+                            rules={[{ required: true, message: 'Please enter the quantity to add!' }]}
+                        >
+                            <Input type="number" min={1} placeholder="Enter quantity" />
+                        </Form.Item>
+                    </>
+                );
+            case 'container':
+                return (
+                    <>
+                        <Form.Item
+                            name="type"
+                            label="Container Type"
+                            rules={[{ required: true, message: 'Please select a container type!' }]}
+                        >
+                            <Select placeholder="Select container type">
+                                <Option value="dry">Dry</Option>
+                                <Option value="reefer">Reefer</Option>
+                                <Option value="flat-rack">Flat Rack</Option>
+                                <Option value="iso-tank">ISO Tank</Option>
+                                <Option value="open-top">Open Top</Option>
+                                <Option value="try-door">Try Door</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="size"
+                            label="Container Size"
+                            rules={[{ required: true, message: 'Please select a container size!' }]}
+                        >
+                            <Select placeholder="Select container size">
+                                <Option value="40ST">40ST</Option>
+                                <Option value="40HC">40HC</Option>
+                                <Option value="20ST">20ST</Option>
+                                <Option value="45HC">45HC</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="quantity"
+                            label="Quantity"
+                            rules={[{ required: true, message: 'Please enter the quantity to add!' }]}
+                        >
+                            <Input type="number" min={1} placeholder="Enter quantity" />
+                        </Form.Item>
+                    </>
+                );
+            case 'trailer':
+                return (
+                    <>
+                        <Form.Item
+                            name="size"
+                            label="Trailer Size"
+                            rules={[{ required: true, message: 'Please select a trailer size!' }]}
+                        >
+                            <Select placeholder="Select trailer size">
+                                <Option value="53">53'</Option>
+                                <Option value="48">48'</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="quantity"
+                            label="Quantity"
+                            rules={[{ required: true, message: 'Please enter the quantity to add!' }]}
+                        >
+                            <Input type="number" min={1} placeholder="Enter quantity" />
+                        </Form.Item>
+                    </>
+                );
+            default:
+                return (
+                    <Form.Item
+                        name="quantity"
+                        label="Quantity"
+                        rules={[{ required: true, message: 'Please enter the quantity to add!' }]}
+                    >
+                        <Input type="number" min={1} placeholder="Enter quantity" />
+                    </Form.Item>
+                );
         }
     };
 
@@ -111,7 +218,7 @@ const AdminDashboard = () => {
     };
 
     return (
-        <MainLayout>
+        <AdminLayout>
             {/* 디비전, 야드 선택 */}
             <div className="select-container">
                 {/* 디비전 선택 */}
@@ -141,7 +248,7 @@ const AdminDashboard = () => {
                 </Select>
 
                 {/* 장비 추가 버튼 */}
-                <Button type="primary" style={{ marginRight: 10, marginLeft: '20px' }} onClick={() => setIsAddModalOpen(true)}>
+                <Button type="primary" style={{ marginRight: 10, marginLeft: '20px', width: '150px' }} onClick={() => setIsAddModalOpen(true)}>
                     Add Equipment
                 </Button>
 
@@ -167,7 +274,6 @@ const AdminDashboard = () => {
             </div>
 
 
-
             {/* 장비 추가 모달 */}
             <Modal
                 title="Add Equipment"
@@ -177,31 +283,29 @@ const AdminDashboard = () => {
             >
                 <Form form={form} layout="vertical" onFinish={handleAddEquipment}>
                     <Form.Item
-                        name="id"
-                        label="Equipment ID"
-                        rules={[{ required: true, message: 'Please enter equipment ID!' }]}
-                    >
-                        <Input placeholder="Enter equipment ID" />
-                    </Form.Item>
-                    <Form.Item
-                        name="type"
+                        name="equipmentType"
                         label="Equipment Type"
-                        rules={[{ required: true, message: 'Please select equipment type!' }]}
+                        rules={[{ required: true, message: 'Please select an equipment type!' }]}
                     >
-                        <Select placeholder="Select type">
+                        <Select
+                            placeholder="Select equipment type"
+                            onChange={(value) => setEquipmentType(value)}
+                        >
                             <Option value="truck">Truck</Option>
                             <Option value="chassis">Chassis</Option>
                             <Option value="container">Container</Option>
                             <Option value="trailer">Trailer</Option>
                         </Select>
                     </Form.Item>
+                    {renderDynamicFields()}
                     <Form.Item>
                         <Button type="primary" htmlType="submit" block>
-                            Add Equipment
+                            Add
                         </Button>
                     </Form.Item>
                 </Form>
             </Modal>
+
 
             {/* 장비 삭제 모달 */}
             <Modal
@@ -222,7 +326,7 @@ const AdminDashboard = () => {
                     ))}
                 </Select>
             </Modal>
-        </MainLayout>
+        </AdminLayout>
     );
 };
 

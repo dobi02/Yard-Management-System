@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { DashboardOutlined, SettingOutlined, EnvironmentOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined, EnvironmentOutlined, RetweetOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import './AdminLayout.css';
 
@@ -22,6 +22,12 @@ const items = [
     icon: <EnvironmentOutlined />,
     label: (<Link to="/admin/yardlayout">Yard Layout</Link>),
   },
+  // transaction layout
+   {
+    key: '/admin/transactions',
+    icon: <RetweetOutlined />,
+    label: (<Link to="/admin/transactions">In/Out Transactions</Link>),
+  },
     // settting
   {
     key: '/admin/settings',
@@ -31,7 +37,7 @@ const items = [
 ];
 
 
-const MainLayout = ({ children }) => {
+const AdminLayout = ({ children }) => {
   const location = useLocation(); // 현재 위치 확인
   const [collapsed, setCollapsed] = useState(false); // 사이드바 접힘 관리
 
@@ -47,7 +53,9 @@ const MainLayout = ({ children }) => {
       </Sider>
       <Layout className="site-layout">
         <Header className="site-layout-background" > {/* 헤더 영역 */}
-          <div className="site-header-title">Header미정</div> {/* 헤더 제목 */}
+          <div className="site-header-title">
+            {location.pathname === '/admin/transactions' ? 'In/Out Transactions' : 'Admin Page'}
+          </div>
         </Header>
         <Content style={{ margin: '16px' }}> {/* 메인 콘텐츠 영역 */}
           {children} {/* 페이지에 따른 다른 콘텐츠 렌더링 */}
@@ -57,4 +65,4 @@ const MainLayout = ({ children }) => {
   );
 };
 
-export default MainLayout;
+export default AdminLayout;

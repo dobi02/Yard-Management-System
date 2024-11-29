@@ -3,11 +3,12 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    padding: 20px;
 }
 
 .login-form {
-    height: 400px;
-    width: 300px;
+    height: auto;
+    width: 90%;
     padding: 20px;
     border: 1px solid #ccc;
     border-radius: 10px;
@@ -16,18 +17,23 @@
 
 .login-logo {
     text-align: center;
-    margin-bottom: 60px;
+    margin-bottom: 40px;
     color: #282c34;
-    font-size: 60px;
+    font-size: 48px;
+}
+
+.user-type-radio {
+    margin-bottom: 20px;
 }
 
 .ant-login-form .ant-form-item {
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .ant-btn-primary {
     background-color: #282c34;
     border-color: #282c34;
+    width: 100%;
 }
 
 .ant-btn-primary:hover {
@@ -40,3 +46,17 @@
     border-color: #1c2027;
 }
 
+/* 반응형 디자인 */
+@media (min-width: 768px) {
+    .login-form {
+        width: 300px
+    }
+
+    .login-logo {
+        font-size: 60px;
+    }
+
+    .ant-login-form .ant-form-item {
+        margin-bottom: 20px;
+    }
+}
