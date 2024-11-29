@@ -34,6 +34,10 @@ const items = [
     icon: <SettingOutlined />,
     label: (<Link to="/manager/settings">Settings</Link>),
   },
+  // test
+    { key: '/admin/dashboard', icon: <DashboardOutlined />, label: <Link to="/admin/dashboard">Dashboard</Link> },
+    { key: '/admin/test', icon: <ExperimentOutlined />, label: <Link to="/admin/test">Test Dashboard</Link> },
+    { key: '/admin/settings', icon: <SettingOutlined />, label: <Link to="/admin/settings">Settings</Link> },
 ];
 
 
