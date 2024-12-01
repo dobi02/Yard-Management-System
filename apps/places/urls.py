@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (DivisionsView, DivisionDetailView, YardsView, YardDetailView, SitesView,
-                    SiteDetailView, ParkingSlotDetailView, ParkingSlotsView, AssetCountView)
+                    SiteDetailView, ParkingSlotDetailView, ParkingSlotsView, AssetCountView, AvailableSlotsBySiteTypeView)
 
 urlpatterns = [
     # Divisions
