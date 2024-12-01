@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (DivisionsView, DivisionDetailView, YardsView, YardDetailView, SitesView,
-                    SiteDetailView, ParkingSlotDetailView, ParkingSlotsView, AssetCountView, AvailableSlotsBySiteTypeView)
+                    SiteDetailView, ParkingSlotDetailView, ParkingSlotsView, AssetCountView, AvailableSlotsBySiteTypeView,
+                    YardAssetView)
 
 urlpatterns = [
     # Divisions
@@ -19,6 +20,7 @@ urlpatterns = [
     path('api/parking-slots/', ParkingSlotsView.as_view(), name='parking-slots-list'),
     path('api/parking-slots/<str:pk>/', ParkingSlotDetailView.as_view(), name='parking-slot-detail'),
 
-    path('api/yards/<str:yard_id>/asset_count/', AssetCountView.as_view(), name='asset-count'),
+    path('api/yards/<str:yard_id>/yard_asset_count/', AssetCountView.as_view(), name='yard-asset-count'),
+    path('api/yards/<str:yard_id>/yard_assets', YardAssetView.as_view(), name='yard-assets'),
 
 ]

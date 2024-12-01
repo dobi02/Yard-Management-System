@@ -237,6 +237,7 @@ class AvailableSlotsBySiteTypeView(APIView):
         return Response({"site_list": result, "chassis_list": chassis_list, "trucks_list": trucks_list,
                          "containers_list": containers_list, "trailers_list": trailers_list})
 
+
 class AssetCountView(APIView):
     def get(self, request, yard_id):
         # Get the specified yard
@@ -266,3 +267,28 @@ class AssetCountView(APIView):
         }
 
         return Response(data, status=200)
+
+class YardAssetView(APIView):
+    def get(self, request, yard_id):
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        # Retrieve all Sites for the yard
+        sites = yard.sites_set.all()  # Reverse relationship to Sites
+
+        # Get all ParkingSlots linked to the Sites
+        parking_slots = ParkingSlots.objects.filter(site_id__in=sites)
+
+        trucks = Trucks.objects.filter(parked_place__in=parking_slots)
+        trailers = Trailers.objects.filter(parked_place__in=parking_slots)
+        chassis = Chassis.objects.filter(parked_place__in=parking_slots)
+        containers = Containers.objects.filter(parked_place__in=parking_slots)
+
+        data = {
+            'trucks': TrucksSerializer(trucks, many=True).data,
+            'trailers': TrailersSerializer(trailers, many=True).data,
+            'chassis': ChassisSerializer(chassis, many=True).data,
+            'containers': ContainersSerializer(containers, many=True).data,
+        }
+
+        return Response(data, status=200)
+
