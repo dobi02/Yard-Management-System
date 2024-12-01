@@ -30,7 +30,7 @@ const TransactionsPage = () => {
   // API 호출
   const fetchDrivers = async () => {
     try {
-      const response = await axios.get('/api/drivers/');
+      const response = await axios.get('http://localhost:8000/drivers/api/drivers');
       setDrivers(response.data);
     } catch (error) {
       message.error('Failed to fetch drivers');
@@ -48,10 +48,10 @@ const TransactionsPage = () => {
 
   const fetchEquipment = async () => {
     try {
-      const truckResponse = await axios.get('/api/equipment/trucks/');
-      const chassisResponse = await axios.get('/api/equipment/chassis/');
-      const containerResponse = await axios.get('/api/equipment/containers/');
-      const trailerResponse = await axios.get('/api/equipment/trailers/');
+      const truckResponse = await axios.get('http://localhost:8000/assets/api/trucks/');
+      const chassisResponse = await axios.get('http://localhost:8000/assets/api/chassis/');
+      const containerResponse = await axios.get('http://localhost:8000/assets/api/containers/');
+      const trailerResponse = await axios.get('http://localhost:8000/assets/api/trailers/');
       setTrucks(truckResponse.data);
       setChassis(chassisResponse.data);
       setContainers(containerResponse.data);
