@@ -7,6 +7,8 @@ from .models import Drivers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import DriversSerializer
+from django.shortcuts import get_object_or_404
+from apps.places.models import Yards
 
 
 class DriversView(APIView):
@@ -58,6 +60,25 @@ class DriverDetailView(APIView):
         driver.delete()
         return Response({"message": "Driver deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
+
+class DriversYardListView(APIView):
+    def get(self, request, yard_id):
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        drivers = Drivers.objects.filter(division_id=yard.division_id)
+
+        # Extract driver names (from linked User model)
+        driver_names = [
+            f"{driver.user.first_name} {driver.user.last_name}".strip()
+            for driver in drivers
+        ]
+
+        data = {
+            "username": drivers.user.username,
+            "drivers": driver_names,
+        }
+
+        return Response(data, status=200)
 
 
 @api_view(['POST'])
