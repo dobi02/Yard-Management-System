@@ -1,14 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form, Select, Input, Button, message } from 'antd';
 
 const { Option } = Select;
 
-const AssetModal = ({ type, visible, onCancel, onFinish, siteList }) => {
+const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, equipmentType }) => {
     const [form] = Form.useForm();
-    const [equipmentType, setEquipmentType] = React.useState(null);
+    const [equipmentOptions, setEquipmentOptions] = useState([]);
+    const [selectedEquipmentType, setSelectedEquipmentType] = React.useState(null);
+
+    // 장비 선택 옵션 업데이트 (삭제 모드에서 사용)
+    useEffect(() => {
+        if (type === 'delete' && yardAssets && equipmentType) {
+            // 야드 데이터에서 특정 장비 유형만 필터링하여 옵션 설정
+            setEquipmentOptions(yardAssets[equipmentType] || []);
+        }
+    }, [type, yardAssets, equipmentType]);
 
     const renderDynamicFields = () => {
-        switch (equipmentType) {
+        if (type === 'delete') {
+            // 삭제 모드: 장비 선택 필드만 렌더링
+            return (
+                <Form.Item
+                    name="equipmentId"
+                    label="Select Equipment to Delete"
+                    rules={[{ required: true, message: 'Please select an equipment ID to delete!' }]}
+                >
+                    <Select
+                        placeholder="Select equipment"
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {equipmentOptions.map((item) => (
+                            <Option key={item.id || item.truck_id} value={item.id || item.truck_id}>
+                                {item.id || item.truck_id} ({item.type})
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+            );
+        }
+
+        // 추가 모드: 장비 유형 및 세부 필드 렌더링
+        switch (selectedEquipmentType) {
             case 'chassis':
                 return (
                     <Form.Item
@@ -92,31 +125,35 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList }) => {
             footer={null}
         >
             <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                <Form.Item
-                    name="equipmentType"
-                    label="Equipment Type"
-                    rules={[{ required: true, message: 'Please select an equipment type!' }]}
-                >
-                    <Select
-                        placeholder="Select equipment type"
-                        onChange={(value) => setEquipmentType(value)}
+                {type === 'add' && (
+                    <Form.Item
+                        name="equipmentType"
+                        label="Equipment Type"
+                        rules={[{ required: true, message: 'Please select an equipment type!' }]}
                     >
-                        <Option value="truck">Truck</Option>
-                        <Option value="chassis">Chassis</Option>
-                        <Option value="container">Container</Option>
-                        <Option value="trailer">Trailer</Option>
-                    </Select>
-                </Form.Item>
+                        <Select
+                            placeholder="Select equipment type"
+                            onChange={(value) => setSelectedEquipmentType(value)}
+                        >
+                            <Option value="truck">Truck</Option>
+                            <Option value="chassis">Chassis</Option>
+                            <Option value="container">Container</Option>
+                            <Option value="trailer">Trailer</Option>
+                        </Select>
+                    </Form.Item>
+                )}
 
                 {renderDynamicFields()}
 
-                <Form.Item
-                    name="quantity"
-                    label="Quantity"
-                    rules={[{ required: true, message: 'Please enter the quantity!' }]}
-                >
-                    <Input type="number" placeholder="Enter quantity" min={1} />
-                </Form.Item>
+                {type === 'add' && (
+                    <Form.Item
+                        name="quantity"
+                        label="Quantity"
+                        rules={[{ required: true, message: 'Please enter the quantity!' }]}
+                    >
+                        <Input type="number" placeholder="Enter quantity" min={1} />
+                    </Form.Item>
+                )}
 
                 <Form.Item>
                     <Button type="primary" htmlType="submit" block>
