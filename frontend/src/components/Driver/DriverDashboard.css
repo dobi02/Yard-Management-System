@@ -1,0 +1,80 @@
+/* 페이지 전체 배경색 및 여백 제거 */
+body {
+  margin: 0; /* 기본 여백 제거 */
+  padding: 0; /* 기본 패딩 제거 */
+  background-color: #e0e0e0; /* 진한 회색 배경 */
+  box-sizing: border-box; /* 전체 크기 계산에 패딩 포함 */
+}
+
+/* 전체 컨테이너 */
+.dashboard-container {
+  padding: 0; /* 컨테이너와 화면 경계 사이의 간격 */
+  background-color: #e0e0e0;
+
+  box-sizing: border-box; /* 패딩 포함 크기 계산 */
+}
+
+/* 카드 스타일 */
+.dashboard-card {
+  margin-bottom: 12px; /* 카드 간의 간격 */
+  background-color: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 제목 스타일 - 위쪽 여백 조정 */
+.dashboard-card h3 {
+  font-size: 18px;
+  margin-top: 0; /* 제목과 카드 상단의 여백 제거 */
+  margin-bottom: 12px; /* 제목과 콘텐츠 사이 여백 */
+  font-weight: bold;
+}
+
+/* 텍스트 스타일 */
+.dashboard-card h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.dashboard-card .list-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.dashboard-card .list-item-icon {
+  margin-right: 8px;
+  font-size: 20px;
+}
+
+.dashboard-card .list-item-key {
+  font-size: 16px;
+  font-weight: bold;
+  color: #282c34;
+  margin-right: 4px;
+}
+
+.dashboard-card .list-item-text {
+  flex: 1;
+}
+
+/* 버튼 스타일 */
+.shortcut-button {
+  flex: 1;
+  background-color: #282c34;
+  color: white;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.shortcut-button:hover {
+  background-color: #a8a8a8;
+}

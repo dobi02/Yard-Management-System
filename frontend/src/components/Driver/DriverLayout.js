@@ -3,12 +3,15 @@ import { TabBar, NavBar } from "antd-mobile";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {
     UnorderedListOutline,
-    FileOutline ,
+    FileOutline,
     BellOutline,
-    SetOutline,
-    MailOutline
+    MailOutline,
+    FolderOutline,
+    CheckCircleOutline
 } from 'antd-mobile-icons';
 import "./DriverLayout.css";
+import {HomeOutlined} from "@ant-design/icons";
+
 
 
 const DriverLayout = ({ children }) => {
@@ -35,7 +38,7 @@ const DriverLayout = ({ children }) => {
                 <div className="sidebar-content">
                     <ul>
                         <li>
-                            <Link to="/settings" onClick={() => setIsSidebarOpen(false)}>
+                            <Link to="/driver/settings" onClick={() => setIsSidebarOpen(false)}>
                                 Settings
                             </Link>
                         </li>
@@ -54,10 +57,26 @@ const DriverLayout = ({ children }) => {
                 activeKey={location.pathname}
                 onChange={(key) => navigate(key)}
             >
-                <TabBar.Item key="/driver/dashboard" icon={<FileOutline />} title="Dashboard" />
-                <TabBar.Item key="/driver/orders" icon={<BellOutline />} title="Orders" />
-                <TabBar.Item key="/driver/notifications" icon={<MailOutline />} title="Notifications" />
-                <TabBar.Item key="/driver/settings" icon={<SetOutline />} title="Settings" />
+                <TabBar.Item
+                    key="/driver/dashboard"
+                    icon={<HomeOutlined />}
+                    title="Dashboard"
+                />
+                <TabBar.Item
+                    key="/driver/orders"
+                    icon={<FileOutline />}
+                    title="Orders"
+                />
+                <TabBar.Item
+                    key="/driver/notifications"
+                    icon={<BellOutline />}
+                    title="Notifications"
+                />
+                <TabBar.Item
+                    key="/driver/status"
+                    icon={<CheckCircleOutline />}
+                    title="Status"
+                />
             </TabBar>
         </div>
     );
