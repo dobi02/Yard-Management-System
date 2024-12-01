@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import Drivers
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,6 +10,8 @@ from .serializers import DriversSerializer
 
 
 class DriversView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         drivers = Drivers.objects.all()
         serializer = DriversSerializer(drivers, many=True)
@@ -23,6 +26,8 @@ class DriversView(APIView):
 
 
 class DriverDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             driver = Drivers.objects.get(pk=pk)
@@ -67,9 +72,11 @@ def login_driver(request):
         try:
             # 해당 사용자가 Driver인지 확인
             driver = Drivers.objects.get(user=user)
+            role = 'driver'
 
             # JWT 토큰 생성
             refresh = RefreshToken.for_user(user)
+            refresh['role'] = role  # 역할(role)을 토큰에 추가
             return Response({
                 "message": "Login successful",
                 "access": str(refresh.access_token),
