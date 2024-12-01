@@ -49,7 +49,7 @@ const ManagerDashboard = () => {
     // 선택된 야드의 장비 목록 가져오기
     const fetchAssets = async (yardId) => {
         try {
-            const response = await axios.get(`/api/yards/${yardId}/equipment-count/`);
+            const response = await axios.get(`/api/yards/${yardId}/count/`);
             setAssets(response.data);
 
             // 삭제용 장비 목록 준비
@@ -89,7 +89,7 @@ const ManagerDashboard = () => {
                 yard: selectedYard,
             };
 
-            await axios.post('/api/equipment/', payload);
+            await axios.post(`/api/${equipmentType}/`, payload);
             message.success('Equipment added successfully.');
             setIsAddModalOpen(false);
             form.resetFields();
