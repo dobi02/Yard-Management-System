@@ -20,21 +20,25 @@ class TrucksView(APIView):
     def post(self, request):
         yard = request.data.get('yard')
         typ = request.data.get('type')
-        slot = services.get_available_parking_slot(yard, "truck")
+        quantity = int(request.data.get('quantity'))
 
         # serializer = TrucksSerializer(data={"type" : typ, "parked_place" : "Null"})
         # print(serializer.is_valid())
         # print(slot)
-        if slot:
-            serializer = TrucksSerializer(data={"type" : typ, "parked_place" : slot.slot_id})
-            if serializer.is_valid():
+        for i in range(quantity):
+            slot = services.get_available_parking_slot(yard, "truck")
+            if slot:
+                serializer = TrucksSerializer(data={"type" : typ, "parked_place" : slot.slot_id})
+                if serializer.is_valid():
 
-                serializer.save()
-                slot.is_occupied = True
-                slot.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+                    serializer.save()
+                    slot.is_occupied = True
+                    slot.save()
+                    if i + 1 != quantity:
+                        continue
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
@@ -70,16 +74,21 @@ class ChassisView(APIView):
     def post(self, request):
         yard = request.data.get('yard')
         typ = request.data.get('type')
-        slot = services.get_available_parking_slot(yard, "chassis")
-        if slot:
-            serializer = ChassisSerializer(data={"type": typ, "parked_place": slot.slot_id})
-            if serializer.is_valid():
-                serializer.save()
-                slot.is_occupied = True
-                slot.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        quantity = int(request.data.get('quantity'))
+
+        for i in range(quantity):
+            slot = services.get_available_parking_slot(yard, "chassis")
+            if slot:
+                serializer = ChassisSerializer(data={"type": typ, "parked_place": slot.slot_id})
+                if serializer.is_valid():
+                    serializer.save()
+                    slot.is_occupied = True
+                    slot.save()
+                    if i + 1 != quantity:
+                        continue
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
@@ -115,16 +124,21 @@ class TrailersView(APIView):
     def post(self, request):
         yard = request.data.get('yard')
         typ = request.data.get('type')
-        slot = services.get_available_parking_slot(yard, "trailer")
-        if slot:
-            serializer = TrailersSerializer(data={"type": typ, "parked_place": slot.slot_id})
-            if serializer.is_valid():
-                serializer.save()
-                slot.is_occupied = True
-                slot.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        quantity = int(request.data.get('quantity'))
+
+        for i in range(quantity):
+            slot = services.get_available_parking_slot(yard, "trailer")
+            if slot:
+                serializer = TrailersSerializer(data={"type": typ, "parked_place": slot.slot_id})
+                if serializer.is_valid():
+                    serializer.save()
+                    slot.is_occupied = True
+                    slot.save()
+                    if i + 1 != quantity:
+                        continue
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
@@ -161,16 +175,21 @@ class ContainersView(APIView):
         yard = request.data.get('yard')
         typ = request.data.get('type')
         size = request.data.get('size')
-        slot = services.get_available_parking_slot(yard, "container")
-        if slot:
-            serializer = ContainersSerializer(data={"type": typ, "parked_place": slot.slot_id, "size": size})
-            if serializer.is_valid():
-                serializer.save()
-                slot.is_occupied = True
-                slot.save()
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        quantity = int(request.data.get('quantity'))
+
+        for i in range(quantity):
+            slot = services.get_available_parking_slot(yard, "container")
+            if slot:
+                serializer = ContainersSerializer(data={"type": typ, "parked_place": slot.slot_id, "size": size})
+                if serializer.is_valid():
+                    serializer.save()
+                    slot.is_occupied = True
+                    slot.save()
+                    if i + 1 != quantity:
+                        continue
+                    return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk):
         try:
