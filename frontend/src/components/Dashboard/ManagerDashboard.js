@@ -9,28 +9,28 @@ const { Option } = Select;
 const ManagerDashboard = () => {
     const [form] = Form.useForm(); // Form 객체 생성
 
-    const [selectedDivision, setSelectedDivision] = React.useState(null); //
-    const [selectedYard, setSelectedYard] = React.useState(null);
-    const [divisions, setDivisions] = React.useState([]); // 디비전 목록
-    const [yards, setYards] = React.useState([]); // 디비전의 야드 목록
-    const [assets, setAssets] = React.useState([]); // 야드의 장비 목록
-    const [equipmentType, setEquipmentType] = React.useState('trucks');
-    const [equipmentList, setEquipmentList] = React.useState([]);
+    const [selectedDivision, setSelectedDivision] = useState(null); //
+    const [selectedYard, setSelectedYard] = useState(null);
+    const [divisions, setDivisions] = useState([]); // 디비전 목록
+    const [yards, setYards] = useState([]); // 디비전의 야드 목록
+    const [sites, setSites] = useState([]);
+    const [assets, setAssets] = useState([]); // 야드의 장비 목록
+
+    const [equipmentType, setEquipmentType] = useState('trucks');
+    const [equipmentList, setEquipmentList] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false); // 장비 추가 팝업 상태
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 장비 삭제 팝업 상태
 
     // 컴포넌트 처음 렌더링할 때 디비전 목록을 불러옴
-    useEffect(() => {
+     useEffect(() => {
         const fetchDivisions = async () => {
             try {
-                // 디비전 목록 호출 API
-                const response = await axios.get("http://localhost:8000/places/divisions/");
-                setDivisions(response.data); // 디비전 목록
+                const response = await axios.get(`http://localhost:8000/places/divisions/`);
+                setDivisions(response.data);
             } catch (error) {
-                message.error("Failed to load divisions");
+                message.error('Failed to load divisions');
             }
         };
-
         fetchDivisions();
     }, []);
 
@@ -45,6 +45,8 @@ const ManagerDashboard = () => {
             message.error("Failed to load yards");
         }
     }
+
+
 
     // 선택된 야드의 장비 목록 가져오기
     const fetchAssets = async (yardId) => {
@@ -65,10 +67,16 @@ const ManagerDashboard = () => {
     };
 
     // 야드 선택 장비 불러오기
-    const handleYardChange = async (value) => {
-        setSelectedYard(value);
-        fetchAssets(value);
+      const handleYardChange = async (yardId) => {
+        setSelectedYard(yardId);
+        try {
+            const response = await axios.get(`http://localhost:8000/places/sites/${yardId}/`);
+            setSites(response.data);
+        } catch (error) {
+            message.error('Failed to load sites');
+        }
     };
+
 
     // 장비 추가 요청
     const handleAddEquipment = async (values) => {
@@ -259,17 +267,22 @@ const ManagerDashboard = () => {
             </div>
 
             {/* 정보 카드 */}
-            <div className="cards-container" style={{marginTop: '16px'}}>
-                {assets.length > 0 ? (
-                    assets.map((info, index) => (
-                        <Card key={index} title={info.name} bordered={false} className="info-card">
-                            <p>{info.description}</p>
+            <div className="cards-container"
+                 style={{marginTop: '16px', display: 'flex', gap: '16px', flexWrap: 'wrap'}}>
+                {sites.length > 0 ? (
+                    sites.map((site) => (
+                        <Card
+                            key={site.site_id}
+                            title={`Site ID: ${site.site_id}`}
+                            style={{width: 300}}
+                            hoverable
+                        >
+                            <p><strong>Yard ID:</strong> {site.yard_id}</p>
+                            <p><strong>Asset Type:</strong> {site.asset_type}</p>
                         </Card>
                     ))
                 ) : (
-                    <Card title="None" bordered={false} className="info-card">
-                        <p>No assets</p>
-                    </Card>
+                    <p>No site available</p>
                 )}
             </div>
 
@@ -285,7 +298,7 @@ const ManagerDashboard = () => {
                     <Form.Item
                         name="equipmentType"
                         label="Equipment Type"
-                        rules={[{ required: true, message: 'Please select an equipment type!' }]}
+                        rules={[{required: true, message: 'Please select an equipment type!'}]}
                     >
                         <Select
                             placeholder="Select equipment type"
