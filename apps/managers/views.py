@@ -6,9 +6,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .models import Managers
 from .serializers import ManagersSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class ManagersView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         managers = Managers.objects.all()
         serializer = ManagersSerializer(managers, many=True)
@@ -34,9 +37,11 @@ def login_manager(request):
         try:
             # 해당 사용자가 Manager인지 확인
             manager = Managers.objects.get(user=user)
+            role = 'manager'
 
             # JWT 토큰 생성
             refresh = RefreshToken.for_user(user)
+            refresh['role'] = role  # role을 토큰에 추가
             return Response({
                 "message": "Login successful",
                 "access": str(refresh.access_token),

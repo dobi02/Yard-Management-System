@@ -3,9 +3,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Transactions
 from .serializers import TransactionsSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class TransactionsView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         transactions = Transactions.objects.all()
         serializer = TransactionsSerializer(transactions, many=True)
@@ -23,6 +25,8 @@ class TransactionsView(APIView):
 
 
 class TransactionDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             transaction = Transactions.objects.get(pk=pk)
