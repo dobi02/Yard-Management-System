@@ -36,7 +36,8 @@ const Login = () => {
                 return;
             }
             // 성공, 토큰 로컬 스토리지 저장
-            localStorage.setItem('authToken', response.data.token);
+            localStorage.setItem('authToken', response.data.access);
+            localStorage.setItem('refreshToken', response.data.refresh);
             message.success(response.data.message);
 
             // 유저 타입에 따라 페이지 이동
