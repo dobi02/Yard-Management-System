@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Button, message } from 'antd';
+import { Button, message, Form } from 'antd';
 import ManagerLayout from './ManagerLayout';
 import DivisionSelect from "./Dashboard/DivisionSelect";
 import YardSelect from './Dashboard/YardSelect';
 import InfoCards from './Dashboard/InfoCards';
-//import AssetModal from "./Dashboard/AssetModal";
+import AssetModal from './Dashboard/AssetModal';
 import './ManagerDashboard.css';
 import axios from 'axios';
 
@@ -18,7 +18,9 @@ const ManagerDashboard = () => {
     const [sites, setSites] = useState([]); // 사이트 목록
     const [selectedDivision, setSelectedDivision] = useState(null); // 선택된 디비전
     const [selectedYard, setSelectedYard] = useState(null); // 선택된 야드
-    //const [modals, setModals] = useState({ add: false, delete: false });
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false); // 모달 상태
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 모달 상태
+    const [form] = Form.useForm(); // 폼 인스턴스
 
     // 디비전 목록 불러오기
     useEffect(() => {
@@ -57,6 +59,39 @@ const ManagerDashboard = () => {
         }
     };
 
+    // 장비 추가 처리
+    const handleAddEquipment = async (values) => {
+        try {
+            const payload = {
+                ...values,
+                yard: selectedYard, // 선택된 야드
+            };
+            await axios.post(`${API_BASE_URL}/equipment/`, payload); // API 호출
+            message.success('Equipment added successfully.');
+            form.resetFields();
+            setIsAddModalOpen(false); // 모달 닫기
+        } catch (error) {
+            message.error('Failed to add equipment.');
+            console.error(error);
+        }
+    };
+
+    // 장비 삭제 처리
+    const handleDeleteEquipment = async (values) => {
+        try {
+            await axios.delete(`${API_BASE_URL}/equipment/${values.equipmentId}/`, {
+                data: { yard: selectedYard }, // 선택된 야드 정보 포함
+            });
+            message.success('Equipment deleted successfully.');
+            form.resetFields();
+            setIsDeleteModalOpen(false); // 모달 닫기
+        } catch (error) {
+            message.error('Failed to delete equipment.');
+            console.error(error);
+        }
+    };
+
+
     return (
         <ManagerLayout>
             <div className="select-container">
@@ -68,8 +103,26 @@ const ManagerDashboard = () => {
             {/*    <Button onClick={() => setModals({ ...modals, delete: true })}>Delete Equipment</Button>*/}
             </div>
 
-            {/* 사이트 카드 뒤에 같은 형식으로 넣기*/}
-            <InfoCards sites={sites}/>
+            {/* 사이트 카드 */}
+            <InfoCards sites={sites} />
+
+            {/* 장비 추가 모달 */}
+            <AssetModal
+                type="add"
+                visible={isAddModalOpen}
+                onCancel={() => setIsAddModalOpen(false)}
+                onFinish={handleAddEquipment}
+                siteList={sites}
+            />
+
+            {/* 장비 삭제 모달 */}
+            <AssetModal
+                type="delete"
+                visible={isDeleteModalOpen}
+                onCancel={() => setIsDeleteModalOpen(false)}
+                onFinish={handleDeleteEquipment}
+                siteList={sites}
+            />
         </ManagerLayout>
     );
 };
