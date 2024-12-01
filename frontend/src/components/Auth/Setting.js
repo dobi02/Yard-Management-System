@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ManagerLayout from "../Dashboard/ManagerLayout";
+import ManagerLayout from "../Manager/ManagerLayout";
 
 const Settings = () => {
     return (

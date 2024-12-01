@@ -1,9 +1,9 @@
 import React from 'react';
 import {Routes, Route, Outlet, Navigate} from 'react-router-dom';
-import ManagerDashboard from '../components/Dashboard/ManagerDashboard';
-import YardLayout from '../components/Dashboard/YardLayout'
+import ManagerDashboard from '../components/Manager/ManagerDashboard';
+import YardLayout from '../components/Manager/YardLayout'
 import Settings from "../components/Auth/Setting";
-import TransactionPage from "../components/Dashboard/TransactionPage";
+import TransactionPage from "../components/Manager/TransactionPage";
 
 const Manager = () => {
       return (
