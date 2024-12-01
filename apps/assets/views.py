@@ -160,9 +160,10 @@ class ContainersView(APIView):
     def post(self, request):
         yard = request.data.get('yard')
         typ = request.data.get('type')
+        size = request.data.get('size')
         slot = services.get_available_parking_slot(yard, "container")
         if slot:
-            serializer = ContainersSerializer(data={"type": typ, "parked_place": slot.slot_id})
+            serializer = ContainersSerializer(data={"type": typ, "parked_place": slot.slot_id, "size": size})
             if serializer.is_valid():
                 serializer.save()
                 slot.is_occupied = True

@@ -10,6 +10,7 @@ urlpatterns = [
     # Yards
     path('api/yards/', YardsView.as_view(), name='yards-list'),
     path('api/yards/<str:pk>/', YardDetailView.as_view(), name='yard-detail'),
+    path('api/yards/<str:pk>/count/', AvailableSlotsBySiteTypeView.as_view(), name='yards-count'),
 
     # Sites
     path('api/sites/', SitesView.as_view(), name='sites-list'),
