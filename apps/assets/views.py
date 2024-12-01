@@ -5,11 +5,13 @@ from .models import Trucks, Chassis, Trailers, Containers
 from .serializers import TrucksSerializer, ChassisSerializer, TrailersSerializer, ContainersSerializer
 from apps.places.models import ParkingSlots
 from apps.utils import services
+from rest_framework.permissions import IsAuthenticated
 
-#Patch or put?
 
 # Trucks View
 class TrucksView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         trucks = Trucks.objects.all()
         serializer = TrucksSerializer(trucks, many=True)
@@ -58,6 +60,8 @@ class TrucksView(APIView):
 
 # Chassis View
 class ChassisView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         chassis = Chassis.objects.all()
         serializer = ChassisSerializer(chassis, many=True)
@@ -101,6 +105,8 @@ class ChassisView(APIView):
 
 # Trailers View
 class TrailersView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         trailers = Trailers.objects.all()
         serializer = TrailersSerializer(trailers, many=True)
@@ -144,6 +150,8 @@ class TrailersView(APIView):
 
 # Containers View
 class ContainersView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         containers = Containers.objects.all()
         serializer = ContainersSerializer(containers, many=True)
