@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # Trucks View
 class TrucksView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         trucks = Trucks.objects.all()
@@ -60,7 +60,7 @@ class TrucksView(APIView):
 
 # Chassis View
 class ChassisView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         chassis = Chassis.objects.all()
@@ -105,7 +105,7 @@ class ChassisView(APIView):
 
 # Trailers View
 class TrailersView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         trailers = Trailers.objects.all()
@@ -150,7 +150,7 @@ class TrailersView(APIView):
 
 # Containers View
 class ContainersView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         containers = Containers.objects.all()

@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # Divisions Views
 class DivisionsView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         divisions = Divisions.objects.all()
@@ -24,7 +24,7 @@ class DivisionsView(APIView):
 
 
 class DivisionDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -50,7 +50,7 @@ class DivisionDetailView(APIView):
 
 # Yards Views
 class YardsView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         yards = Yards.objects.all()
@@ -67,7 +67,7 @@ class YardsView(APIView):
 
 
 class YardDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -102,7 +102,7 @@ class YardDetailView(APIView):
 
 # Sites Views
 class SitesView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         sites = Sites.objects.all()
@@ -111,7 +111,7 @@ class SitesView(APIView):
 
 
 class SiteDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -136,7 +136,7 @@ class SiteDetailView(APIView):
 
 
 class ParkingSlotsView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         parking_slots = ParkingSlots.objects.all()
@@ -145,7 +145,7 @@ class ParkingSlotsView(APIView):
 
 
 class ParkingSlotDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:

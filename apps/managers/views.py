@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class ManagersView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         managers = Managers.objects.all()

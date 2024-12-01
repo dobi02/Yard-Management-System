@@ -10,7 +10,7 @@ from .serializers import DriversSerializer
 
 
 class DriversView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request):
         drivers = Drivers.objects.all()
@@ -26,7 +26,7 @@ class DriversView(APIView):
 
 
 class DriverDetailView(APIView):
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
