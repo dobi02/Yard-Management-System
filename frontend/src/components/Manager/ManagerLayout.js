@@ -33,12 +33,6 @@ const items = [
     key: '/manager/settings',
     icon: <SettingOutlined />,
     label: (<Link to="/manager/settings">Settings</Link>),
-  },
-  // test
-  {
-    key: '/manager/test',
-    icon: <SettingOutlined />,
-    label: (<Link to="/manager/test">Test Page</Link>),
   }
 ];
 

@@ -4,7 +4,6 @@ import ManagerDashboard from '../components/Manager/ManagerDashboard';
 import YardLayout from '../components/Manager/YardLayout'
 import Settings from "../components/Auth/Setting";
 import TransactionPage from "../components/Manager/TransactionPage";
-import TestPage from '../components/Manager/TestPage';
 
 const Manager = () => {
       return (
@@ -17,7 +16,6 @@ const Manager = () => {
           <Route path="/yardlayout" element={<YardLayout />} /> {/* /admin/yardlayout 경로에 해당 */}
           <Route path="/transactions" element={<TransactionPage />} /> {/* /admin/transactions 경로 추가 */}
           <Route path="/settings" element={<Settings />} /> {/* /admin/settings 경로에 해당 */}
-          <Route path="/test" element={<TestPage />} />
       </Routes>
     </div>
   );
