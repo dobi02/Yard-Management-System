@@ -14,7 +14,7 @@ def create_sites_and_parking_slots(sender, instance, created, **kwargs):
             site_id = f"{instance.yard_id}_{asset_type}"
             site = Sites.objects.create(
                 site_id=site_id,
-                yard=instance,
+                yard_id=instance,
                 asset_type=asset_type
             )
 
@@ -23,5 +23,5 @@ def create_sites_and_parking_slots(sender, instance, created, **kwargs):
                 slot_id = f"{site_id}_{i:02d}"  # 예: 1_truck_01
                 ParkingSlots.objects.create(
                     slot_id=slot_id,
-                    site=site
+                    site_id=site
                 )

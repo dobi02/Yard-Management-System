@@ -3,10 +3,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Divisions, Yards, Sites, ParkingSlots
 from .serializers import DivisionsSerializer, YardsSerializer, SitesSerializer, ParkingSlotsSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 # Divisions Views
 class DivisionsView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         divisions = Divisions.objects.all()
         serializer = DivisionsSerializer(divisions, many=True)
@@ -21,6 +24,8 @@ class DivisionsView(APIView):
 
 
 class DivisionDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             division = Divisions.objects.get(pk=pk)
@@ -45,6 +50,8 @@ class DivisionDetailView(APIView):
 
 # Yards Views
 class YardsView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         yards = Yards.objects.all()
         serializer = YardsSerializer(yards, many=True)
@@ -60,6 +67,8 @@ class YardsView(APIView):
 
 
 class YardDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             yard = Yards.objects.filter(division_id=pk)
@@ -93,6 +102,8 @@ class YardDetailView(APIView):
 
 # Sites Views
 class SitesView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         sites = Sites.objects.all()
         serializer = SitesSerializer(sites, many=True)
@@ -100,6 +111,8 @@ class SitesView(APIView):
 
 
 class SiteDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             site = Sites.objects.filter(yard_id=pk)
@@ -123,6 +136,8 @@ class SiteDetailView(APIView):
 
 
 class ParkingSlotsView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request):
         parking_slots = ParkingSlots.objects.all()
         serializer = ParkingSlotsSerializer(parking_slots, many=True)
@@ -130,6 +145,8 @@ class ParkingSlotsView(APIView):
 
 
 class ParkingSlotDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
     def get(self, request, pk):
         try:
             parking_slot = ParkingSlots.objects.get(pk=pk)
