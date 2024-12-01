@@ -1,27 +1,131 @@
-import React from 'react';
-import { Modal, Form, Select, Input, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Modal, Form, Select, Input, Button, message } from 'antd';
 
 const { Option } = Select;
 
-const EquipmentModal = ({
-    type,
-    visible,
-    onCancel,
-    onFinish,
-    equipmentList = [],
-    renderDynamicFields
-}) => {
+const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, equipmentType }) => {
     const [form] = Form.useForm();
+    const [equipmentOptions, setEquipmentOptions] = useState([]);
+    const [selectedEquipmentType, setSelectedEquipmentType] = React.useState(null);
+
+    // 장비 선택 옵션 업데이트 (삭제 모드에서 사용)
+    useEffect(() => {
+        if (type === 'delete' && yardAssets && equipmentType) {
+            // 야드 데이터에서 특정 장비 유형만 필터링하여 옵션 설정
+            setEquipmentOptions(yardAssets[equipmentType] || []);
+        }
+    }, [type, yardAssets, equipmentType]);
+
+    const renderDynamicFields = () => {
+        if (type === 'delete') {
+            // 삭제 모드: 장비 선택 필드만 렌더링
+            return (
+                <Form.Item
+                    name="equipmentId"
+                    label="Select Equipment to Delete"
+                    rules={[{ required: true, message: 'Please select an equipment ID to delete!' }]}
+                >
+                    <Select
+                        placeholder="Select equipment"
+                        showSearch
+                        optionFilterProp="children"
+                    >
+                        {equipmentOptions.map((item) => (
+                            <Option key={item.id || item.truck_id} value={item.id || item.truck_id}>
+                                {item.id || item.truck_id} ({item.type})
+                            </Option>
+                        ))}
+                    </Select>
+                </Form.Item>
+            );
+        }
+
+        // 추가 모드: 장비 유형 및 세부 필드 렌더링
+        switch (selectedEquipmentType) {
+            case 'chassis':
+                return (
+                    <Form.Item
+                        name="chassisType"
+                        label="Chassis Type"
+                        rules={[{ required: true, message: 'Please select a chassis type!' }]}
+                    >
+                        <Select placeholder="Select chassis type">
+                            <Option value="regular">Regular</Option>
+                            <Option value="light">Light</Option>
+                            <Option value="tandem">Tandem</Option>
+                            <Option value="triAxle">Tri Axle</Option>
+                        </Select>
+                    </Form.Item>
+                );
+            case 'container':
+                return (
+                    <>
+                        <Form.Item
+                            name="containerSize"
+                            label="Container Size"
+                            rules={[{ required: true, message: 'Please select a container size!' }]}
+                        >
+                            <Select placeholder="Select container size">
+                                <Option value="20ST">20ST</Option>
+                                <Option value="40HC">40HC</Option>
+                                <Option value="40ST">40ST</Option>
+                                <Option value="45HC">45HC</Option>
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="containerType"
+                            label="Container Type"
+                            rules={[{ required: true, message: 'Please select a container type!' }]}
+                        >
+                            <Select placeholder="Select container type">
+                                <Option value="dry">Dry</Option>
+                                <Option value="reefer">Reefer</Option>
+                                <Option value="flatRack">Flat Rack</Option>
+                                <Option value="isoTank">ISO Tank</Option>
+                                <Option value="openTop">Open Top</Option>
+                            </Select>
+                        </Form.Item>
+                    </>
+                );
+            case 'trailer':
+                return (
+                    <Form.Item
+                        name="trailerSize"
+                        label="Trailer Size"
+                        rules={[{ required: true, message: 'Please select a trailer size!' }]}
+                    >
+                        <Select placeholder="Select trailer size">
+                            <Option value="53ft">53'</Option>
+                            <Option value="48ft">48'</Option>
+                        </Select>
+                    </Form.Item>
+                );
+            default:
+                return null;
+        }
+    };
+
+    const handleSubmit = async (values) => {
+        try {
+            await onFinish(values);
+            form.resetFields();
+        } catch (error) {
+            message.error('Failed to process the request.');
+        }
+    };
 
     return (
         <Modal
             title={type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
             visible={visible}
-            onCancel={onCancel}
+            onCancel={() => {
+                form.resetFields();
+                onCancel();
+            }}
             footer={null}
         >
-            {type === 'add' ? (
-                <Form form={form} layout="vertical" onFinish={onFinish}>
+            <Form form={form} layout="vertical" onFinish={handleSubmit}>
+                {type === 'add' && (
                     <Form.Item
                         name="equipmentType"
                         label="Equipment Type"
@@ -29,7 +133,7 @@ const EquipmentModal = ({
                     >
                         <Select
                             placeholder="Select equipment type"
-                            onChange={(value) => form.setFieldsValue({ equipmentType: value })}
+                            onChange={(value) => setSelectedEquipmentType(value)}
                         >
                             <Option value="truck">Truck</Option>
                             <Option value="chassis">Chassis</Option>
@@ -37,28 +141,28 @@ const EquipmentModal = ({
                             <Option value="trailer">Trailer</Option>
                         </Select>
                     </Form.Item>
-                    {renderDynamicFields && renderDynamicFields()}
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
-                            {type === 'add' ? 'Add' : 'Delete'}
-                        </Button>
+                )}
+
+                {renderDynamicFields()}
+
+                {type === 'add' && (
+                    <Form.Item
+                        name="quantity"
+                        label="Quantity"
+                        rules={[{ required: true, message: 'Please enter the quantity!' }]}
+                    >
+                        <Input type="number" placeholder="Enter quantity" min={1} />
                     </Form.Item>
-                </Form>
-            ) : (
-                <Select
-                    placeholder="Select Equipment to Delete"
-                    style={{ width: '100%', marginBottom: 20 }}
-                    onChange={(value) => onFinish(value)}
-                >
-                    {equipmentList.map((item) => (
-                        <Option key={item.id} value={item.id}>
-                            {item.id} ({item.count} Units)
-                        </Option>
-                    ))}
-                </Select>
-            )}
+                )}
+
+                <Form.Item>
+                    <Button type="primary" htmlType="submit" block>
+                        {type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
+                    </Button>
+                </Form.Item>
+            </Form>
         </Modal>
     );
 };
 
-export default EquipmentModal;
+export default AssetModal;
