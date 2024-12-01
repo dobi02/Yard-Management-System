@@ -24,7 +24,7 @@ const ManagerDashboard = () => {
     useEffect(() => {
         const fetchDivisions = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/places/divisions/`);
+                const response = await axios.get(`${API_BASE_URL}/places/api/divisions/`);
                 setDivisions(response.data);
             } catch (error) {
                 message.error('Failed to load divisions');
@@ -37,7 +37,7 @@ const ManagerDashboard = () => {
     const handleDivisionChange = async (divisionId) => {
         setSelectedDivision(divisionId);
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/places/yards/${divisionId}/`);
+            const response = await axios.get(`${API_BASE_URL}/places/api/yards/${divisionId}/`);
             setYards(response.data);
             setSelectedYard(null); // 디비전 변경시 야드 초기화
             setSites([]); // 사이트 목록 초기화
@@ -50,7 +50,7 @@ const ManagerDashboard = () => {
     const handleYardChange = async (yardId) => {
         setSelectedYard(yardId);
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/places/sites/${yardId}/`);
+            const response = await axios.get(`${API_BASE_URL}/places/api/sites/${yardId}/`);
             setSites(response.data);
         } catch (error) {
             message.error('Failed to load sites');
