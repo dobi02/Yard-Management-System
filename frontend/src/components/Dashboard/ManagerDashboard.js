@@ -24,7 +24,7 @@ const ManagerDashboard = () => {
         const fetchDivisions = async () => {
             try {
                 // 디비전 목록 호출 API
-                const response = await axios.get("http://localhost:8000/places/divisions/");
+                const response = await axios.get("http://localhost:8000/places/api/divisions/");
                 setDivisions(response.data); // 디비전 목록
             } catch (error) {
                 message.error("Failed to load divisions");
@@ -39,7 +39,7 @@ const ManagerDashboard = () => {
         setSelectedDivision(value);
         try {
             // 디비전의 야드 목록 호출 API
-            const response = await axios.get(`http://localhost:8000/places/yards/${value}`);
+            const response = await axios.get(`http://localhost:8000/places/api/yards/${value}`);
             setYards(response.data); // 야드 목록
         } catch (error) {
             message.error("Failed to load yards");
@@ -49,7 +49,7 @@ const ManagerDashboard = () => {
     // 선택된 야드의 장비 목록 가져오기
     const fetchAssets = async (yardId) => {
         try {
-            const response = await axios.get(`/api/yards/${yardId}/count/`);
+            const response = await axios.get(`assets/api/yards/${yardId}/equipment-count/`);
             setAssets(response.data);
 
             // 삭제용 장비 목록 준비
@@ -89,7 +89,7 @@ const ManagerDashboard = () => {
                 yard: selectedYard,
             };
 
-            await axios.post(`/api/${equipmentType}/`, payload);
+            await axios.post('assets/api/equipment/', payload);
             message.success('Equipment added successfully.');
             setIsAddModalOpen(false);
             form.resetFields();
@@ -206,7 +206,7 @@ const ManagerDashboard = () => {
         }
 
         try {
-            await axios.delete(`http://localhost:8000/api/${equipmentType}/${id}/`, {
+            await axios.delete(`http://localhost:8000/assets/api/${equipmentType}/${id}/`, {
                 data: { yard: selectedYard }, // 선택된 야드 전달
             });
             message.success('Equipment deleted successfully');

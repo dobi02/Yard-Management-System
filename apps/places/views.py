@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.shortcuts import get_object_or_404
 from .models import Divisions, Yards, Sites, ParkingSlots
+from apps.assets.models import Trucks, Chassis, Trailers, Containers
 from .serializers import DivisionsSerializer, YardsSerializer, SitesSerializer, ParkingSlotsSerializer
 from rest_framework.permissions import IsAuthenticated
 from apps.assets.models import *
@@ -234,3 +236,33 @@ class AvailableSlotsBySiteTypeView(APIView):
         print(result)
         return Response({"site_list": result, "chassis_list": chassis_list, "trucks_list": trucks_list,
                          "containers_list": containers_list, "trailers_list": trailers_list})
+
+class AssetCountView(APIView):
+    def get(self, request, yard_id):
+        # Get the specified yard
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        # Retrieve all Sites for the yard
+        sites = yard.sites_set.all()  # Reverse relationship to Sites
+
+        # Get all ParkingSlots linked to the Sites
+        parking_slots = ParkingSlots.objects.filter(site_id__in=sites)
+
+        # Count equipment for each type
+        trucks_count = Trucks.objects.filter(parked_place__in=parking_slots).count()
+        chassis_count = Chassis.objects.filter(parked_place__in=parking_slots).count()
+        trailers_count = Trailers.objects.filter(parked_place__in=parking_slots).count()
+        containers_count = Containers.objects.filter(parked_place__in=parking_slots).count()
+
+        # Prepare the response
+        data = {
+            "yard_id": yard_id,
+            "equipment_count": {
+                "trucks": trucks_count,
+                "chassis": chassis_count,
+                "trailers": trailers_count,
+                "containers": containers_count,
+            }
+        }
+
+        return Response(data, status=200)
