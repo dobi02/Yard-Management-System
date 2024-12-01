@@ -1,33 +1,10 @@
-
-.cards-container {
-    display: flex;
-    overflow-x: auto; /* 가로 스크롤 */
-    gap: 16px;
-    padding: 16px;
-}
-
-.info-card {
-    flex-shrink: 0; /* 카드 안 줄어듦 */
-    width: 300px;
-    margin: 0 8px;
-}
-
-.ant-card {
-    border-radius: 10px;
-    text-align: center;
-}
-
-.yard-map-placeholder {
-    height: 400px;
-    margin-top: 20px;
-    background: #e8e8e8;
-    display: flex;
+.select-container {
+    position: sticky; /* 화면에 스크롤 시 고정 */
+    top: 0; /* 화면의 상단에 고정 */
+    z-index: 10; /* 다른 요소 위에 표시되도록 설정 */
+    flex-wrap: nowrap; /* 한 줄에 고정 */
     align-items: center;
-    justify-content: center;
-    color: #888;
-    border-radius: 8px;
-}
-
-.ant-btn {
-    margin-top: 10px;
+    gap: 16px; /* 요소 간 간격 */
+    padding: 8px 16px; /* 내부 여백 */
+    border-bottom: 1px solid #ddd; /* 시각적 구분을 위한 하단 테두리 */
 }

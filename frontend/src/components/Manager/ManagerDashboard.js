@@ -68,9 +68,8 @@ const ManagerDashboard = () => {
             {/*    <Button onClick={() => setModals({ ...modals, delete: true })}>Delete Equipment</Button>*/}
             </div>
 
-            {/* 사이트 카드 */}
-            <InfoCards sites={sites} />
-
+            {/* 사이트 카드 뒤에 같은 형식으로 넣기*/}
+            <InfoCards sites={sites}/>
         </ManagerLayout>
     );
 };
