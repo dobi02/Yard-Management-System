@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import DivisionsView, DivisionDetailView, YardsView, YardDetailView, SitesView, SiteDetailView, ParkingSlotDetailView, ParkingSlotsView
+from .views import DivisionsView, DivisionDetailView, YardsView, YardDetailView, SitesView, SiteDetailView, ParkingSlotDetailView, ParkingSlotsView, AvailableSlotsBySiteTypeView
 
 urlpatterns = [
     # Divisions
@@ -9,6 +9,7 @@ urlpatterns = [
     # Yards
     path('yards/', YardsView.as_view(), name='yards-list'),
     path('yards/<str:pk>/', YardDetailView.as_view(), name='yard-detail'),
+    path('yards/<str:pk>/count/', AvailableSlotsBySiteTypeView.as_view(), name='yards-count'),
 
     # Sites
     path('sites/', SitesView.as_view(), name='sites-list'),
