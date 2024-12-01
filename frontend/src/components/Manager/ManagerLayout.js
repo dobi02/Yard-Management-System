@@ -60,7 +60,7 @@ const ManagerLayout = ({ children }) => {
       <Layout className="site-layout">
         <Header className="site-layout-background" > {/* 헤더 영역 */}
           <div className="site-header-title">
-            {location.pathname === '/manager/transactions' ? 'In/Out Transactions' : 'Admin Page'}
+            {location.pathname === '/manager/transactions' ? 'In/Out Transactions' :'Manager Page'}
           </div>
         </Header>
         <Content style={{ margin: '16px' }}> {/* 메인 콘텐츠 영역 */}

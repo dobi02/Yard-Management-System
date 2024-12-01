@@ -9,7 +9,7 @@ class Divisions(models.Model):
     division_id = models.CharField(max_length=4, primary_key=True)
 
     class Meta:
-        db_table = 'divisions'
+        db_table = 'places_divisions'
 
     def __str__(self):
         return self.division_id
@@ -30,7 +30,7 @@ class Yards(models.Model):
         return self.yard_id
 
     class Meta:
-        db_table = 'yards'
+        db_table = 'places_yards'
 
 
 class Sites(models.Model):
@@ -39,7 +39,7 @@ class Sites(models.Model):
     asset_type = models.CharField(max_length=10, null=False)
 
     class Meta:
-        db_table = 'sites'
+        db_table = 'places_sites'
 
 
 class ParkingSlots(models.Model):
@@ -48,4 +48,4 @@ class ParkingSlots(models.Model):
     is_occupied = models.BooleanField(default=False)
 
     class Meta:
-        db_table = 'parking_slots'
+        db_table = 'places_parking_slots'
