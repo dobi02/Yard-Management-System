@@ -67,18 +67,9 @@ class DriversYardListView(APIView):
 
         drivers = Drivers.objects.filter(division_id=yard.division_id)
 
-        # Extract driver names (from linked User model)
-        driver_names = [
-            f"{driver.user.first_name} {driver.user.last_name}".strip()
-            for driver in drivers
-        ]
+        serializer = DriversSerializer(drivers, many=True)
 
-        data = {
-            "username": drivers.user.username,
-            "drivers": driver_names,
-        }
-
-        return Response(data, status=200)
+        return Response(serializer.data, status=200)
 
 
 @api_view(['POST'])
