@@ -1,0 +1,52 @@
+/* DeliveryOrders.css */
+
+.orders-container {
+    padding: 16px;
+    background-color: #f8f9fb; /* Light gray to match the background color */
+}
+
+.orders-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    text-align: center;
+    color: #333; /* Dark color for better contrast */
+}
+
+.orders-list-item {
+    margin-bottom: 16px;
+}
+
+.order-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Rounded cards with soft shadow */
+    background-color: #ffffff;
+    padding: 16px;
+}
+
+.order-panel {
+    font-size: 16px;
+    color: #555;
+    padding: 8px;
+}
+
+.order-buttons {
+    margin-top: 16px;
+}
+
+.accept-button, .reject-button {
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.accept-button {
+    background-color: #007bff; /* Consistent with the existing blue button */
+    border: none;
+    color: #fff;
+}
+
+.reject-button {
+    background-color: #dc3545; /* Consistent with the existing red button */
+    border: none;
+    color: #fff;
+}

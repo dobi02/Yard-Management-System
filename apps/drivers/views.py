@@ -32,7 +32,7 @@ class DriverDetailView(APIView):
 
     def get(self, request, pk):
         try:
-            driver = Drivers.objects.get(pk=pk)
+            driver = Drivers.objects.get(user__username=pk)
         except Drivers.DoesNotExist:
             return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
 
