@@ -1,0 +1,46 @@
+.yard-map {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.map-tile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 14px;
+    background-color: #f9f9f9; /* 시각적 구분을 위한 배경색 추가 */
+}
+
+.list-view {
+    margin-top: 20px;
+    list-style-type: none;
+    padding: 0;
+}
+
+.list-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #fdfdfd; /* 배경색 추가 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 시각적으로 떠 있는 느낌 추가 */
+}
+
+.view-actions-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.view-actions-container button {
+    width: 150px; /* 버튼 크기 통일 */
+    height: 40px; /* 버튼 높이 통일 */
+    border-radius: 5px; /* 버튼 모서리 둥글게 */
+}
