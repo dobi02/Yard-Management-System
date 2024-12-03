@@ -57,3 +57,16 @@ class TransactionDetailView(APIView):
 
         transaction.delete()
         return Response({"message": "Transaction deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class TransactionsByDriverView(APIView):
+    def get(self, request, driver_id):
+        # Fetch transactions related to the driver_id
+        transactions = Transactions.objects.filter(driver_id=driver_id)
+
+        if not transactions.exists():
+            return Response({"message": "No transactions found for this driver."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Serialize the transactions
+        serializer = TransactionsSerializer(transactions, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
