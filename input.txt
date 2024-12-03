@@ -1,0 +1,85 @@
+Division post   http://localhost:8000/places/api/divisions/
+{
+    "division_id": ""
+}
+
+
+Yard post   http://localhost:8000/places/api/yards/
+{
+    "yard_id": ""
+}
+
+Driver post     http://localhost:8000/api/drivers/
+{
+    "user": {
+        "username": "",
+        "password": "",
+        "first_name": "",
+        "last_name": "",
+        "email": ""
+    },
+    "phone_number": "010-0000-0000",
+    "division_id": ""
+}
+
+
+Manager post    http://localhost:8000/api/managers/
+{
+    "user": {
+        "username": "",
+        "password": "",
+        "first_name": "",
+        "last_name": "",
+        "email": ""
+    },
+    "access_rigths": "manager",
+    "phone_number": "010-0000-0000"
+}
+
+
+Trucks post     http://localhost:8000/assets/api/trucks/
+{
+    "type" : "",
+    "yard": "",
+    "quantity" : ""
+}
+
+Chassis post    http://localhost:8000/assets/api/chassis/
+{
+    "type" : "",
+    "yard": "",
+    "quantity" : ""
+}
+
+Trailers post   http://localhost:8000/assets/api/trailers/
+{
+    "size" : "",
+    "yard": "",
+    "quantity" : ""
+}
+
+Containers post     http://localhost:8000/assets/api/containers/
+{
+    "type" : "",
+    "size" : "",
+    "yard": "",
+    "quantity" : ""
+}
+
+
+Transaction post  http://localhost:8000/api/transactions/
+{
+    "transaction_status": "",
+    "departure_time": null,
+    "departure_time_real": null,
+    "arrival_time": null,
+    "arrival_time_real": null,
+    "manager_id": null,
+    "driver_id": "",
+    "origin_yard_id": "",
+    "destination_yard_id": null,
+    "truck_id": null,
+    "chassis_id": null,
+    "container_id": null,
+    "trailer_id": null
+}
