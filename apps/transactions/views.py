@@ -62,7 +62,7 @@ class TransactionDetailView(APIView):
 class TransactionsByDriverView(APIView):
     def get(self, request, driver_id):
         # Fetch transactions related to the driver_id
-        transactions = Transactions.objects.filter(driver_id=driver_id)
+        transactions = Transactions.objects.filter(driver_id__user_username=driver_id)
 
         if not transactions.exists():
             return Response({"message": "No transactions found for this driver."}, status=status.HTTP_404_NOT_FOUND)
