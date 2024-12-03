@@ -1,7 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from apps.places.models import Yards
 from .models import Trucks, Chassis, Trailers, Containers
+from django.shortcuts import get_object_or_404
 from .serializers import TrucksSerializer, ChassisSerializer, TrailersSerializer, ContainersSerializer
 from apps.places.models import ParkingSlots
 from apps.utils import services
@@ -211,3 +213,39 @@ class ContainersView(APIView):
 
         container.delete()
         return Response({"message": "Container deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
+
+
+class YardContainerView(APIView):
+    def get(self, request, yard_id):
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        containers = Containers.objects.filter(parked_place__site_id__yard_id=yard)
+
+        return Response(ContainersSerializer(containers, many=True).data, status=200)
+
+
+class YardTruckView(APIView):
+    def get(self, request, yard_id):
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        trucks = Trucks.objects.filter(parked_place__site_id__yard_id=yard)
+
+        return Response(TrucksSerializer(trucks, many=True).data, status=200)
+
+
+class YardChassisView(APIView):
+    def get(self, request, yard_id):
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        chassis = Chassis.objects.filter(parked_place__site_id__yard_id=yard)
+
+        return Response(ChassisSerializer(chassis, many=True).data, status=200)
+
+
+class YardTrailerView(APIView):
+    def get(self, request, yard_id):
+        yard = get_object_or_404(Yards, yard_id=yard_id)
+
+        trailers = Trailers.objects.filter(parked_place__site_id__yard_id=yard)
+
+        return Response(TrailersSerializer(trailers, many=True).data, status=200)
