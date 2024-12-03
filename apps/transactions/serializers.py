@@ -1,16 +1,12 @@
 from rest_framework import serializers
-from .models import Transactions
+from .models import *
 
 
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
-        fields = [
-            'transaction_id', 'transaction_type', 'transaction_time', 'driver_id',
-            'origin_yard_id', 'destination_yard_id', 'truck_id', 'chassis_id',
-            'container_id', 'trailer_id'
-        ]
-        read_only_fields = ['transaction_id', 'transaction_time']
+        fields = '__all__'
+        read_only_fields = ['transaction_id', 'transaction_time', 'transaction_created', 'transaction_updated']
 
     def create(self, validated_data):
         # 서버 날짜 기준으로 transaction_time 설정
@@ -30,5 +26,4 @@ class TransactionsSerializer(serializers.ModelSerializer):
         validated_data['transaction_time'] = transaction_time
 
         return super().create(validated_data)
-
 
