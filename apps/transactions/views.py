@@ -4,7 +4,7 @@ from rest_framework import status
 from .models import Transactions
 from .serializers import TransactionsSerializer
 from rest_framework.permissions import IsAuthenticated
-
+from apps.drivers.models import Drivers
 
 
 class TransactionsView(APIView):
@@ -15,6 +15,7 @@ class TransactionsView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        request.data['driver_id'] = Drivers.objects.get(user__username=request.data['driver_id']).id
         serializer = TransactionsSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -62,7 +63,7 @@ class TransactionDetailView(APIView):
 class TransactionsByDriverView(APIView):
     def get(self, request, driver_id):
         # Fetch transactions related to the driver_id
-        transactions = Transactions.objects.filter(driver_id=driver_id)
+        transactions = Transactions.objects.filter(driver_id__user__username=driver_id)
 
         if not transactions.exists():
             return Response({"message": "No transactions found for this driver."}, status=status.HTTP_404_NOT_FOUND)
