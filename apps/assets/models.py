@@ -11,6 +11,7 @@ class Trucks(models.Model):
     truck_id = models.CharField(primary_key=True, max_length=6, editable=False)
     type = models.CharField(max_length=10, null=False)
     parked_place = models.ForeignKey(ParkingSlots, on_delete=models.SET_NULL, null=True)
+    state = models.CharField(max_length=10, null=False, default="parked")  #parked, waiting, moving
 
     class Meta:
         db_table = 'trucks'
@@ -27,6 +28,7 @@ class Chassis(models.Model):
     chassis_id = models.CharField(primary_key=True, max_length=6, editable=False)
     type = models.CharField(max_length=10, null=False)
     parked_place = models.ForeignKey(ParkingSlots, on_delete=models.SET_NULL, null=True)
+    state = models.CharField(max_length=10, null=False, default="parked")  # parked, waiting, moving
 
     class Meta:
         db_table = 'chassis'
@@ -42,7 +44,9 @@ class Chassis(models.Model):
 class Trailers(models.Model):
     trailer_id = models.CharField(primary_key=True, max_length=6, editable=False)
     size = models.CharField(max_length=5, null=False)
+    type = models.CharField(max_length=10, null=False)
     parked_place = models.ForeignKey(ParkingSlots, on_delete=models.SET_NULL, null=True)
+    state = models.CharField(max_length=10, null=False, default="parked")  # parked, waiting, moving
 
     class Meta:
         db_table = 'trailers'
@@ -57,9 +61,9 @@ class Trailers(models.Model):
 
 class Containers(models.Model):
     container_id = models.CharField(primary_key=True, max_length=6, editable=False)
-    type = models.CharField(max_length=10, null=False)
     size = models.CharField(max_length=5, null=False)
     parked_place = models.ForeignKey(ParkingSlots, on_delete=models.SET_NULL, null=True)
+    state = models.CharField(max_length=10, null=False, default="parked")  # parked, waiting, moving
 
     class Meta:
         db_table = 'containers'
