@@ -65,7 +65,8 @@ const ManagerDashboard = () => {
     };
 
     // 야드 삭제 버튼 클릭 처리
-    const handleDeleteYard = async (yardId) => {
+    const handleDeleteYard = async (yardId, event) => {
+        event.stopPropagation(); // 이벤트 버블링 방지
         try {
             await axios.delete(`${API_BASE_URL}/places/api/yards/${yardId}/`);
             message.success('Yard deleted successfully.');
@@ -106,7 +107,7 @@ const ManagerDashboard = () => {
                         extra={
                             <Button
                                 danger
-                                onClick={() => handleDeleteYard(yard.yard_id)}
+                                onClick={(event) => handleDeleteYard(yard.yard_id, event)} // 이벤트 전달
                                 style={{ width: '100px' }}
                             >
                                 Delete
@@ -116,10 +117,10 @@ const ManagerDashboard = () => {
                         hoverable
                         className="yard-card"
                     >
-                        <p>Truck Count: {yard.truck_count}</p>
-                        <p>Chassis Count: {yard.chassis_count}</p>
-                        <p>Trailer Count: {yard.trailer_count}</p>
-                        <p>Container Count: {yard.container_count}</p>
+                        <p>Truck Count: {yard.equipment_count?.trucks || 0}</p>
+                        <p>Chassis Count: {yard.equipment_count?.chassis || 0}</p>
+                        <p>Trailer Count: {yard.equipment_count?.trailers || 0}</p>
+                        <p>Container Count: {yard.equipment_count?.containers || 0}</p>
                     </Card>
                 ))}
             </div>
