@@ -12,16 +12,18 @@ const { Option } = Select;
 const API_BASE_URL = 'http://localhost:8000';
 
 const YardLayout = () => {
-    const { yardId } = useParams(); // URL에서 yardId 읽기
-    const navigate = useNavigate(); // 네비게이션 훅
+    const { yardId } = useParams();
+    const navigate = useNavigate();
     const [yardDetails, setYardDetails] = useState(null);
-    const [viewMode, setViewMode] = useState('map'); // 'map' 또는 'list'
+    const [viewMode, setViewMode] = useState('map');
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false); // 트랜잭션 모달 상태
+    const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false);
     const [form] = Form.useForm();
+    const [selectedChassis, setSelectedChassis] = useState(null);
+    const [selectedTrailer, setSelectedTrailer] = useState(false);
+    const [yards, setYards] = useState([]);
 
-    // 야드 세부 정보 가져오기
     useEffect(() => {
         const fetchYardDetails = async () => {
             try {
@@ -32,31 +34,37 @@ const YardLayout = () => {
             }
         };
         fetchYardDetails();
+
+        const fetchYards = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/places/api/yards/`);
+                setYards(response.data);
+            } catch (error) {
+                message.error('Failed to fetch yards.');
+            }
+        };
+        fetchYards();
     }, [yardId]);
 
-    // 장비 추가 처리
     const handleAddEquipment = async (values) => {
         const { equipmentType, type, quantity, size } = values;
-
         const apiEndpoints = {
             truck: '/api/trucks/',
             chassis: '/api/chassis/',
             trailer: '/api/trailers/',
             container: '/api/containers/',
         };
-
         const endpoint = apiEndpoints[equipmentType];
         if (!endpoint) {
             message.error('Invalid equipment type.');
             return;
         }
-
         try {
             const payload = {
                 yard: yardId,
                 type,
                 quantity,
-                ...(equipmentType === 'container' && { size }), // 컨테이너에만 사이즈 포함
+                ...(equipmentType === 'container' && { size }),
             };
             await axios.post(`${API_BASE_URL}${endpoint}`, payload);
             message.success(`${equipmentType.toUpperCase()} added successfully.`);
@@ -67,23 +75,19 @@ const YardLayout = () => {
         }
     };
 
-    // 장비 삭제 처리
     const handleDeleteEquipment = async (values) => {
         const { equipmentId, equipmentType } = values;
-
         const apiEndpoints = {
             truck: '/api/trucks/',
             chassis: '/api/chassis/',
             trailer: '/api/trailers/',
             container: '/api/containers/',
         };
-
         const endpoint = apiEndpoints[equipmentType];
         if (!endpoint) {
             message.error('Invalid equipment type.');
             return;
         }
-
         try {
             await axios.delete(`${API_BASE_URL}${endpoint}${equipmentId}/`);
             message.success(`${equipmentType.toUpperCase()} deleted successfully.`);
@@ -93,7 +97,6 @@ const YardLayout = () => {
         }
     };
 
-    // 트랜잭션 추가 처리
     const handleAddTransaction = async (values) => {
         try {
             const payload = {
@@ -111,7 +114,6 @@ const YardLayout = () => {
         }
     };
 
-    // 맵 뷰 렌더링
     const renderMapView = () => (
         <div className="yard-map">
             {yardDetails &&
@@ -127,7 +129,6 @@ const YardLayout = () => {
         </div>
     );
 
-    // 리스트 뷰 렌더링
     const renderListView = () => (
         <Table
             dataSource={yardDetails?.equipment || []}
@@ -148,7 +149,7 @@ const YardLayout = () => {
                 <div className="view-mode-buttons">
                     <Button
                         type="default"
-                        onClick={() => navigate('/manager/dashboard')} // 매니저 대시보드로 이동
+                        onClick={() => navigate('/manager/dashboard')}
                         style={{ width: '150px', marginRight: '10px' }}
                     >
                         Back to Dashboard
@@ -185,7 +186,6 @@ const YardLayout = () => {
                 </div>
                 {viewMode === 'map' ? renderMapView() : renderListView()}
 
-                {/* 장비 추가 모달 */}
                 <AssetModal
                     type="add"
                     visible={isAddModalOpen}
@@ -193,7 +193,6 @@ const YardLayout = () => {
                     onFinish={handleAddEquipment}
                 />
 
-                {/* 장비 삭제 모달 */}
                 <AssetModal
                     type="delete"
                     visible={isDeleteModalOpen}
@@ -201,50 +200,14 @@ const YardLayout = () => {
                     onFinish={handleDeleteEquipment}
                 />
 
-                {/* 트랜잭션 추가 모달 */}
                 <Modal
-                    title="Add Transaction"
+                    title="Add Order"
                     visible={isTransactionModalOpen}
                     onCancel={() => setIsTransactionModalOpen(false)}
                     footer={null}
                 >
                     <Form form={form} layout="vertical" onFinish={handleAddTransaction}>
-                        <Form.Item
-                            name="driver"
-                            label="Driver"
-                            rules={[{ required: true, message: 'Please select a driver!' }]}
-                        >
-                            <Select placeholder="Select a driver">
-                                {/* 예시 데이터 */}
-                                <Option value="driver1">Driver 1</Option>
-                                <Option value="driver2">Driver 2</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item
-                            name="equipment"
-                            label="Equipment"
-                            rules={[{ required: true, message: 'Please select equipment!' }]}
-                        >
-                            <Select placeholder="Select equipment">
-                                {yardDetails?.equipment.map((equip) => (
-                                    <Option key={equip.id} value={equip.id}>
-                                        {equip.type} - {equip.id}
-                                    </Option>
-                                ))}
-                            </Select>
-                        </Form.Item>
-                        <Form.Item
-                            name="destination"
-                            label="Destination Yard"
-                            rules={[{ required: true, message: 'Please enter destination!' }]}
-                        >
-                            <Input placeholder="Enter destination yard" />
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit" block>
-                                Submit Order
-                            </Button>
-                        </Form.Item>
+                        {/* 드라이버, 장비, 목적지 선택 폼 */}
                     </Form>
                 </Modal>
             </div>
