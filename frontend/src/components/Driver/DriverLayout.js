@@ -41,9 +41,9 @@ const DriverLayout = ({ children }) => {
                     title="Dashboard"
                 />
                 <TabBar.Item
-                    key="/driver/order"
+                    key="/driver/transaction"
                     icon={<FileOutline />}
-                    title="Order"
+                    title="Transaction"
                 />
                 <TabBar.Item
                     key="/driver/settings"

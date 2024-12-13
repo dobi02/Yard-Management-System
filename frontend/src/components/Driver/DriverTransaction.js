@@ -14,7 +14,7 @@ const DriverTransaction = () => {
         // 드라이버 아이디로 transaction 불러옴
         const fetchTransaction = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/transactions/`, {
+                const response = await axios.get(`${API_BASE_URL}/api/transactions/driver/hong`, {
                     // params: {
                     //     driver_id: 'current_driver_id'
                     // }
@@ -50,12 +50,6 @@ const DriverTransaction = () => {
         fetchTransaction();
     }, []);
 
-    const handleAccept = () => {
-        Toast.show({
-            icon: 'success',
-            content: 'Transaction accepted! Please confirm on the Status tab.'
-        })
-    }
 
     const handleStatusChange = async (newStatus) => {
         if (!transaction) return;
@@ -149,6 +143,7 @@ const DriverTransaction = () => {
                             <p>Details: {transaction.details}</p>
                             <p>Departure Time: {transaction.departureTime}</p>
                             <p>Arrival Time: {transaction.arrivalTime}</p>
+                            <p>Status: {transaction.status}</p>
                             <Space direction="horizontal" className="transaction-buttons">
                                 {renderActionButtons()}
                                 {transaction.status !== 'canceled' && (

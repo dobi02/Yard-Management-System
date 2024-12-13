@@ -3,8 +3,7 @@ import './DriverDashboard.css'
 import DriverLayout from "./DriverLayout";
 
 
-import {Card, List, Space, Button, Toast} from "antd-mobile";
-import { EnvironmentOutline } from "antd-mobile-icons";
+import {Card, Toast} from "antd-mobile";
 import axios from "axios";
 import DriverTransactionCard from "./Dashboard/DriverTransactionCard";
 
@@ -13,19 +12,16 @@ const API_BASE_URL = 'http://localhost:8000';
 const DriverDashboard = () => {
 
     const [transaction, setTransaction] = useState(null); // 주문 정보
+    const [loading, setLoading] = useState(true); // 로딩중
 
     useEffect(() => {
         // 드라이버 아이디로 transaction 불러옴
         const fetchTransaction = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/transactions/`, {
-                    // params: {
-                    //     driver_id: 'current_driver_id'
-                    // }
-                });
+                const response = await axios.get(`${API_BASE_URL}/api/transactions/driver/hong`);
                 const data = response.data[0];
                 if (data) {
-                    const summarizedData = {
+                    setTransaction({
                         id: data.transaction_id,
                         number: `TRX${data.transaction_id}`,
                         originYard: data.origin_yard_id,
@@ -33,14 +29,16 @@ const DriverDashboard = () => {
                         details: `From ${data.origin_yard_id} to ${data.destination_yard_id || 'N/A'}`,
                         departureTime: data.departure_time,
                         arrivalTime: data.arrival_time,
-                    };
-                    setTransaction(summarizedData);
+                        status: data.transaction_status,
+                    });
                 }
             } catch (error) {
                 Toast.show({
                     icon: 'fail',
                     content: 'Error fetching transaction',
                 });
+            } finally {
+                setLoading(false); // 로딩 완료
             }
         };
 
@@ -48,9 +46,14 @@ const DriverDashboard = () => {
     }, []);
 
 
+
     return (
         <DriverLayout>
             <div className="driver-dashboard-container">
+                {loading ? (
+                    <div className="loading-container">Loading transaction details...</div>
+                    ) : (
+                        <>
                 {/* Transaction */}
                 <div className="driver-dashboard-card">
                     {
@@ -82,6 +85,8 @@ const DriverDashboard = () => {
                         <span className="list-item-text">200 Tons</span>
                     </div>
                 </Card>
+                        </>
+                    )}
             </div>
         </DriverLayout>
     );
