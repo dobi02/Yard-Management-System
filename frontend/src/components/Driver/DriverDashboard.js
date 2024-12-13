@@ -1,52 +1,78 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import './DriverDashboard.css'
 import DriverLayout from "./DriverLayout";
 
-import { Card, List, Space, Button } from "antd-mobile";
-import { AppstoreOutline, EnvironmentOutline } from "antd-mobile-icons";
 
+import {Card, Toast} from "antd-mobile";
+import axios from "axios";
+import DriverTransactionCard from "./Dashboard/DriverTransactionCard";
 
+const API_BASE_URL = 'http://localhost:8000';
 
 const DriverDashboard = () => {
 
+    const [transaction, setTransaction] = useState(null); // 주문 정보
+    const [loading, setLoading] = useState(true); // 로딩중
+
+    useEffect(() => {
+        // 드라이버 아이디로 transaction 불러옴
+        const fetchTransaction = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/api/transactions/driver/hong`);
+                const data = response.data[0];
+                if (data) {
+                    setTransaction({
+                        id: data.transaction_id,
+                        number: `TRX${data.transaction_id}`,
+                        originYard: data.origin_yard_id,
+                        destination: data.destination_yard_id,
+                        details: `From ${data.origin_yard_id} to ${data.destination_yard_id || 'N/A'}`,
+                        departureTime: data.departure_time,
+                        arrivalTime: data.arrival_time,
+                        status: data.transaction_status,
+                    });
+                }
+            } catch (error) {
+                Toast.show({
+                    icon: 'fail',
+                    content: 'Error fetching transaction',
+                });
+            } finally {
+                setLoading(false); // 로딩 완료
+            }
+        };
+
+        fetchTransaction();
+    }, []);
+
+
+
     return (
         <DriverLayout>
-            <div className="dashboard-container">
-                {/* Pending Trip Requests */}
-                <Card className="dashboard-card">
-                    <h3>Pending Trip Orders</h3>
-                    <div className="list-item">
-                        <span className="list-item-icon">📋</span>
-                        <span className="list-item-text">예정 주문</span>
-                    </div>
-                </Card>
+            <div className="driver-dashboard-container">
+                {loading ? (
+                    <div className="loading-container">Loading transaction details...</div>
+                    ) : (
+                        <>
+                {/* Transaction */}
+                <div className="driver-dashboard-card">
+                    {
+                        transaction ? (
+                            <DriverTransactionCard transaction={transaction} />
+                        ) : (
+                            <Card className="driver-transaction-card">
+                                <h3>No Transaction Available</h3>
+                                <div className="list-item">
+                                    <p>There are no ongoing trips at the moment.</p>
+                                </div>
 
-                {/* Ongoing Trip */}
-                <Card className="dashboard-card">
-                    <h3>Ongoing Trip</h3>
-                    <div className="list-item">
-                        <span className="list-item-icon">
-                            <EnvironmentOutline/>
-                        </span>
-                        <span className="list-item-key">From:</span>
-                        <span className="list-item-text">여기에서</span>
-                    </div>
-                    <div className="list-item">
-                        <span className="list-item-icon">
-                            <EnvironmentOutline/>
-                        </span>
-                        <span className="list-item-key">To:</span>
-                        <span className="list-item-text">여기로</span>
-                    </div>
-                    <div className="list-item">
-                        <span className="list-item-icon">📏</span>
-                        <span className="list-item-key">Distance Left:</span>
-                        <span className="list-item-text">10 km</span>
-                    </div>
-                </Card>
+                            </Card>
+                        )
+                    }
+                </div>
 
                 {/* Key Statistics */}
-                <Card className="dashboard-card">
+                <Card className="driver-dashboard-card">
                     <h3>Key Statistics</h3>
                     <div className="list-item">
                         <span className="list-item-icon">✔️</span>
@@ -59,12 +85,8 @@ const DriverDashboard = () => {
                         <span className="list-item-text">200 Tons</span>
                     </div>
                 </Card>
-
-                {/* Shortcuts */}
-                <Space className="dashboard-buttons">
-                    <div className="shortcut-button">바로가기</div>
-                    <div className="shortcut-button">?????</div>
-                </Space>
+                        </>
+                    )}
             </div>
         </DriverLayout>
     );

@@ -18,7 +18,15 @@ const YardLayout = () => {
     const [viewMode, setViewMode] = useState('map'); // 'map' 또는 'list'
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isTransactionModalOpen, setIsTransactionModalOpen] = useState(false); // 트랜잭션 모달 상태
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false); // 주문 추가 모달 상태
+    const [drivers, setDrivers] = useState([]); // 드라이버 목록
+    const [yards, setYards] = useState([]); // 목적지 야드 목록
+    const [trucks, setTrucks] = useState([]); // 트럭 목록
+    const [chassis, setChassis] = useState([]); // 샤시 목록
+    const [containers, setContainers] = useState([]); // 컨테이너 목록
+    const [trailers, setTrailers] = useState([]); // 트레일러 목록
+    const [selectedChassis, setSelectedChassis] = useState(null);
+    const [selectedTrailer, setSelectedTrailer] = useState(false);
     const [form] = Form.useForm();
 
     // 야드 세부 정보 가져오기
@@ -31,7 +39,38 @@ const YardLayout = () => {
                 message.error('Failed to load yard details.');
             }
         };
+
+        const fetchDriversAndYards = async () => {
+            try {
+                const driversResponse = await axios.get(`${API_BASE_URL}/drivers/api/yard-drivers/${yardId}/`);
+                setDrivers(driversResponse.data);
+
+                const yardsResponse = await axios.get(`${API_BASE_URL}/places/api/yards/`);
+                setYards(yardsResponse.data);
+            } catch (error) {
+                message.error('Failed to fetch drivers or yards.');
+            }
+        };
+
+        const fetchEquipment = async () => {
+            try {
+                const truckResponse = await axios.get(`${API_BASE_URL}/assets/api/trucks/yards/${yardId}/`);
+                const chassisResponse = await axios.get(`${API_BASE_URL}/assets/api/chassis/yards/${yardId}/`);
+                const containerResponse = await axios.get(`${API_BASE_URL}/assets/api/containers/yards/${yardId}/`);
+                const trailerResponse = await axios.get(`${API_BASE_URL}/assets/api/trailers/yards/${yardId}/`);
+
+                setTrucks(truckResponse.data);
+                setChassis(chassisResponse.data);
+                setContainers(containerResponse.data);
+                setTrailers(trailerResponse.data);
+            } catch (error) {
+                message.error('Failed to fetch equipment.');
+            }
+        };
+
         fetchYardDetails();
+        fetchDriversAndYards();
+        fetchEquipment();
     }, [yardId]);
 
     // 장비 추가 처리
@@ -93,25 +132,33 @@ const YardLayout = () => {
         }
     };
 
-    // 트랜잭션 추가 처리
-    const handleAddTransaction = async (values) => {
+    // 주문 추가 처리
+    const handleAddOrder = async (values) => {
+        if (!selectedChassis && values.container) {
+            message.error('Container cannot be selected without a chassis');
+            return;
+        }
+
         try {
             const payload = {
-                yard: yardId,
                 driver: values.driver,
-                equipment: values.equipment,
-                destination: values.destination,
+                truck: values.truck,
+                chassis: selectedChassis,
+                container: values.container || null,
+                trailer: selectedTrailer ? values.trailer : null,
+                to_yard: values.to_yard,
             };
-            await axios.post(`${API_BASE_URL}/transactions/api/add`, payload);
-            message.success('Transaction added successfully.');
-            setIsTransactionModalOpen(false);
+            await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
+            message.success('Order added successfully.');
+            setIsOrderModalOpen(false);
             form.resetFields();
+            setSelectedChassis(null);
+            setSelectedTrailer(false);
         } catch (error) {
-            message.error('Failed to add transaction.');
+            message.error('Failed to add order.');
         }
     };
 
-    // 맵 뷰 렌더링
     const renderMapView = () => (
         <div className="yard-map">
             {yardDetails &&
@@ -127,7 +174,6 @@ const YardLayout = () => {
         </div>
     );
 
-    // 리스트 뷰 렌더링
     const renderListView = () => (
         <Table
             dataSource={yardDetails?.equipment || []}
@@ -148,7 +194,7 @@ const YardLayout = () => {
                 <div className="view-mode-buttons">
                     <Button
                         type="default"
-                        onClick={() => navigate('/manager/dashboard')} // 매니저 대시보드로 이동
+                        onClick={() => navigate('/manager/dashboard')}
                         style={{ width: '150px', marginRight: '10px' }}
                     >
                         Back to Dashboard
@@ -168,7 +214,10 @@ const YardLayout = () => {
                         List View
                     </Button>
                     <EquipmentActions
-                        modals={{ add: isAddModalOpen, delete: isDeleteModalOpen }}
+                        modals={{
+                            add: isAddModalOpen,
+                            delete: isDeleteModalOpen,
+                        }}
                         setModals={({ add, delete: del }) => {
                             setIsAddModalOpen(add);
                             setIsDeleteModalOpen(del);
@@ -177,7 +226,7 @@ const YardLayout = () => {
                     />
                     <Button
                         type="default"
-                        onClick={() => setIsTransactionModalOpen(true)}
+                        onClick={() => setIsOrderModalOpen(true)}
                         style={{ width: '150px', marginLeft: '10px' }}
                     >
                         Add Order
@@ -185,64 +234,118 @@ const YardLayout = () => {
                 </div>
                 {viewMode === 'map' ? renderMapView() : renderListView()}
 
-                {/* 장비 추가 모달 */}
                 <AssetModal
                     type="add"
                     visible={isAddModalOpen}
                     onCancel={() => setIsAddModalOpen(false)}
                     onFinish={handleAddEquipment}
                 />
-
-                {/* 장비 삭제 모달 */}
                 <AssetModal
                     type="delete"
                     visible={isDeleteModalOpen}
                     onCancel={() => setIsDeleteModalOpen(false)}
                     onFinish={handleDeleteEquipment}
                 />
-
-                {/* 트랜잭션 추가 모달 */}
                 <Modal
-                    title="Add Transaction"
-                    visible={isTransactionModalOpen}
-                    onCancel={() => setIsTransactionModalOpen(false)}
+                    title="Add Order"
+                    visible={isOrderModalOpen}
+                    onCancel={() => setIsOrderModalOpen(false)}
                     footer={null}
                 >
-                    <Form form={form} layout="vertical" onFinish={handleAddTransaction}>
+                    <Form form={form} layout="vertical" onFinish={handleAddOrder}>
                         <Form.Item
                             name="driver"
                             label="Driver"
                             rules={[{ required: true, message: 'Please select a driver!' }]}
                         >
                             <Select placeholder="Select a driver">
-                                {/* 예시 데이터 */}
-                                <Option value="driver1">Driver 1</Option>
-                                <Option value="driver2">Driver 2</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item
-                            name="equipment"
-                            label="Equipment"
-                            rules={[{ required: true, message: 'Please select equipment!' }]}
-                        >
-                            <Select placeholder="Select equipment">
-                                {yardDetails?.equipment.map((equip) => (
-                                    <Option key={equip.id} value={equip.id}>
-                                        {equip.type} - {equip.id}
+                                {drivers.map((driver) => (
+                                    <Option
+                                        key={driver.user.username}
+                                        value={`${driver.user.first_name} ${driver.user.last_name}`}
+                                    >
+                                        {driver.user.first_name} {driver.user.last_name}
                                     </Option>
                                 ))}
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="destination"
-                            label="Destination Yard"
-                            rules={[{ required: true, message: 'Please enter destination!' }]}
+                            name="truck"
+                            label="Truck"
+                            rules={[{ required: true, message: 'Please select a truck!' }]}
                         >
-                            <Input placeholder="Enter destination yard" />
+                            <Select placeholder="Select a truck">
+                                {trucks.map((truck) => (
+                                    <Option key={truck.truck_id} value={truck.truck_id}>
+                                        {truck.truck_id}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="chassis"
+                            label="Chassis"
+                        >
+                            <Select
+                                placeholder="Select a chassis"
+                                allowClear
+                                onChange={(value) => setSelectedChassis(value)}
+                            >
+                                {chassis.map((item) => (
+                                    <Option key={item.chassis_id} value={item.chassis_id}>
+                                        {item.chassis_id}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="container"
+                            label="Container"
+                        >
+                            <Select
+                                placeholder="Select a container"
+                                allowClear
+                                disabled={!selectedChassis}
+                            >
+                                {containers.map((item) => (
+                                    <Option key={item.container_id} value={item.container_id}>
+                                        {item.container_id}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="trailer"
+                            label="Trailer"
+                        >
+                            <Select
+                                placeholder="Select a trailer"
+                                allowClear
+                                disabled={selectedChassis || selectedTrailer}
+                            >
+                                {trailers.map((item) => (
+                                    <Option key={item.trailer_id} value={item.trailer_id}>
+                                        {item.trailer_id}
+                                    </Option>
+                                ))}
+                            </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="to_yard"
+                            label="Destination Yard"
+                            rules={[{ required: true, message: 'Please select a yard!' }]}
+                        >
+                            <Select placeholder="Select a yard">
+                                {yards.map((yard) => (
+                                    <Option key={yard.yard_id} value={yard.yard_id}>
+                                        {yard.yard_id} ({yard.division_id})
+                                    </Option>
+                                ))}
+                            </Select>
                         </Form.Item>
                         <Form.Item>
                             <Button type="primary" htmlType="submit" block>
-                                Submit Order
+                                Submit
                             </Button>
                         </Form.Item>
                     </Form>
