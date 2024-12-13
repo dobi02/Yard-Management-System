@@ -22,7 +22,7 @@
     position: sticky; /* 스크롤 시 고정 */
     top: 96px; /* 야드 카드 시작 높이에 맞춤 */
     overflow-y: auto; /* 스크롤 가능 */
-    max-height: calc(100vh - 96px); /* 화면 높이에 맞게 제한 */
+    height: calc(100vh - 96px); /* 야드 카드와 동일한 기준으로 높이 설정 */
 }
 
 .driver-list h3 {
@@ -44,4 +44,27 @@
 
 .driver-item:last-child {
     border-bottom: none; /* 마지막 항목은 구분선 없음 */
+}
+
+.select-container {
+    display: flex; /* 버튼과 선택 항목 나란히 배치 */
+    align-items: center; /* 세로 정렬 */
+    gap: 10px; /* 요소 간 간격 */
+    padding: 16px; /* 내부 여백 */
+}
+
+.select-container select,
+.select-container button {
+    height: 40px; /* 동일한 높이 */
+}
+
+.yard-card {
+    min-height: 200px; /* 카드 최소 높이 고정 */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* 제목과 내용 간격 유지 */
+}
+
+.yard-card p {
+    margin: 0; /* 카드 내부 텍스트 여백 제거 */
 }
