@@ -35,7 +35,7 @@
 
 .driver-item {
     display: flex;
-    justify-content: space-between; /* 드라이버 이름과 연락처 간격 분리 */
+    flex-direction: column;
     padding: 8px 0; /* 항목 간 간격 */
     border-bottom: 1px solid #eee; /* 항목 구분선 */
     font-size: 0.9rem;
