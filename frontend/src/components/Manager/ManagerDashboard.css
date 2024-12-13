@@ -1,35 +1,47 @@
-.select-container {
-    display: flex;
-    align-items: center;
-    gap: 16px; /* 버튼과 셀렉트 간의 간격 */
-    padding: 16px;
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #ddd;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+.dashboard-main {
+    display: flex; /* 좌측(야드 카드)와 우측(드라이버 목록) 나란히 배치 */
 }
 
-.select-container .ant-select,
-.select-container button {
-    width: 150px; /* 동일 크기로 통일 */
-    height: 40px; /* 버튼과 셀렉트 높이 통일 */
-    margin: 0; /* 버튼 간 여백을 CSS gap으로 관리 */
+.yard-section {
+    flex: 1; /* 남은 공간을 차지하도록 설정 */
+    padding-right: 16px; /* 드라이버 목록과 간격 유지 */
 }
 
 .yard-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 16px;
-    padding: 16px;
+    display: grid; /* 그리드 레이아웃 */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* 고정된 카드 크기 */
+    gap: 16px; /* 카드 간 간격 */
+    padding: 16px; /* 내부 여백 */
 }
 
-.yard-card {
-    cursor: pointer;
-    transition: transform 0.2s;
+.driver-list {
+    width: 250px; /* 고정된 폭 */
+    padding: 16px; /* 내부 여백 */
+    background-color: #f9f9f9; /* 배경색 */
+    border-left: 1px solid #ddd; /* 구분선 */
+    position: sticky; /* 스크롤 시 고정 */
+    top: 96px; /* 야드 카드 시작 높이에 맞춤 */
+    overflow-y: auto; /* 스크롤 가능 */
+    max-height: calc(100vh - 96px); /* 화면 높이에 맞게 제한 */
 }
 
-.yard-card:hover {
-    transform: scale(1.03);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.driver-list h3 {
+    margin-bottom: 16px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.driver-item {
+    display: flex;
+    justify-content: space-between; /* 드라이버 이름과 연락처 간격 분리 */
+    padding: 8px 0; /* 항목 간 간격 */
+    border-bottom: 1px solid #eee; /* 항목 구분선 */
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.driver-item:last-child {
+    border-bottom: none; /* 마지막 항목은 구분선 없음 */
 }
