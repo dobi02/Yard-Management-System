@@ -5,12 +5,12 @@ import './InfoCards.css';
 // 각 필요한 정보들 변수로 넣음
 const InfoCards = ({ sites }) => {
     return (
-        <div className="cards-section">
+        <div className="info-cards-section">
             {/* 사이트 카드 */}
             {sites.length > 0 && (
                 <>
                     <h2>Sites</h2>
-                    <div className="cards-container">
+                    <div className="info-cards-container">
                         {sites.map((site) => (
                             <Card
                                 key={site.site_id}

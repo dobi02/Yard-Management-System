@@ -6,31 +6,31 @@
 }
 
 
-.cards-container {
+.info-cards-container {
     display: flex;
     overflow-x: auto; /* 가로 스크롤 활성화 */
     gap: 16px; /* 카드 간격 */
     padding-bottom: 16px; /* 스크롤바 공간 */
 }
 
-.cards-container > .ant-card {
+.info-cards-container > .ant-card {
     flex-shrink: 0; /* 카드 크기를 줄이지 않음 */
 }
 
-.cards-container::-webkit-scrollbar {
+.info-cards-container::-webkit-scrollbar {
     height: 8px; /* 스크롤바 높이 */
 }
 
-.cards-container::-webkit-scrollbar-thumb {
+.info-cards-container::-webkit-scrollbar-thumb {
     background-color: #888; /* 스크롤바 색상 */
     border-radius: 4px;
 }
 
-.cards-container::-webkit-scrollbar-thumb:hover {
+.info-cards-container::-webkit-scrollbar-thumb:hover {
     background-color: #555; /* 스크롤바 호버 색상 */
 }
 
-.cards-container::-webkit-scrollbar-track {
+.info-cards-container::-webkit-scrollbar-track {
     background-color: #f1f1f1; /* 스크롤바 배경 */
 }
 
