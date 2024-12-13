@@ -6,7 +6,7 @@ Division post   http://localhost:8000/places/api/divisions/
 
 Yard post   http://localhost:8000/places/api/yards/
 {
-    "yard_id": ""
+    "division_id": ""
 }
 
 Driver post     http://localhost:8000/api/drivers/
