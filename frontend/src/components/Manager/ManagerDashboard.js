@@ -58,7 +58,19 @@ const ManagerDashboard = () => {
         try {
             await axios.post(`${API_BASE_URL}/places/api/yards/`, { division_id: selectedDivision });
             message.success('Yard added successfully.');
-            handleDivisionChange(selectedDivision); // 목록 갱신
+            // 추가 후 목록 갱신
+            const updatedResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${selectedDivision}/`);
+            const updatedYards = await Promise.all(
+                updatedResponse.data.map(async (yard) => {
+                    try {
+                        const countResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${yard.yard_id}/equipment-count/`);
+                        return { ...yard, equipment_count: countResponse.data.equipment_count };
+                    } catch {
+                        return { ...yard, equipment_count: { trucks: 0, chassis: 0, trailers: 0, containers: 0 } };
+                    }
+                })
+            );
+            setYards(updatedYards); // 갱신된 야드 목록 설정
         } catch (error) {
             message.error('Failed to add yard.');
         }
@@ -70,7 +82,19 @@ const ManagerDashboard = () => {
         try {
             await axios.delete(`${API_BASE_URL}/places/api/yards/${yardId}/`);
             message.success('Yard deleted successfully.');
-            handleDivisionChange(selectedDivision); // 목록 갱신
+            // 삭제 후 목록 갱신
+            const updatedResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${selectedDivision}/`);
+            const updatedYards = await Promise.all(
+                updatedResponse.data.map(async (yard) => {
+                    try {
+                        const countResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${yard.yard_id}/equipment-count/`);
+                        return { ...yard, equipment_count: countResponse.data.equipment_count };
+                    } catch {
+                        return { ...yard, equipment_count: { trucks: 0, chassis: 0, trailers: 0, containers: 0 } };
+                    }
+                })
+            );
+            setYards(updatedYards); // 갱신된 야드 목록 설정
         } catch (error) {
             message.error('Failed to delete yard.');
         }
