@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import DriversSerializer
 from django.shortcuts import get_object_or_404
-from apps.places.models import Yards
+from apps.places.models import Yards, Divisions
 
 
 class DriversView(APIView):
@@ -66,6 +66,17 @@ class DriversYardListView(APIView):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
         drivers = Drivers.objects.filter(division_id=yard.division_id)
+
+        serializer = DriversSerializer(drivers, many=True)
+
+        return Response(serializer.data, status=200)
+
+
+class DriversDivisionListView(APIView):
+    def get(self, request, division_id):
+        division_id = get_object_or_404(Divisions, division_id=division_id)
+
+        drivers = Drivers.objects.filter(division_id=division_id)
 
         serializer = DriversSerializer(drivers, many=True)
 
