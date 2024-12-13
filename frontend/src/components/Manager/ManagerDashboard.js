@@ -125,8 +125,9 @@ const ManagerDashboard = () => {
                     <h3>Driver List</h3>
                     {drivers.map((driver) => (
                         <div key={driver.id} className="driver-item">
-                            <span>{driver.name}</span>
-                            <span>{driver.phone}</span>
+                            <div>{driver.user.first_name} {driver.user.last_name}</div>
+                            <div>{driver.state}</div>
+                            <div>{driver.phone_number}</div>
                         </div>
                     ))}
                 </div>
