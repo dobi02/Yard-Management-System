@@ -1,97 +1,100 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, message, Select } from 'antd';
-import MainLayout from './ManagerLayout';
+import { Table, Tag, message } from 'antd';
+import ManagerLayout from './ManagerLayout';
 import './TransactionPage.css';
 import axios from 'axios';
-
-const { Option } = Select;
 
 const API_BASE_URL = 'http://localhost:8000';
 
 const TransactionsPage = () => {
     const [transactions, setTransactions] = useState([]);
-    const [filter, setFilter] = useState(null); // 필터 상태
+    const [loading, setLoading] = useState(false);
 
+    // 트랜잭션 데이터 불러오기
+    const fetchTransactions = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${API_BASE_URL}/transactions/api/transactions/`);
+            const sortedTransactions = response.data.sort(
+                (a, b) => new Date(b.transaction_created) - new Date(a.transaction_created)
+            );
+            setTransactions(sortedTransactions);
+            setLoading(false);
+        } catch (error) {
+            message.error('Failed to load transactions.');
+            setLoading(false);
+        }
+    };
+
+    // 컴포넌트 로드 시 데이터 불러오기
     useEffect(() => {
         fetchTransactions();
     }, []);
 
-    // 트랜잭션 데이터 가져오기
-    const fetchTransactions = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/transactions/api/list`);
-            setTransactions(response.data);
-        } catch (error) {
-            message.error('Failed to load transactions.');
-        }
-    };
-
-    // 필터 핸들러
-    const handleFilterChange = (value) => {
-        setFilter(value);
-    };
-
-    // 트랜잭션 처리 (In 트랜잭션 수락)
-    const handleAcceptTransaction = async (transactionId) => {
-        try {
-            await axios.post(`${API_BASE_URL}/transactions/api/accept/${transactionId}/`);
-            message.success('Transaction accepted successfully.');
-            fetchTransactions(); // 목록 갱신
-        } catch (error) {
-            message.error('Failed to accept transaction.');
-        }
-    };
-
-    // 필터링된 트랜잭션 목록
-    const filteredTransactions = filter
-        ? transactions.filter((transaction) => transaction.type === filter)
-        : transactions;
+    // 테이블 컬럼 정의
+    const columns = [
+        {
+            title: 'Transaction ID',
+            dataIndex: 'transaction_id',
+            key: 'transaction_id',
+        },
+        {
+            title: 'Driver',
+            dataIndex: ['driver_id', 'user', 'username'],
+            key: 'driver',
+            render: (driver) => driver || 'N/A',
+        },
+        {
+            title: 'Origin Yard',
+            dataIndex: ['origin_yard_id', 'yard_id'],
+            key: 'origin_yard',
+            render: (yard) => yard || 'N/A',
+        },
+        {
+            title: 'Destination Yard',
+            dataIndex: ['destination_yard_id', 'yard_id'],
+            key: 'destination_yard',
+            render: (yard) => yard || 'N/A',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'transaction_status',
+            key: 'transaction_status',
+            render: (status) => {
+                const color =
+                    status === 'waiting'
+                        ? 'orange'
+                        : status === 'accepted'
+                        ? 'blue'
+                        : status === 'moving'
+                        ? 'purple'
+                        : status === 'arrive'
+                        ? 'green'
+                        : 'red';
+                return <Tag color={color}>{status.toUpperCase()}</Tag>;
+            },
+        },
+        {
+            title: 'Created Time',
+            dataIndex: 'transaction_created',
+            key: 'transaction_created',
+            render: (time) => new Date(time).toLocaleString(),
+        },
+    ];
 
     return (
-        <MainLayout>
-            <div className="transactions-header">
-                <h2>In/Out Transactions</h2>
-                <Select
-                    placeholder="Filter by type"
-                    onChange={handleFilterChange}
-                    style={{ width: '200px', marginBottom: '10px' }}
-                    allowClear
-                >
-                    <Option value="in">In Transactions</Option>
-                    <Option value="out">Out Transactions</Option>
-                </Select>
+        <ManagerLayout>
+            <div className="transaction-page">
+                <h2>Transaction List</h2>
+                <Table
+                    dataSource={transactions}
+                    columns={columns}
+                    rowKey="transaction_id"
+                    loading={loading}
+                    pagination={{ pageSize: 10 }}
+                />
             </div>
-
-            {/* In/Out 트랜잭션 카드 리스트 */}
-            <div className="transactions-list">
-                {filteredTransactions.map((transaction, index) => (
-                    <Card
-                        key={`transaction-${index}`}
-                        className="transaction-card"
-                        title={`Transaction: ${transaction.type.toUpperCase()}`}
-                        extra={
-                            transaction.type === 'in' && (
-                                <Button
-                                    type="primary"
-                                    onClick={() => handleAcceptTransaction(transaction.id)}
-                                >
-                                    Accept
-                                </Button>
-                            )
-                        }
-                    >
-                        <p><b>Driver:</b> {transaction.driver}</p>
-                        <p><b>Truck:</b> {transaction.truck || 'N/A'}</p>
-                        {transaction.chassis && <p><b>Chassis:</b> {transaction.chassis}</p>}
-                        {transaction.container && <p><b>Container:</b> {transaction.container}</p>}
-                        {transaction.trailer && <p><b>Trailer:</b> {transaction.trailer}</p>}
-                        <p><b>From Yard:</b> {transaction.from_yard || 'N/A'}</p>
-                        <p><b>To Yard:</b> {transaction.to_yard || 'N/A'}</p>
-                        <p><b>Date:</b> {new Date(transaction.date).toLocaleString()}</p>
-                    </Card>
-                ))}
-            </div>
-        </MainLayout>
+        </ManagerLayout>
     );
 };
 
