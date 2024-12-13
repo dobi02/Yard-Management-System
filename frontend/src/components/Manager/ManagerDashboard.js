@@ -33,7 +33,17 @@ const ManagerDashboard = () => {
         setSelectedDivision(divisionId);
         try {
             const response = await axios.get(`${API_BASE_URL}/places/api/yards/${divisionId}/`);
-            setYards(response.data);
+            const yardsWithCounts = await Promise.all(
+                response.data.map(async (yard) => {
+                    try {
+                        const countResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${yard.yard_id}/equipment-count/`);
+                        return { ...yard, equipment_count: countResponse.data.equipment_count };
+                    } catch {
+                        return { ...yard, equipment_count: { trucks: 0, chassis: 0, trailers: 0, containers: 0 } };
+                    }
+                })
+            );
+            setYards(yardsWithCounts);
         } catch (error) {
             message.error('Failed to load yards.');
         }
