@@ -5,22 +5,22 @@ from .models import *
 class TrucksSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trucks
-        fields = ['truck_id', 'type', 'parked_place']
+        fields = '__all__'
 
 
 class ChassisSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chassis
-        fields = ['chassis_id', 'type', 'parked_place']
+        fields = '__all__'
 
 
 class TrailersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trailers
-        fields = ['trailer_id', 'size', 'parked_place']
+        fields = '__all__'
 
 
 class ContainersSerializer(serializers.ModelSerializer):
     class Meta:
         model = Containers
-        fields = ['container_id', 'type', 'size', 'parked_place']
+        fields = '__all__'

@@ -15,7 +15,7 @@ class DriversSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Drivers
-        fields = ['user', 'phone_number', 'division_id']
+        fields = ['user', 'phone_number', 'division_id', 'state']
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
