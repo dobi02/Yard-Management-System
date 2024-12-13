@@ -1,7 +1,7 @@
 import React from 'react';
 import {Routes, Route, Outlet, Navigate} from 'react-router-dom';
 import DriverDashboard from "../components/Driver/DriverDashboard";
-import DeliveryOrders from "../components/Driver/DeliveryOrders";
+import DriverTransaction from "../components/Driver/DriverTransaction";
 import DriverNotifications from "../components/Driver/DriverNotifications";
 import DriverMessages from "../components/Driver/DriverMessages";
 import DriverStatus from "../components/Driver/DriverStatus";
@@ -16,7 +16,7 @@ const Driver = () => {
           <Route path="/" element={<Navigate to="/driver/dashboard" replace />} />
           {/* 하단 탭 */}
           <Route path="/dashboard/" element={<DriverDashboard />} /> {/* /driver/dashboard 경로에 해당 */}
-          <Route path="/order/" element={<DeliveryOrders />} />
+          <Route path="/order/" element={<DriverTransaction />} />
           <Route path="/notifications/" element={<DriverNotifications />} />
           <Route path="/status" element={<DriverStatus />} />
           {/* 사이드 바 */}

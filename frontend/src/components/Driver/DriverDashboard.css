@@ -7,7 +7,7 @@ body {
 }
 
 /* 전체 컨테이너 */
-.dashboard-container {
+.driver-dashboard-container {
   padding: 0; /* 컨테이너와 화면 경계 사이의 간격 */
   background-color: #e0e0e0;
 
@@ -15,7 +15,7 @@ body {
 }
 
 /* 카드 스타일 */
-.dashboard-card {
+.driver-dashboard-card {
   margin-bottom: 12px; /* 카드 간의 간격 */
   background-color: white;
   border-radius: 8px;
@@ -24,7 +24,7 @@ body {
 }
 
 /* 제목 스타일 - 위쪽 여백 조정 */
-.dashboard-card h3 {
+.driver-dashboard-card h3 {
   font-size: 18px;
   margin-top: 0; /* 제목과 카드 상단의 여백 제거 */
   margin-bottom: 12px; /* 제목과 콘텐츠 사이 여백 */
@@ -32,13 +32,13 @@ body {
 }
 
 /* 텍스트 스타일 */
-.dashboard-card h3 {
+.driver-dashboard-card h3 {
   font-size: 18px;
   margin-bottom: 8px;
   font-weight: bold;
 }
 
-.dashboard-card .list-item {
+.driver-dashboard-card .list-item {
   display: flex;
   align-items: center;
   font-size: 14px;
@@ -46,19 +46,19 @@ body {
   margin-bottom: 12px;
 }
 
-.dashboard-card .list-item-icon {
+.driver-dashboard-card .list-item-icon {
   margin-right: 8px;
   font-size: 20px;
 }
 
-.dashboard-card .list-item-key {
+.driver-dashboard-card .list-item-key {
   font-size: 16px;
   font-weight: bold;
   color: #282c34;
   margin-right: 4px;
 }
 
-.dashboard-card .list-item-text {
+.driver-dashboard-card .list-item-text {
   flex: 1;
 }
 
