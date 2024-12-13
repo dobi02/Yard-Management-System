@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Modal, Form, Select, Input, message } from 'antd';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import ManagerLayout from './ManagerLayout';
 import AssetModal from './Dashboard/AssetModal';
 import EquipmentActions from './Dashboard/EquipmentActions';
@@ -13,6 +13,7 @@ const API_BASE_URL = 'http://localhost:8000';
 
 const YardLayout = () => {
     const { yardId } = useParams(); // URL에서 yardId 읽기
+    const navigate = useNavigate(); // 네비게이션 훅
     const [yardDetails, setYardDetails] = useState(null);
     const [viewMode, setViewMode] = useState('map'); // 'map' 또는 'list'
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -145,6 +146,13 @@ const YardLayout = () => {
             <div className="yard-layout">
                 <h2>Yard Layout: {yardId}</h2>
                 <div className="view-mode-buttons">
+                    <Button
+                        type="default"
+                        onClick={() => navigate('/manager/dashboard')} // 매니저 대시보드로 이동
+                        style={{ width: '150px', marginRight: '10px' }}
+                    >
+                        Back to Dashboard
+                    </Button>
                     <Button
                         type={viewMode === 'map' ? 'primary' : 'default'}
                         onClick={() => setViewMode('map')}
