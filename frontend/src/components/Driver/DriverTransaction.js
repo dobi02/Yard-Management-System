@@ -14,11 +14,7 @@ const DriverTransaction = () => {
         // 드라이버 아이디로 transaction 불러옴
         const fetchTransaction = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/api/transactions/driver/hong`, {
-                    // params: {
-                    //     driver_id: 'current_driver_id'
-                    // }
-                });
+                const response = await axios.get(`${API_BASE_URL}/api/transactions/driver/hong`); //임시
 
                 const data = response.data[0];
                 if (data) {
@@ -55,7 +51,7 @@ const DriverTransaction = () => {
         if (!transaction) return;
 
         try {
-            await axios.patch(`${API_BASE_URL}/api/transactions/${transaction_id}/`, {
+            await axios.put(`${API_BASE_URL}/api/transactions/driver/hong/${transaction_id}/`, {
                 transaction_status: newStatus
             });
             setTransaction((prev) => ({ ...prev, status: newStatus }));
@@ -64,6 +60,7 @@ const DriverTransaction = () => {
                 content: `Transaction status update to: ${newStatus}`,
             });
         } catch (error) {
+            console.error(error.response?.data || error.message);
             Toast.show({
             icon: 'fail',
             content: 'Error updating transaction status',
