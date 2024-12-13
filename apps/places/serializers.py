@@ -24,8 +24,9 @@ class YardsSerializer(serializers.ModelSerializer):
         except Divisions.DoesNotExist:
             raise serializers.ValidationError({"division_id": "Division not found."})
 
-        # 현재 division에 속한 Yards 개수로 순번 생성
-        count = Yards.objects.filter(division_id=division_id).count() + 1
+        last_yard = Yards.objects.filter(division_id=division_id).order_by('-yard_id').first()
+        counts = last_yard.yard_id[-2:]
+        count = int(counts)+1
         yard_id = f"{division_id}_{count:02d}"
 
         # Yards 생성
