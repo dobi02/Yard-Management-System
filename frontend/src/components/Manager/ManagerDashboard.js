@@ -46,7 +46,7 @@ const ManagerDashboard = () => {
             return;
         }
         try {
-            await axios.post(`${API_BASE_URL}/places/api/yards/`, { division: selectedDivision });
+            await axios.post(`${API_BASE_URL}/places/api/yards/`, { division_id: selectedDivision });
             message.success('Yard added successfully.');
             handleDivisionChange(selectedDivision); // 목록 갱신
         } catch (error) {
