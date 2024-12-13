@@ -54,13 +54,13 @@ Chassis post    http://localhost:8000/assets/api/chassis/
 Trailers post   http://localhost:8000/assets/api/trailers/
 {
     "size" : "",
+    "type" : "",
     "yard": "",
     "quantity" : ""
 }
 
 Containers post     http://localhost:8000/assets/api/containers/
 {
-    "type" : "",
     "size" : "",
     "yard": "",
     "quantity" : ""

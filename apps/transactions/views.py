@@ -81,7 +81,7 @@ class TransactionsDriverView(APIView):
             return Response({"message": "Transaction not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if request.data['transaction_status'] in ("accepted", "moving", "arrive", "finished", "canceled"):
-            serializer = TransactionsSerializer(transactions, data=request.data)
+            serializer = TransactionsSerializer(transactions, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
