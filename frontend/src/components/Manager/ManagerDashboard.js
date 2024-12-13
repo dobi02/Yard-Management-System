@@ -32,7 +32,7 @@ const ManagerDashboard = () => {
         setSelectedDivision(divisionId);
         try {
             const yardsResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${divisionId}/`);
-            const driversResponse = await axios.get(`${API_BASE_URL}/drivers/api/yard-drivers/${divisionId}/`);
+            const driversResponse = await axios.get(`${API_BASE_URL}/drivers/api/division-drivers/${divisionId}/`);
             setYards(yardsResponse.data);
             setDrivers(driversResponse.data);
         } catch (error) {
