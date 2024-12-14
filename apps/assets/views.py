@@ -219,7 +219,7 @@ class YardContainerView(APIView):
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
-        containers = Containers.objects.filter(parked_place__site_id__yard_id=yard)
+        containers = Containers.objects.filter(parked_place__site_id__yard_id=yard, state__contains='parked')
 
         return Response(ContainersSerializer(containers, many=True).data, status=200)
 
@@ -228,8 +228,7 @@ class YardTruckView(APIView):
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
-        trucks = Trucks.objects.filter(parked_place__site_id__yard_id=yard)
-
+        trucks = Trucks.objects.filter(parked_place__site_id__yard_id=yard, state__contains='parked')
         return Response(TrucksSerializer(trucks, many=True).data, status=200)
 
 
@@ -237,7 +236,7 @@ class YardChassisView(APIView):
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
-        chassis = Chassis.objects.filter(parked_place__site_id__yard_id=yard)
+        chassis = Chassis.objects.filter(parked_place__site_id__yard_id=yard, state__contains='parked')
 
         return Response(ChassisSerializer(chassis, many=True).data, status=200)
 
@@ -246,6 +245,6 @@ class YardTrailerView(APIView):
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
-        trailers = Trailers.objects.filter(parked_place__site_id__yard_id=yard)
+        trailers = Trailers.objects.filter(parked_place__site_id__yard_id=yard, state__contains='parked')
 
         return Response(TrailersSerializer(trailers, many=True).data, status=200)

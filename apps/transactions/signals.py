@@ -23,7 +23,10 @@ def handle_transaction(sender, instance, **kwargs):
     """
     try:
         with transaction.atomic():
-            if instance.transaction_status == 'waiting' or True:
+            if instance.transaction_status == 'waiting':
+                if instance.origin_yard_id == instance.destination_yard_id:
+                    raise ValidationError("The starting yard and destination yard are the same")
+
                 # 'waiting' 트랜잭션 처리
                 if instance.truck_id:
                     if instance.truck_id.state != "parked":
@@ -51,6 +54,8 @@ def handle_transaction(sender, instance, **kwargs):
 
                 # Driver의 division_id를 None으로 변경
                 if instance.driver_id:
+                    if instance.driver_id.state != "ready":
+                        raise ValidationError("Driver is not ready.")
                     instance.driver_id.state = "responding"
                     instance.driver_id.save()
 
