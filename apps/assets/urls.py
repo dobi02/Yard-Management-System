@@ -1,5 +1,8 @@
 from django.urls import path
-from .views import TrucksView, ChassisView, TrailersView, ContainersView, YardContainerView, YardChassisView, YardTrailerView, YardTruckView
+from .views import (TrucksView, ChassisView, TrailersView, ContainersView,
+                    YardContainerView, YardChassisView, YardTrailerView,
+                    YardTruckView, TruckMovingView, TrailerMovingView,
+                    ChassisMovingView, ContainerMovingView)
 
 
 urlpatterns = [
@@ -16,4 +19,9 @@ urlpatterns = [
     path('api/chassis/yards/<str:yard_id>/', YardChassisView.as_view(), name='yard-chassis'),
     path('api/trailers/yards/<str:yard_id>/', YardTrailerView.as_view(), name='yard-trailer'),
     path('api/containers/yards/<str:yard_id>/', YardContainerView.as_view(), name='yard-container'),
+
+    path('api/moving/trucks/', TruckMovingView.as_view(), name='moving-truck'),
+    path('api/moving/trailers/', TrailerMovingView.as_view(), name='moving-trailer'),
+    path('api/moving/containers/', ContainerMovingView.as_view(), name='moving-container'),
+    path('api/moving/chassis/', ChassisMovingView.as_view(), name='moving-chassis'),
 ]

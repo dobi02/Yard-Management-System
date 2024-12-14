@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from .serializers import TrucksSerializer, ChassisSerializer, TrailersSerializer, ContainersSerializer
 from apps.places.models import ParkingSlots
 from apps.utils import services
+from django.db import transaction
+from django.core.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 
 
@@ -249,3 +251,190 @@ class YardTrailerView(APIView):
         trailers = Trailers.objects.filter(parked_place__site_id__yard_id=yard)
 
         return Response(TrailersSerializer(trailers, many=True).data, status=200)
+
+
+class TruckMovingView(APIView):
+    def patch(self, request):
+        try:
+            with transaction.atomic():
+                destination_slot = get_object_or_404(ParkingSlots, pk=request.data.get('destination_slot'))
+                truck = get_object_or_404(Trucks, pk=request.data.get('truck'))
+                origin_slot = get_object_or_404(ParkingSlots, pk=truck.parked_place.slot_id)
+
+                if destination_slot.site_id.asset_type != origin_slot.site_id.asset_type:
+                    raise ValidationError("types are not equal.")
+
+                if origin_slot.site_id.yard_id != destination_slot.site_id.yard_id:
+                    raise ValidationError("yards are not equal.")
+
+                if destination_slot.is_occupied:
+                    raise ValidationError("destination slot is occupied.")
+
+                truck.parked_place = destination_slot
+                origin_slot.is_occupied = False
+                destination_slot.is_occupied = True
+
+                # 변경 사항 저장
+                truck.save()
+                origin_slot.save()
+                destination_slot.save()
+
+                # 성공 응답
+                return Response({
+                    "message": "Truck moved successfully.",
+                    "origin_slot": origin_slot.slot_id,
+                    "destination_slot": truck.parked_place.slot_id,
+                    "truck": truck.pk
+                }, status=200)
+        except ValidationError as e:
+            # ValidationError에 대한 사용자 친화적인 응답
+            return Response({"error": str(e)}, status=400)
+        except Exception as e:
+            # 기타 예상치 못한 에러 처리
+            print(f"Error processing patch: {e}")
+            return Response({"error": "An unexpected error occurred."}, status=500)
+
+class TrailerMovingView(APIView):
+    def patch(self, request):
+        try:
+            with transaction.atomic():
+                destination_slot = get_object_or_404(ParkingSlots, pk=request.data.get('destination_slot'))
+                trailer = get_object_or_404(Trailers, pk=request.data.get('trailer'))
+                origin_slot = get_object_or_404(ParkingSlots, pk=trailer.parked_place.slot_id)
+
+                if destination_slot.site_id.asset_type != origin_slot.site_id.asset_type:
+                    raise ValidationError("types are not equal.")
+
+                if origin_slot.site_id.yard_id != destination_slot.site_id.yard_id:
+                    raise ValidationError("yards are not equal.")
+
+                if destination_slot.is_occupied:
+                    raise ValidationError("destination slot is occupied.")
+
+                trailer.parked_place = destination_slot
+                origin_slot.is_occupied = False
+                destination_slot.is_occupied = True
+
+                # 변경 사항 저장
+                trailer.save()
+                origin_slot.save()
+                destination_slot.save()
+
+                # 성공 응답
+                return Response({
+                    "message": "Trailer moved successfully.",
+                    "origin_slot": origin_slot.slot_id,
+                    "destination_slot": trailer.parked_place.slot_id,
+                    "truck": trailer.pk
+                }, status=200)
+        except ValidationError as e:
+            # ValidationError에 대한 사용자 친화적인 응답
+            return Response({"error": str(e)}, status=400)
+        except Exception as e:
+            # 기타 예상치 못한 에러 처리
+            print(f"Error processing patch: {e}")
+            return Response({"error": "An unexpected error occurred."}, status=500)
+
+
+class ChassisMovingView(APIView):
+    def patch(self, request):
+        try:
+            with transaction.atomic():
+                destination_slot = get_object_or_404(ParkingSlots, pk=request.data.get('destination_slot'))
+                chassis = get_object_or_404(Chassis, pk=request.data.get('chassis'))
+                origin_slot = get_object_or_404(ParkingSlots, pk=chassis.parked_place.slot_id)
+
+                if destination_slot.site_id.asset_type != origin_slot.site_id.asset_type:
+                    raise ValidationError("types are not equal.")
+
+                if origin_slot.site_id.yard_id != destination_slot.site_id.yard_id:
+                    raise ValidationError("yards are not equal.")
+
+                if destination_slot.is_occupied:
+                    raise ValidationError("destination slot is occupied.")
+
+                chassis.parked_place = destination_slot
+                origin_slot.is_occupied = False
+                destination_slot.is_occupied = True
+
+                if chassis.state == 'combined':
+                    container = get_object_or_404(Containers, parked_place=chassis.parked_place)
+                    container.parked_place = destination_slot
+                    container.save()
+
+                # 변경 사항 저장
+                chassis.save()
+                origin_slot.save()
+                destination_slot.save()
+
+                # 성공 응답
+                return Response({
+                    "message": "Chassis moved successfully.",
+                    "origin_slot": origin_slot.slot_id,
+                    "destination_slot": chassis.parked_place.slot_id,
+                    "truck": chassis.pk
+                }, status=200)
+        except ValidationError as e:
+            # ValidationError에 대한 사용자 친화적인 응답
+            return Response({"error": str(e)}, status=400)
+        except Exception as e:
+            # 기타 예상치 못한 에러 처리
+            print(f"Error processing patch: {e}")
+            return Response({"error": "An unexpected error occurred."}, status=500)
+
+
+class ContainerMovingView(APIView):
+    def patch(self, request):
+        try:
+            with transaction.atomic():
+                destination_slot = get_object_or_404(ParkingSlots, pk=request.data.get('destination_slot'))
+                container = get_object_or_404(Containers, pk=request.data.get('container'))
+                origin_slot = get_object_or_404(ParkingSlots, pk=container.parked_place.slot_id)
+
+                if origin_slot.site_id.yard_id != destination_slot.site_id.yard_id:
+                    raise ValidationError("yards are not equal.")
+
+                if container.state == 'combined':
+                    origin_chassis = get_object_or_404(Chassis, parked_place=origin_slot.parked_place)
+                    origin_chassis.state = "parked"
+                    origin_chassis.save()
+                else:
+                    origin_slot.is_occupied = False
+
+                if destination_slot.site_id.asset_type == "container":
+                    if destination_slot.is_occupied:
+                        raise ValidationError("destination slot is occupied.")
+
+                    container.state = 'parked'
+                    destination_slot.is_occupied = True
+                elif destination_slot.site_id.asset_type == "chassis":
+                    destination_chassis = get_object_or_404(Chassis, parked_place=destination_slot.parked_place) #Chassis가 있을때만 올릴 수 있음
+                    if destination_chassis.state == 'combined':
+                        raise ValidationError("destination chassis is already combined.")
+
+                    container.state = 'combined'
+                    destination_chassis.save()
+                else:
+                    raise ValidationError("types are not equal.")
+
+                container.parked_place = destination_slot
+
+                # 변경 사항 저장
+                container.save()
+                origin_slot.save()
+                destination_slot.save()
+
+                # 성공 응답
+                return Response({
+                    "message": "Container moved successfully.",
+                    "origin_slot": origin_slot.slot_id,
+                    "destination_slot": container.parked_place.slot_id,
+                    "truck": container.pk
+                }, status=200)
+        except ValidationError as e:
+            # ValidationError에 대한 사용자 친화적인 응답
+            return Response({"error": str(e)}, status=400)
+        except Exception as e:
+            # 기타 예상치 못한 에러 처리
+            print(f"Error processing patch: {e}")
+            return Response({"error": "An unexpected error occurred."}, status=500)

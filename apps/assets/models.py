@@ -28,7 +28,7 @@ class Chassis(models.Model):
     chassis_id = models.CharField(primary_key=True, max_length=6, editable=False)
     type = models.CharField(max_length=10, null=False)
     parked_place = models.ForeignKey(ParkingSlots, on_delete=models.SET_NULL, null=True)
-    state = models.CharField(max_length=10, null=False, default="parked")  # parked, waiting, moving
+    state = models.CharField(max_length=10, null=False, default="parked")  # parked, combined, waiting, moving
 
     class Meta:
         db_table = 'chassis'
@@ -63,7 +63,7 @@ class Containers(models.Model):
     size = models.CharField(max_length=5, null=False)
     type = models.CharField(max_length=10, null=False)
     parked_place = models.ForeignKey(ParkingSlots, on_delete=models.SET_NULL, null=True)
-    state = models.CharField(max_length=10, null=False, default="parked")  # parked, waiting, moving
+    state = models.CharField(max_length=10, null=False, default="parked")  # parked, combined, waiting, moving
 
     class Meta:
         db_table = 'containers'

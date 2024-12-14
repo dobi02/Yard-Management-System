@@ -83,3 +83,9 @@ Transaction post  http://localhost:8000/api/transactions/
     "container_id": null,
     "trailer_id": null
 }
+
+TruckMovingView patch http://127.0.0.1:8000/assets/api/moving/trucks/
+{
+    "destination_slot": "HOU_01_truck_09",
+    "truck": "tk0003"
+}
