@@ -66,6 +66,13 @@ const YardLayout = () => {
                 setChassis(chassisResponse.data);
                 setContainers(containerResponse.data);
                 setTrailers(trailerResponse.data);
+
+                setYardDetails({
+                    trucks: truckResponse.data,
+                    chassis: chassisResponse.data,
+                    containers: containerResponse.data,
+                    trailers: trailerResponse.data,
+                });
             } catch (error) {
                 message.error('Failed to fetch equipment.');
             }
@@ -105,8 +112,9 @@ const YardLayout = () => {
                 yard: yardId,
                 type,
                 quantity,
-                ...(equipmentType === 'container' || 'trailer' && { size }), // 컨테이너에만 사이즈 포함
+                size,
             };
+            console.log(payload);
             await axios.post(`${API_BASE_URL}${endpoint}`, payload);
             message.success(`${equipmentType.toUpperCase()} added successfully.`);
             setIsAddModalOpen(false);
@@ -202,18 +210,53 @@ const YardLayout = () => {
         </div>
     );
 
-    // 리스트 뷰 렌더링
     const renderListView = () => (
-        <Table
-            dataSource={yardDetails.equipment || []}
-            columns={[
-                { title: 'Type', dataIndex: 'type', key: 'type' },
-                { title: 'ID', dataIndex: 'id', key: 'id' },
-                { title: 'Status', dataIndex: 'status', key: 'status' },
-            ]}
-            rowKey="id"
-            pagination={false}
-        />
+        <div className="list-view">
+            <div className="asset-column">
+                <h3>Trucks</h3>
+                {trucks.map((truck, index) => (
+                    <div key={`truck-${index}`} className="asset-card">
+                        <p><strong>ID:</strong> {truck.truck_id}</p>
+                        <p><strong>Type:</strong> {truck.type}</p>
+                        <p><strong>Status:</strong> {truck.state}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="asset-column">
+                <h3>Chassis</h3>
+                {chassis.map((ch, index) => (
+                    <div key={`chassis-${index}`} className="asset-card">
+                        <p><strong>ID:</strong> {ch.chassis_id}</p>
+                        <p><strong>Type:</strong> {ch.type}</p>
+                        <p><strong>Status:</strong> {ch.state}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="asset-column">
+                <h3>Containers</h3>
+                {containers.map((container, index) => (
+                    <div key={`container-${index}`} className="asset-card">
+                        <p><strong>ID:</strong> {container.container_id}</p>
+                        <p><strong>Type:</strong> {container.type}</p>
+                        <p><strong>Size:</strong> {container.size}</p>
+                        <p><strong>Status:</strong> {container.state}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="asset-column">
+                <h3>Trailers</h3>
+                {trailers.map((trailer, index) => (
+                    <div key={`trailer-${index}`} className="asset-card">
+                        <p><strong>ID:</strong> {trailer.trailer_id}</p>
+                        <p><strong>Size:</strong> {trailer.size}</p>
+                        <p><strong>Status:</strong> {trailer.state}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 
     const fetchYardDetails = async () => {
