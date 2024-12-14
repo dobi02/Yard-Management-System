@@ -5,6 +5,7 @@ import ManagerLayout from './ManagerLayout';
 import AssetModal from './YardLayout/AssetModal';
 import EquipmentActions from './Dashboard/EquipmentActions';
 import './YardLayout.css';
+import './ParkingLot.css';
 import axios from 'axios';
 
 const { Option } = Select;
@@ -27,12 +28,17 @@ const YardLayout = () => {
     const [trailers, setTrailers] = useState([]); // 트레일러 목록
     const [parkingSlots, setParkingSlots] = useState([]);
     const [selectedChassis, setSelectedChassis] = useState(null);
-    const [selectedTrailer, setSelectedTrailer] = useState(false);
+    const [selectedTrailer, setSelectedTrailer] = useState(null);
     const [form] = Form.useForm();
     const [selectedDriver, setSelectedDriver] = useState(null);
     const [selectedTruck, setSelectedTruck] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [equipmentCounts, setEquipmentCounts] = useState({
+        trucks: 0,
+        chassis: 0,
+        containers: 0,
+        trailers: 0,
+    });
 
 
 
@@ -63,6 +69,13 @@ const YardLayout = () => {
                 setTrailers(response.data.trailers_list);
                 setParkingSlots(response.data.parking_slots);
 
+                setEquipmentCounts({
+                    trucks: response.data.trucks_list.length,
+                    chassis: response.data.chassis_list.length,
+                    containers: response.data.containers_list.length,
+                    trailers: response.data.trailers_list.length,
+                });
+
                 } catch(error)  {
                     console.error("Error fetching data:", error);
                 }
@@ -84,6 +97,8 @@ const YardLayout = () => {
         form.resetFields();
         setSelectedDriver(null); // 드라이버 상태 초기화
         setSelectedTruck(null); // 트럭 상태 초기화
+        setSelectedChassis(null);
+        setSelectedTrailer(null);
     };
 
 
@@ -189,142 +204,262 @@ const YardLayout = () => {
             message.error('Failed to add order.');
         }
     };
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
-    const renderMapView = () => (
-    <div className="yard-map" style={{ position: "relative", width: "100%", height: "1000px", backgroundColor: "#f5f5f5" }}>
-        {sites.map((site, idx) => {
-            const typeSlots = parkingSlots[idx] || []; // 각 타입별 슬롯 데이터
-            const slotCount = site.total_slots;
+    const renderMapView = () => {
 
-            // Y축 위치 계산 (모든 사이트 간 일정한 세로 간격)
-            const topPosition = idx === 0
-                ? 100 // 첫 번째 사이트
-                : idx === 1 || idx === 2
-                ? 300 // 두 번째, 세 번째 사이트
-                : 500; // 네 번째 사이트
 
-            // X축 위치 계산 (두 번째와 세 번째 사이트를 가로로 배치)
-            const leftPosition = idx === 2
-                ? 400 // 세 번째 사이트는 오른쪽으로 이동
-                : 150; // 나머지는 기본 X축 위치
+        const getSlotColor = (slot) => {
+            if (!slot.is_occupied) {
+            // 슬롯이 비어 있는 경우
+                if (slot.site_id.includes("truck")) return "#e6f7ff"; // 트럭용 슬롯 - 연한 파란색
+                if (slot.site_id.includes("trailer")) return "#f6ffed"; // 트레일러용 슬롯 - 연한 녹색
+                if (slot.site_id.includes("container")) return "#fffbe6"; // 컨테이너용 슬롯 - 연한 노란색
+                if (slot.site_id.includes("chassis")) return "#f9f0ff"; // 샤시용 슬롯 - 연한 보라색
+                return "#ffffff"; // 기본 색상
+            } else {
+                // 슬롯에 장비가 주차된 경우
+                return "#ffcccc"; // 점유된 슬롯 - 연한 빨간색
+            }
+        };
 
-            // 열 계산 (2줄 고정)
-            const rows = 2;
-            const columns = Math.ceil(slotCount / rows);
+        const handleSlotClick = (slot) => {
+            setSelectedSlot(slot);
+        };
 
-            return (
+
+        return (
+        <div
+            style={{
+                display: "flex", // 슬롯과 정보란을 옆으로 배치
+                gap: "20px", // 슬롯 영역과 정보 영역 간 간격
+                padding: "20px",
+            }}
+        >
+            {/* 슬롯 영역 */}
+            <div
+                style={{
+                    marginTop: "30px",
+                    position: "relative",
+                    width: "1000px", // 슬롯 그룹의 너비
+                    backgroundColor: "#ddd",
+                    borderRadius: "10px",
+                    padding: "50px",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "50px", // 사이트 그룹 간 간격
+                }}
+            >
+                {/* 첫 번째 사이트 */}
                 <div
-                    key={site.asset_type}
                     style={{
-                        position: "absolute",
-                        top: `${topPosition}px`, // 조정된 Y축 위치
-                        left: `${leftPosition}px`, // 조정된 X축 위치
-                        padding: "0px",
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "5px", // 슬롯 간 간격
                     }}
                 >
+                    {parkingSlots[0]?.map((slot) => (
+                        <div
+                            key={slot.slot_id}
+                            style={{
+                                width: "40px",
+                                height: "60px",
+                                border: "1px solid #ccc",
+                                backgroundColor: getSlotColor(slot),
+                                cursor: "pointer", // 클릭 가능 표시
+                            }}
+                            onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
+                        ></div>
+                    ))}
+                </div>
+
+                {/* 두 번째와 세 번째 사이트 */}
+                <div
+                    style={{
+                        display: "flex",
+                        gap: "50px", // 두 사이트 간 간격
+                    }}
+                >
+                    {/* 두 번째 사이트 */}
                     <div
                         style={{
-                            display: "grid",
-                            gridTemplateColumns: `repeat(${columns}, 30px)`, // 슬롯 폭 조정
-                            gridAutoRows: "50px", // 고정된 슬롯 높이
-                            gap: "0px", // 슬롯 간 간격 제거
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "5px",
                         }}
                     >
-                        {typeSlots.map((slot, slotIdx) => (
+                        {parkingSlots[1]?.map((slot) => (
                             <div
                                 key={slot.slot_id}
                                 style={{
-                                    width: "30px",
-                                    height: "50px",
-                                    border: "1px solid #ccc", // 슬롯 경계
-                                    boxSizing: "border-box",
-                                    backgroundColor: slot.is_occupied ? "#ffcccc" : "#ffffff", // 점유 상태에 따라 색상 변경
+                                    width: "40px",
+                                    height: "60px",
+                                    border: "1px solid #ccc",
+                                    backgroundColor: getSlotColor(slot),
+                                    cursor: "pointer", // 클릭 가능 표시
                                 }}
+                                onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
+                            ></div>
+                        ))}
+                    </div>
+
+                    {/* 세 번째 사이트 */}
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "5px",
+                        }}
+                    >
+                        {parkingSlots[2]?.map((slot) => (
+                            <div
+                                key={slot.slot_id}
+                                style={{
+                                    width: "40px",
+                                    height: "60px",
+                                    border: "1px solid #ccc",
+                                    backgroundColor: getSlotColor(slot),
+                                    cursor: "pointer", // 클릭 가능 표시
+                                }}
+                                onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
                             ></div>
                         ))}
                     </div>
                 </div>
-            );
-        })}
-    </div>
-);
 
-    const renderListView = () => (
-        <div className="list-view">
-            <div className="asset-column">
-                <h3>Trucks</h3>
-                {trucks.map((truck, index) => (
-                    <div key={`truck-${index}`} className="asset-card">
-                        <Button
-                            type="danger"
-                            className="delete-btn"
-                            onClick={() => handleDeleteEquipment(truck.truck_id, 'trucks')}
-                        >
-                            Delete
-                        </Button>
-                        <p><strong>ID:</strong> {truck.truck_id}</p>
-                        <p><strong>Type:</strong> {truck.type}</p>
-                        <p><strong>Status:</strong> {truck.state}</p>
-                    </div>
-                ))}
+                {/* 네 번째 사이트 */}
+                <div
+                    style={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "5px",
+                    }}
+                >
+                    {parkingSlots[3]?.map((slot) => (
+                        <div
+                            key={slot.slot_id}
+                            style={{
+                                width: "40px",
+                                height: "60px",
+                                border: "1px solid #ccc",
+                                backgroundColor: getSlotColor(slot),
+                                cursor: "pointer", // 클릭 가능 표시
+                            }}
+                            onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
+                        ></div>
+                    ))}
+                </div>
             </div>
 
-            <div className="asset-column">
-                <h3>Chassis</h3>
-                {chassis.map((ch, index) => (
-                    <div key={`chassis-${index}`} className="asset-card">
-                        <Button
-                            type="danger"
-                            className="delete-btn"
-                            onClick={() => handleDeleteEquipment(ch.chassis_id, 'chassis')}
-                        >
-                            Delete
-                        </Button>
-                        <p><strong>ID:</strong> {ch.chassis_id}</p>
-                        <p><strong>Type:</strong> {ch.type}</p>
-                        <p><strong>Status:</strong> {ch.state}</p>
-                    </div>
-                ))}
-            </div>
-
-            <div className="asset-column">
-                <h3>Containers</h3>
-                {containers.map((container, index) => (
-                    <div key={`container-${index}`} className="asset-card">
-                        <Button
-                            type="danger"
-                            className="delete-btn"
-                            onClick={() => handleDeleteEquipment(container.container_id, 'containers')}
-                        >
-                            Delete
-                        </Button>
-                        <p><strong>ID:</strong> {container.container_id}</p>
-                        <p><strong>Type:</strong> {container.type}</p>
-                        <p><strong>Size:</strong> {container.size}</p>
-                        <p><strong>Status:</strong> {container.state}</p>
-                    </div>
-                ))}
-            </div>
-
-            <div className="asset-column">
-                <h3>Trailers</h3>
-                {trailers.map((trailer, index) => (
-                    <div key={`trailer-${index}`} className="asset-card">
-                        <Button
-                            type="danger"
-                            className="delete-btn"
-                            onClick={() => handleDeleteEquipment(trailer.trailer_id, 'trailers')}
-                        >
-                            Delete
-                        </Button>
-                        <p><strong>ID:</strong> {trailer.trailer_id}</p>
-                        <p><strong>Size:</strong> {trailer.size}</p>
-                        <p><strong>Status:</strong> {trailer.state}</p>
-                    </div>
-                ))}
+            {/* 선택된 슬롯 정보란 */}
+            <div
+                style={{
+                    width: "300px",
+                    backgroundColor: "#fff",
+                    borderRadius: "10px",
+                    padding: "20px",
+                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                }}
+            >
+                {selectedSlot ? (
+                    <>
+                        <h3>슬롯 상세 정보</h3>
+                        <p><strong>슬롯 ID:</strong> {selectedSlot.slot_id}</p>
+                        <p><strong>장비 유형:</strong> {selectedSlot.site_id}</p>
+                        <p><strong>점유 상태:</strong> {selectedSlot.is_occupied ? "점유됨" : "비어 있음"}</p>
+                    </>
+                ) : (
+                    <p>슬롯을 클릭하면 정보가 표시됩니다.</p>
+                )}
             </div>
         </div>
     );
+};
+
+
+                    const renderListView = () => (
+                    <div className="list-view">
+                        <div className="asset-column">
+                            <h3>Trucks</h3>
+                            {trucks.map((truck, index) => (
+                                <div key={`truck-${index}`} className="asset-card">
+                                    <Button
+                                        type="danger"
+                                        className="delete-btn"
+                                        onClick={() => handleDeleteEquipment(truck.truck_id, 'trucks')}
+                                    >
+                                        Delete
+                                    </Button>
+                                    <p><strong>ID:</strong> {truck.truck_id}</p>
+                                    <p><strong>Type:</strong> {truck.type}</p>
+                                    <p><strong>Status:</strong> {truck.state}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="asset-column">
+                            <h3>Chassis</h3>
+                            {chassis.map((ch, index) => (
+                                <div key={`chassis-${index}`} className="asset-card">
+                                    <Button
+                                        type="danger"
+                                        className="delete-btn"
+                                        onClick={() => handleDeleteEquipment(ch.chassis_id, 'chassis')}
+                                    >
+                                        Delete
+                                    </Button>
+                                    <p><strong>ID:</strong> {ch.chassis_id}</p>
+                                    <p><strong>Type:</strong> {ch.type}</p>
+                                    <p><strong>Status:</strong> {ch.state}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="asset-column">
+                            <h3>Containers</h3>
+                            {containers.map((container, index) => (
+                                <div key={`container-${index}`} className="asset-card">
+                                    <Button
+                                        type="danger"
+                                        className="delete-btn"
+                                        onClick={() => handleDeleteEquipment(container.container_id, 'containers')}
+                                    >
+                                        Delete
+                                    </Button>
+                                    <p><strong>ID:</strong> {container.container_id}</p>
+                                    <p><strong>Type:</strong> {container.type}</p>
+                                    <p><strong>Size:</strong> {container.size}</p>
+                                    <p><strong>Status:</strong> {container.state}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="asset-column">
+                            <h3>Trailers</h3>
+                            {trailers.map((trailer, index) => (
+                                <div key={`trailer-${index}`} className="asset-card">
+                                    <Button
+                                        type="danger"
+                                        className="delete-btn"
+                                        onClick={() => handleDeleteEquipment(trailer.trailer_id, 'trailers')}
+                                    >
+                                        Delete
+                                    </Button>
+                                    <p><strong>ID:</strong> {trailer.trailer_id}</p>
+                                    <p><strong>Size:</strong> {trailer.size}</p>
+                                    <p><strong>Status:</strong> {trailer.state}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    );
+
+    const equipmentData = [
+        { label: 'Trucks', count: equipmentCounts.trucks, color: '#4CAF50' },
+        { label: 'Chassis', count: equipmentCounts.chassis, color: '#00BCD4' },
+        { label: 'Containers', count: equipmentCounts.containers, color: '#2196F3' },
+        { label: 'Trailers', count: equipmentCounts.trailers, color: '#FF9800' },
+    ];
 
     const fetchYardDetails = async () => {
         setIsLoading(true);
@@ -338,23 +473,30 @@ const YardLayout = () => {
         }
     };
 
-    const fetchEquipment = async () => {
-        try {
-            const response = await axios.get(`${API_BASE_URL}/places/api/yards/${yardId}/count/`);
+                    const fetchEquipment = async () => {
+                    try {
+                    const response = await axios.get(`${API_BASE_URL}/places/api/yards/${yardId}/count/`);
 
 
-                setSites(response.data.site_list);
-                setChassis(response.data.chassis_list);
-                setTrucks(response.data.trucks_list);
-                setContainers(response.data.containers_list);
-                setTrailers(response.data.trailers_list);
-                setParkingSlots(response.data.parking_slots);
+                    setSites(response.data.site_list);
+                    setChassis(response.data.chassis_list);
+                    setTrucks(response.data.trucks_list);
+                    setContainers(response.data.containers_list);
+                    setTrailers(response.data.trailers_list);
+                    setParkingSlots(response.data.parking_slots);
+
+                setEquipmentCounts({
+                    trucks: response.data.trucks_list.length,
+                    chassis: response.data.chassis_list.length,
+                    containers: response.data.containers_list.length,
+                    trailers: response.data.trailers_list.length,
+                });
 
 
-        } catch (error) {
-            message.error('Failed to fetch equipment.');
-        }
-    };
+                } catch (error) {
+                    message.error('Failed to fetch equipment.');
+                }
+                };
 
     return (
         <ManagerLayout>
@@ -362,7 +504,19 @@ const YardLayout = () => {
                 <div className="loading-container">Loading details...</div>
             ) : (
                 <div className="yard-layout">
-                <h2>Yard Layout: {yardId}</h2>
+                <h2 className="yard-title">{yardId}</h2>
+                <div className="equipment-summary">
+                    {equipmentData.map((item, index) => (
+                        <div
+                            key={index}
+                            className="equipment-card"
+                            style={{ backgroundColor: item.color }}
+                        >
+                            <div className="equipment-count">{item.count}</div>
+                            <div className="equipment-label">{item.label}</div>
+                        </div>
+                    ))}
+                </div>
                 <div className="view-mode-buttons">
                     <Button
                         type="default"
@@ -443,7 +597,12 @@ const YardLayout = () => {
                             label="Truck"
                             // rules={[{ required: true, message: 'Please select a truck!' }]}
                         >
-                            <Select placeholder="Select a truck">
+                            <Select placeholder="Select a truck"
+                                onChange={(value) => {
+                                    setSelectedTruck(value); // 트럭 상태 업데이트
+                                    setSelectedChassis(null); // 샤시 초기화
+                                }}
+                            >
                                 {trucks.map((truck) => (
                                     <Option key={truck.truck_id} value={truck.truck_id}>
                                         {truck.truck_id}
@@ -458,6 +617,7 @@ const YardLayout = () => {
                             <Select
                                 placeholder="Select a chassis"
                                 allowClear
+                                disabled={!selectedTruck || selectedTrailer}
                                 onChange={(value) => setSelectedChassis(value)}
                             >
                                 {chassis.map((item) => (
@@ -490,7 +650,8 @@ const YardLayout = () => {
                             <Select
                                 placeholder="Select a trailer"
                                 allowClear
-                                disabled={selectedChassis || selectedTrailer}
+                                disabled={!selectedTruck || selectedChassis}
+                                onChange={(value) => setSelectedTrailer(value)}
                             >
                                 {trailers.map((item) => (
                                     <Option key={item.trailer_id} value={item.trailer_id}>
@@ -507,7 +668,7 @@ const YardLayout = () => {
                             <Select placeholder="Select a yard">
                                 {yards.map((yard) => (
                                     <Option key={yard.yard_id} value={yard.yard_id}>
-                                        {yard.yard_id} ({yard.division_id})
+                                        {yard.yard_id}
                                     </Option>
                                 ))}
                             </Select>
@@ -531,4 +692,4 @@ const YardLayout = () => {
     );
 };
 
-export default YardLayout;
+                    export default YardLayout;
