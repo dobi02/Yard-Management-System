@@ -72,7 +72,7 @@ class TransactionDetailView(APIView):
 class TransactionsByDriverView(APIView):
     def get(self, request, driver_id):
         # Fetch transactions related to the driver_id
-        transactions = Transactions.objects.filter(driver_id__user__username=driver_id)
+        transactions = Transactions.objects.filter(driver_id__user__username=driver_id).exclude(transaction_status__in=["finished","canceled"])
 
         if not transactions.exists():
             return Response({"message": "No transactions found for this driver."}, status=status.HTTP_404_NOT_FOUND)
@@ -89,11 +89,17 @@ class TransactionsDriverView(APIView):
             return Response({"message": "Transaction not found."}, status=status.HTTP_404_NOT_FOUND)
 
         if request.data['transaction_status'] in ("accepted", "moving", "arrive", "finished", "canceled"):
+            print(request.data)
             serializer = TransactionsSerializer(transactions, data=request.data, partial=True)
+
+            print(transactions.origin_yard_id)
+
             if serializer.is_valid():
+
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
+            print("tut")
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response(status=status.HTTP_400_BAD_REQUEST)
 

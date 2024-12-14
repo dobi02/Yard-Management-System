@@ -3,75 +3,95 @@ import axios from 'axios';
 import { Card, Button, Space, Toast } from 'antd-mobile';
 import DriverLayout from "./DriverLayout";
 import './DriverTransaction.css';
+import {useParams} from "react-router-dom";
 
 const API_BASE_URL = 'http://localhost:8000';
 
 const DriverTransaction = () => {
     const [transaction, setTransaction] = useState(null);
     const [transaction_id, setTransactionId] = useState(null);
+    const [driverState, setDriverState] = useState(null);
+    const {username} = useParams();
 
     useEffect(() => {
-        // 드라이버 아이디로 transaction 불러옴
-        const fetchTransaction = async () => {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/api/transactions/driver/hong`); //임시
+    const fetchInfo = async () => {
+        try {
+            const [transactionResponse, driverResponse] = await Promise.all([
+                axios.get(`${API_BASE_URL}/api/transactions/driver/${username}/`),
+                axios.get(`${API_BASE_URL}/api/drivers/${username}/`),
+            ]);
 
-                const data = response.data[0];
-                if (data) {
-                    const summarizedData = {
-                        transaction_id: data.transaction_id,
-                        number: `TRX${data.transaction_id}`,
-                        truck: data.truck_id,
-                        chassis: data.chassis_id,
-                        container: data.container_id,
-                        trailer: data.trailer_id,
-                        destination: data.destination_yard_id,
-                        originYard: data.origin_yard_id,
-                        details: `From ${data.origin_yard_id} to ${data.destination_yard_id || 'N/A'}`,
-                        departureTime: data.departure_time,
-                        arrivalTime: data.arrival_time,
-                        status: data.transaction_status,
-                    };
-                    setTransaction(summarizedData);
-                    setTransactionId(data.transaction_id);
-                }
-            } catch (error) {
-                Toast.show({
-                    icon: 'fail',
-                    content: 'Error fetching transaction',
-                });
+            const transactionData = transactionResponse.data;
+            if (Array.isArray(transactionData) && transactionData.length > 0) {
+                const firstTransaction = transactionData[0];
+                const summarizedData = {
+                    transaction_id: firstTransaction.transaction_id,
+                    number: `TRX${firstTransaction.transaction_id}`,
+                    truck: firstTransaction.truck_id,
+                    chassis: firstTransaction.chassis_id,
+                    container: firstTransaction.container_id,
+                    trailer: firstTransaction.trailer_id,
+                    destination: firstTransaction.destination_yard_id,
+                    originYard: firstTransaction.origin_yard_id,
+                    details: `From ${firstTransaction.origin_yard_id} to ${firstTransaction.destination_yard_id || 'N/A'}`,
+                    departureTime: firstTransaction.departure_time,
+                    arrivalTime: firstTransaction.arrival_time,
+                    status: firstTransaction.transaction_status,
+                };
+                setTransaction(summarizedData);
+                setTransactionId(firstTransaction.transaction_id);
+            } else {
+                // 트랜잭션이 없을 경우 초기화
+                setTransaction(null);
+                setTransactionId(null);
             }
-        };
 
-        fetchTransaction();
-    }, []);
+            setDriverState(driverResponse.data.state);
+        } catch (error) {
+            Toast.show({
+                icon: 'fail',
+                content: 'Error fetching data',
+            });
+        }
+    };
+
+    fetchInfo();
+}, []);
 
 
     const handleStatusChange = async (newStatus) => {
-        if (!transaction) return;
+    if (!transaction) return;
 
-        try {
-            await axios.put(`${API_BASE_URL}/api/transactions/driver/hong/${transaction_id}/`, {
-                transaction_status: newStatus
-            });
-            setTransaction((prev) => ({ ...prev, status: newStatus }));
-            Toast.show({
-                icon: 'success',
-                content: `Transaction status update to: ${newStatus}`,
-            });
-        } catch (error) {
-            console.error(error.response?.data || error.message);
-            Toast.show({
+    try {
+        // 트랜잭션 상태 업데이트 API 호출
+        await axios.put(`${API_BASE_URL}/api/transactions/driver/${username}/${transaction_id}/`, {
+            transaction_status: newStatus,
+        });
+
+
+        // 트랜잭션 상태 업데이트
+        setTransaction((prev) => ({ ...prev, status: newStatus }));
+        Toast.show({
+            icon: 'success',
+            content: `Transaction status updated to: ${newStatus}`,
+        });
+    } catch (error) {
+        console.error(error.response?.data || error.message);
+        Toast.show({
             icon: 'fail',
             content: 'Error updating transaction status',
         });
-        }
     }
+};
+
+
 
     const renderActionButtons = () => {
-        if (!transaction) return null;
+        if (!transaction || !driverState) return null;
 
         const { status } = transaction;
+
+        const isDriverUnavailable = driverState === 'off_work';
 
         switch (status) {
             case 'waiting':
@@ -80,6 +100,7 @@ const DriverTransaction = () => {
                         color="primary"
                         className="accept-button"
                         onClick={() => handleStatusChange('accepted')}
+                        disabled={isDriverUnavailable || driverState !== 'responding'}
                     >
                         Accept
                     </Button>
@@ -98,13 +119,13 @@ const DriverTransaction = () => {
                 return (
                     <Button
                         color="primary"
-                        className="arrive-button"
-                        onClick={() => handleStatusChange('arrive')}
+                        className="finished-button"
+                        onClick={() => handleStatusChange('finished')}
                     >
                         Confirm Arrival
                     </Button>
                 );
-            case 'arrive':
+            case 'finished':
                 return (
                     <Button color="success" className="completed-button" disabled>
                         Completed
@@ -120,9 +141,6 @@ const DriverTransaction = () => {
                 return null;
         }
     };
-
-
-
 
 
     return (
@@ -166,5 +184,4 @@ const DriverTransaction = () => {
         </DriverLayout>
     );
 };
-
 export default DriverTransaction;
