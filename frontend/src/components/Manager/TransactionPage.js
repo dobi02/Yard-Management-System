@@ -10,14 +10,42 @@ const TransactionsPage = () => {
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
 
+
+    const fetchAllDrivers = async () => {
+        try {
+            // 모든 드라이버 정보를 가져오는 API 호출
+            const response = await axios.get(`${API_BASE_URL}/api/drivers/`);
+            // 드라이버 데이터를 매핑 (driver_id -> 이름)
+            const driverMap = response.data.reduce((map, driver) => {
+                map[driver.id] = `${driver.user.first_name} ${driver.user.last_name}`;
+                return map;
+            }, {}); // 초기값은 빈 객체 {}
+            return driverMap;
+        } catch (error) {
+            message.error('Failed to load drivers.');
+            setLoading(false);
+        }
+    };
+
     // 트랜잭션 데이터 불러오기
     const fetchTransactions = async () => {
         setLoading(true);
         try {
+            //드라이버 정보 먼저 가져오기
+            const driverMap = await fetchAllDrivers();
             const response = await axios.get(`${API_BASE_URL}/transactions/api/transactions/`);
-            const sortedTransactions = response.data.sort(
+            const transactions = response.data;
+
+
+            const transactionsWithDriverNames = transactions.map((transaction) => ({
+                ...transaction,
+                driver_name: driverMap[transaction.driver_id] || 'N/A', // 매핑된 이름 또는 기본값
+            }));
+
+            const sortedTransactions = transactionsWithDriverNames.sort(
                 (a, b) => new Date(b.transaction_created) - new Date(a.transaction_created)
             );
+
             setTransactions(sortedTransactions);
             setLoading(false);
         } catch (error) {
@@ -40,9 +68,9 @@ const TransactionsPage = () => {
         },
         {
             title: 'Driver',
-            dataIndex: 'driver_id',
+            dataIndex: 'driver_name',
             key: 'driver',
-            render: (driver) => driver || 'N/A',
+            render: (driverName) => driverName || 'N/A',
         },
         {
             title: 'Origin Yard',

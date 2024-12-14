@@ -60,6 +60,17 @@ class DriverDetailView(APIView):
         driver.delete()
         return Response({"message": "Driver deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
+class DriverIdDetailView(APIView):
+    #permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            driver = Drivers.objects.get(driver_id=pk)
+        except Drivers.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = DriversSerializer(driver)
+        return Response(serializer.data)
 
 class DriversYardListView(APIView):
     def get(self, request, yard_id):
