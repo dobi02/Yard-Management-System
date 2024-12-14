@@ -168,15 +168,8 @@ def handle_transaction(sender, instance, **kwargs):
                         instance.truck_id.save()
                         slot.is_occupied = True
                         slot.save()
-
-                        # a = Trucks.objects.get(id=instance.truck_id)
-                        # data = {"state": "parked"}
-                        # serializer = TrucksSerializer(a, data=data, partial=True)
-                        # if serializer.is_valid():
-                        #     serializer.save()
-                        #     slot.is_occupied = True
-                        #     slot.save()
-
+                    else:
+                        raise ValidationError("Truck slot is not available.")
 
                 if instance.chassis_id:
                     slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "chassis")
@@ -186,6 +179,8 @@ def handle_transaction(sender, instance, **kwargs):
                         instance.chassis_id.save()
                         slot.is_occupied = True
                         slot.save()
+                    else:
+                        raise ValidationError("Chassis slot is not available.")
 
                 if instance.container_id:
                     slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "container")
@@ -195,6 +190,8 @@ def handle_transaction(sender, instance, **kwargs):
                         instance.container_id.save()
                         slot.is_occupied = True
                         slot.save()
+                    else:
+                        raise ValidationError("Container slot is not available.")
 
                 if instance.trailer_id:
                     slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "trailer")
@@ -204,6 +201,8 @@ def handle_transaction(sender, instance, **kwargs):
                         instance.trailer_id.save()
                         slot.is_occupied = True
                         slot.save()
+                    else:
+                        raise ValidationError("Trailer slot is not available.")
 
                 # Driver의 division_id를 None으로 변경
                 if instance.driver_id:
