@@ -92,10 +92,18 @@ class TransactionsDriverView(APIView):
 
         if request.data['transaction_status'] in ("accepted", "moving", "arrive", "finished", "canceled"):
             serializer = TransactionsSerializer(transactions, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+            try:
+                if serializer.is_valid():
+                    serializer.save()
+                    return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            except Exception as e:
+                if request.data['transaction_status'] == "finished":
+                    request.data['transaction_status'] = "arrive"
+                    serializer = TransactionsSerializer(transactions, data=request.data, partial=True)
+                    if serializer.is_valid():
+                        serializer.save()
+                        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+                print(e)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
