@@ -76,7 +76,7 @@ class DriversYardListView(APIView):
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
-        drivers = Drivers.objects.filter(division_id=yard.division_id)
+        drivers = Drivers.objects.filter(division_id=yard.division_id, state__contains='ready')
 
         serializer = DriversSerializer(drivers, many=True)
 
