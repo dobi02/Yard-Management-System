@@ -161,19 +161,25 @@ const YardLayout = () => {
 
     const renderMapView = () => (
         <div className="yard-map">
-            {yardDetails &&
-                yardDetails.equipment.map((equip, index) => (
-                    <div
-                        key={index}
-                        className={`equipment-box ${equip.type.toLowerCase()}`}
-                        style={{ backgroundColor: equip.color }}
-                    >
-                        {equip.type} - {equip.id}
+            {yardDetails?.sites?.map((site, index) => (
+                <div key={index} className="map-site">
+                    <h3 className="site-title">{site.site_name}</h3>
+                    <div className="site-slots">
+                        {site.slots.map((slot, slotIndex) => (
+                            <div
+                                key={slotIndex}
+                                className={`map-tile ${slot.isOccupied ? 'occupied' : 'empty'}`}
+                            >
+                                {slot.isOccupied ? slot.equipmentType : 'Empty'}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                </div>
+            ))}
         </div>
     );
 
+    // 리스트 뷰 렌더링
     const renderListView = () => (
         <Table
             dataSource={yardDetails?.equipment || []}
