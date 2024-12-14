@@ -100,6 +100,18 @@ class YardDetailView(APIView):
         except Yards.DoesNotExist:
             return Response({"error": "Yard not found"}, status=status.HTTP_404_NOT_FOUND)
 
+        # 해당 Yard와 연결된 ParkingSlots 중 is_occupied=True인 항목이 있는지 확인
+        has_occupied_slots = ParkingSlots.objects.filter(
+            site_id__yard_id=yard,  # Sites와 Yards를 통해 ParkingSlots 조회
+            is_occupied=True  # is_occupied가 True인 항목만 필터링
+        ).exists()
+
+        if has_occupied_slots:
+            return Response(
+                {"error": "Cannot delete Yard because it has occupied parking slots."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         yard.delete()
         return Response({"message": "Yard deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
