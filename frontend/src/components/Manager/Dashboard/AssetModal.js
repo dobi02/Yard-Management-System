@@ -8,6 +8,11 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [selectedEquipmentType, setSelectedEquipmentType] = React.useState(null);
 
+    const resetForm = () => {
+      form.resetFields();
+      setSelectedEquipmentType(null); // 장비 유형 상태 초기화
+    };
+
     // 장비 선택 옵션 업데이트 (삭제 모드에서 사용)
     useEffect(() => {
         if (type === 'delete' && yardAssets && equipmentType) {
@@ -42,10 +47,23 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
 
         // 추가 모드: 장비 유형 및 세부 필드 렌더링
         switch (selectedEquipmentType) {
+            case 'truck':
+                return (
+                    <Form.Item
+                        name="type"
+                        label="Truck Type"
+                        rules={[{ required: true, message: 'Please select a Truck type!' }]}
+                    >
+                        <Select placeholder="Select truck type">
+                            <Option value="TA">TA</Option>
+                            <Option value="TB">TB</Option>
+                        </Select>
+                    </Form.Item>
+                );
             case 'chassis':
                 return (
                     <Form.Item
-                        name="chassisType"
+                        name="type"
                         label="Chassis Type"
                         rules={[{ required: true, message: 'Please select a chassis type!' }]}
                     >
@@ -61,7 +79,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
                 return (
                     <>
                         <Form.Item
-                            name="containerSize"
+                            name="size"
                             label="Container Size"
                             rules={[{ required: true, message: 'Please select a container size!' }]}
                         >
@@ -73,7 +91,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="containerType"
+                            name="type"
                             label="Container Type"
                             rules={[{ required: true, message: 'Please select a container type!' }]}
                         >
@@ -90,7 +108,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
             case 'trailer':
                 return (
                     <Form.Item
-                        name="trailerSize"
+                        name="size"
                         label="Trailer Size"
                         rules={[{ required: true, message: 'Please select a trailer size!' }]}
                     >
@@ -108,7 +126,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
     const handleSubmit = async (values) => {
         try {
             await onFinish(values);
-            form.resetFields();
+            resetForm();
         } catch (error) {
             message.error('Failed to process the request.');
         }
@@ -119,7 +137,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
             title={type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
             visible={visible}
             onCancel={() => {
-                form.resetFields();
+                resetForm();
                 onCancel();
             }}
             footer={null}
@@ -156,9 +174,15 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
                 )}
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" block>
-                        {type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
-                    </Button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        {/* **[추가] Reset 버튼** */}
+                        <Button onClick={resetForm} style={{ width: '48%' }}>
+                            Reset
+                        </Button>
+                        <Button type="primary" htmlType="submit" style={{ width: '48%' }}>
+                            {type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
+                        </Button>
+                    </div>
                 </Form.Item>
             </Form>
         </Modal>
