@@ -12,14 +12,6 @@ const EquipmentActions = ({ modals, setModals, isDisabled }) => {
             >
                 Add Equipment
             </Button>
-            <Button
-                type="danger"
-                onClick={() => setModals({ ...modals, delete: true })}
-                disabled={isDisabled}
-                style={{ width: '150px', marginLeft: '10px' }} // Select와 동일한 크기
-            >
-                Delete Equipment
-            </Button>
         </>
     );
 };

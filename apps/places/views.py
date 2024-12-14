@@ -165,11 +165,11 @@ class ParkingSlotDetailView(APIView):
 
     def get(self, request, pk):
         try:
-            parking_slot = ParkingSlots.objects.get(pk=pk)
+            parking_slot = ParkingSlots.objects.filter(site_id=pk).order_by("slot_id")
         except ParkingSlots.DoesNotExist:
             return Response({"error": "Parking slot not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = ParkingSlotsSerializer(parking_slot)
+        serializer = ParkingSlotsSerializer(parking_slot,many=True)
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -197,8 +197,12 @@ class AvailableSlotsBySiteTypeView(APIView):
         chassis_list = []
         trucks_list = []
         containers_list = []
+        parking_slots = []
         for site in sites:
-            total_slots = ParkingSlots.objects.filter(site_id=site).count()
+            slots = ParkingSlots.objects.filter(site_id=site)
+            ser = ParkingSlotsSerializer(slots, many=True)
+            parking_slots.append(ser.data)
+            total_slots = slots.count()
             available_slots = ParkingSlots.objects.filter(site_id=site, is_occupied=False).count()
             occupied_slots = ParkingSlots.objects.filter(site_id=site, is_occupied=True)
 
@@ -247,7 +251,7 @@ class AvailableSlotsBySiteTypeView(APIView):
         ]
         print(result)
         return Response({"site_list": result, "chassis_list": chassis_list, "trucks_list": trucks_list,
-                         "containers_list": containers_list, "trailers_list": trailers_list})
+                         "containers_list": containers_list, "trailers_list": trailers_list, "parking_slots": parking_slots})
 
 
 class AssetCountView(APIView):
@@ -304,3 +308,14 @@ class YardAssetView(APIView):
 
         return Response(data, status=200)
 
+# class ParkedAssetView(APIView):
+#     def get(self, request, yard_id):
+#         yard = get_object_or_404(Yards, yard_id=yard_id)
+#
+#         query = """
+#         SELECT * FROM parking_slots ps
+#         JOIN sites s on s.site_id = ps.site_id_id
+#         LEFT JOIN trucks as t ON (ps.slot_id = t.parked_place_id)
+#         WHERE yard_id_id = 'aaa_02' and asset_type= 'truck';
+#         """
+#         table =

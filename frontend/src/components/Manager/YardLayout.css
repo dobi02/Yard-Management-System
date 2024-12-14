@@ -81,6 +81,7 @@
 }
 
 .asset-card {
+    position: relative; /* Delete 버튼을 절대 위치로 배치하기 위한 기준 */
     border: 1px solid #ddd;
     border-radius: 8px; /* 모서리를 더 부드럽게 */
     background-color: #f9f9f9; /* 카드 배경색 */
@@ -108,4 +109,21 @@
     font-weight: bold; /* 강조 */
     color: #333;
     text-align: center;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4d4f; /* Danger 색상 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #ff7875; /* Hover 시 더 밝은 빨간색 */
 }
