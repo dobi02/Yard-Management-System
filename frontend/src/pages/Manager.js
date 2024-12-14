@@ -6,6 +6,7 @@ import Settings from "../components/Auth/Setting";
 import TransactionPage from "../components/Manager/TransactionPage";
 import TransactionDetailPage from "../components/Manager/TransactionLog";
 
+
 const Manager = () => {
     return (
         <div>
@@ -18,6 +19,7 @@ const Manager = () => {
                 <Route path="/transactions" element={<TransactionPage />} /> {/* In/Out 트랜잭션 페이지 */}
                 <Route path="/settings" element={<Settings />} /> {/* 설정 페이지 */}
                 <Route path="/transactionlog/:transactionId" element={<TransactionDetailPage />} />
+
             </Routes>
         </div>
     );
