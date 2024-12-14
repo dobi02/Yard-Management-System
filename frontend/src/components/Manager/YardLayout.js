@@ -120,7 +120,7 @@ const YardLayout = () => {
             setIsAddModalOpen(false);
             form.resetFields();
 
-            await fetchYardDetails();
+            await fetchEquipment();
         } catch (error) {
             message.error(`Failed to add ${equipmentType}.`);
         }
@@ -152,7 +152,7 @@ const YardLayout = () => {
             message.success('Equipment deleted successfully.');
 
             // 최신 장비 데이터를 다시 가져옴
-            await fetchYardDetails();
+            await fetchEquipment();
         } catch (error) {
             message.error('Failed to delete equipment.');
         }
@@ -298,6 +298,29 @@ const YardLayout = () => {
             message.error('Failed to load yard details.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const fetchEquipment = async () => {
+        try {
+            const truckResponse = await axios.get(`${API_BASE_URL}/assets/api/trucks/yards/${yardId}/`);
+            const chassisResponse = await axios.get(`${API_BASE_URL}/assets/api/chassis/yards/${yardId}/`);
+            const containerResponse = await axios.get(`${API_BASE_URL}/assets/api/containers/yards/${yardId}/`);
+            const trailerResponse = await axios.get(`${API_BASE_URL}/assets/api/trailers/yards/${yardId}/`);
+
+            setTrucks(truckResponse.data);
+            setChassis(chassisResponse.data);
+            setContainers(containerResponse.data);
+            setTrailers(trailerResponse.data);
+
+            setYardDetails({
+                trucks: truckResponse.data,
+                chassis: chassisResponse.data,
+                containers: containerResponse.data,
+                trailers: trailerResponse.data,
+            });
+        } catch (error) {
+            message.error('Failed to fetch equipment.');
         }
     };
 
