@@ -159,12 +159,16 @@ const YardLayout = () => {
         try {
             const payload = {
                 driver_id: values.driver_id,
-                truck: values.truck,
-                chassis: selectedChassis,
-                container: values.container || null,
-                trailer: selectedTrailer ? values.trailer : null,
+                // truck: values.truck,
+                // chassis: selectedChassis,
+                // container: values.container || null,
+                // trailer: selectedTrailer ? values.trailer : null,
                 destination_yard_id: values.destination_yard_id,
                 origin_yard_id: yardId,
+                truck_id: values.truck_id,
+                chassis_id: values.chassis_id,
+                container_id: values.container_id,
+                trailer_id: values.trailer_id,
             };
             await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
             message.success('Order added successfully.');
@@ -312,7 +316,7 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="truck"
+                            name="truck_id"
                             label="Truck"
                             // rules={[{ required: true, message: 'Please select a truck!' }]}
                         >
@@ -325,7 +329,7 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="chassis"
+                            name="chassis_id"
                             label="Chassis"
                         >
                             <Select
@@ -341,7 +345,7 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="container"
+                            name="container_id"
                             label="Container"
                         >
                             <Select
@@ -357,7 +361,7 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="trailer"
+                            name="trailer_id"
                             label="Trailer"
                         >
                             <Select
