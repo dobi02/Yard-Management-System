@@ -117,17 +117,17 @@ const TransactionDetailPage = () => {
                 <Descriptions.Item label="Updated Time">
                     {new Date(transaction.transaction_updated).toLocaleString()}
                 </Descriptions.Item>
-                <Descriptions.Item label="Departure Time">
-                    {new Date(transaction.departure_time).toLocaleString()}
+               <Descriptions.Item label="Departure Time">
+                    {transaction.departure_time ? new Date(transaction.departure_time).toLocaleString() : 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Real Departure Time">
-                    {new Date(transaction.departure_time_real).toLocaleString()}
+                    {transaction.departure_time_real ? new Date(transaction.departure_time_real).toLocaleString() : 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Arrival Time">
-                    {new Date(transaction.arrival_time).toLocaleString()}
+                    {transaction.arrival_time ? new Date(transaction.arrival_time).toLocaleString() : 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Real Arrival Time">
-                    {new Date(transaction.arrival_time_real).toLocaleString()}
+                    {transaction.arrival_time_real ? new Date(transaction.arrival_time_real).toLocaleString() : 'N/A'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Truck ID">
                     {transaction.truck_id || 'N/A'}
