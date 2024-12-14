@@ -13,6 +13,7 @@ const ManagerDashboard = () => {
     const [divisions, setDivisions] = useState([]);
     const [selectedDivision, setSelectedDivision] = useState(null);
     const [yards, setYards] = useState([]);
+    const [yardsCount, setYardsCount] = useState([]);
     const [drivers, setDrivers] = useState([]);
     const navigate = useNavigate();
 
@@ -35,6 +36,7 @@ const ManagerDashboard = () => {
             const driversResponse = await axios.get(`${API_BASE_URL}/drivers/api/division-drivers/${divisionId}/`);
             setYards(yardsResponse.data);
             setDrivers(driversResponse.data);
+            getYardsCount(yardsResponse.data);
         } catch (error) {
             message.error('Failed to load data.');
         }
@@ -61,6 +63,18 @@ const ManagerDashboard = () => {
             handleDivisionChange(selectedDivision);
         } catch (error) {
             message.error('Failed to delete yard.');
+        }
+    };
+    const getYardsCount = async (yardds) => {
+        try{
+            let a = []
+            for(let yard of yardds){
+                const yardsCountResponse = await axios.get(`${API_BASE_URL}/places/api/yards/${yard.yard_id}/yard_asset_count/`);
+                a.push(yardsCountResponse.data);
+            }
+            setYardsCount(a)
+        }catch(error){
+            message.error('Failed to get yards.');
         }
     };
 
@@ -91,7 +105,7 @@ const ManagerDashboard = () => {
                         </Button>
                     </div>
                     <div className="yard-container">
-                        {yards.map((yard) => (
+                        {yardsCount.map((yard) => (
                             <Card
                                 key={yard.yard_id}
                                 title={`Yard: ${yard.yard_id}`}
@@ -111,10 +125,10 @@ const ManagerDashboard = () => {
                                 hoverable
                                 className="yard-card"
                             >
-                                <p>Truck Count: {yard.truck_count}</p>
-                                <p>Chassis Count: {yard.chassis_count}</p>
-                                <p>Trailer Count: {yard.trailer_count}</p>
-                                <p>Container Count: {yard.container_count}</p>
+                                <p>Truck Count: {yard.equipment_count.trucks}</p>
+                                <p>Chassis Count: {yard.equipment_count.chassis}</p>
+                                <p>Trailer Count: {yard.equipment_count.trailers}</p>
+                                <p>Container Count: {yard.equipment_count.containers}</p>
                             </Card>
                         ))}
                     </div>
