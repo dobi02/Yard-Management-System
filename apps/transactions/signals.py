@@ -1,87 +1,213 @@
-# from django.db.models.signals import pre_save
-# from django.dispatch import receiver
-# from apps.places.models import Yards, Divisions
-# from apps.drivers.models import Drivers
-# from apps.assets.models import Trucks, Chassis, Containers, Trailers
-# from django.core.exceptions import ValidationError
-# from apps.transactions.models import Transactions
-# from apps.utils.services import get_available_parking_slot  # 주차 슬롯 가져오는 함수
-#
-#
-# @receiver(pre_save, sender=Transactions)
-# def handle_transaction(sender, instance, created, **kwargs):
-#     """
-#     Transactions 추가 전에 유효성 검사를 진행하고, 실패 시 예외를 발생시켜 롤백
-#     """
-#     transaction = instance
-#
-#     try:
-#         with transaction.atomic():
-#             if transaction.transaction_type == 'OUT':
-#                 # 'OUT' 트랜잭션 처리
-#                 if transaction.truck_id:
-#                     transaction.truck_id.parked_place = None
-#                     transaction.truck_id.save()
-#                 if transaction.chassis_id:
-#                     transaction.chassis_id.parked_place = None
-#                     transaction.chassis_id.save()
-#                 if transaction.container_id:
-#                     transaction.container_id.parked_place = None
-#                     transaction.container_id.save()
-#                 if transaction.trailer_id:
-#                     transaction.trailer_id.parked_place = None
-#                     transaction.trailer_id.save()
-#
-#                 # Driver의 division_id를 None으로 변경
-#                 if transaction.driver_id:
-#                     driver = transaction.driver_id
-#                     driver.division_id = None
-#                     driver.save()
-#
-#             elif transaction.transaction_type == 'IN':
-#                 # 'IN' 트랜잭션 처리
-#                 if transaction.destination_yard_id:
-#                     yard = transaction.destination_yard_id
-#
-#                     # 각 장비에 대해 사용 가능한 주차 슬롯 지정
-#                     if transaction.truck_id:
-#                         slot = get_available_parking_slot(yard.yard_id, 'truck')
-#                         if not slot:  # Slot이 없는 경우 예외 발생
-#                             raise ValidationError("No available parking slot for truck.")
-#                         transaction.truck_id.parked_place = slot
-#                         transaction.truck_id.save()
-#
-#                     if transaction.chassis_id:
-#                         slot = get_available_parking_slot(yard.yard_id, 'chassis')
-#                         if not slot:
-#                             raise ValidationError("No available parking slot for chassis.")
-#                         transaction.chassis_id.parked_place = slot
-#                         transaction.chassis_id.save()
-#
-#                     if transaction.container_id:
-#                         slot = get_available_parking_slot(yard.yard_id, 'container')
-#                         if not slot:
-#                             raise ValidationError("No available parking slot for container.")
-#                         transaction.container_id.parked_place = slot
-#                         transaction.container_id.save()
-#
-#                     if transaction.trailer_id:
-#                         slot = get_available_parking_slot(yard.yard_id, 'trailer')
-#                         if not slot:
-#                             raise ValidationError("No available parking slot for trailer.")
-#                         transaction.trailer_id.parked_place = slot
-#                         transaction.trailer_id.save()
-#
-#                     # Driver의 division_id를 destination_yard_id가 속하는 division_id로 설정
-#                     if transaction.driver_id:
-#                         driver = transaction.driver_id
-#                         driver.division_id = yard.division_id
-#                         driver.save()
-#             else:
-#                 # transaction_type이 유효하지 않으면 예외 발생
-#                 raise ValidationError(f"Invalid transaction_type: {transaction.transaction_type}")
-#     except Exception as e:
-#             # 에러가 발생하면 트랜잭션 롤백
-#             print(f"Error processing transaction: {e}")
-#             raise  # 예외를 상위로 전달하여 Transactions 저장 차단
-#
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
+
+from apps.drivers.serializers import DriversSerializer
+from apps.places.models import Yards, Divisions, ParkingSlots
+from apps.drivers.models import Drivers
+from apps.utils import services
+from django.utils.timezone import now
+from apps.assets.models import Trucks, Chassis, Containers, Trailers
+from apps.assets.serializers import TrucksSerializer, ChassisSerializer, ContainersSerializer, TrailersSerializer
+from django.core.exceptions import ValidationError
+
+from apps.places.serializers import DivisionsSerializer, ParkingSlotsSerializer
+from apps.transactions.models import Transactions
+from django.db import transaction
+from apps.utils.services import get_available_parking_slot  # 주차 슬롯 가져오는 함수
+
+
+@receiver(pre_save, sender=Transactions)
+def handle_transaction(sender, instance, **kwargs):
+    """
+    Transactions 추가 전에 유효성 검사를 진행하고, 실패 시 예외를 발생시켜 롤백
+    """
+    a = instance.truck_id
+    try:
+        with transaction.atomic():
+            if instance.transaction_status == 'waiting':
+                # 'waiting' 트랜잭션 처리
+                if instance.truck_id:
+                    instance.truck_id.state = "waiting"
+                    instance.truck_id.save()
+
+                if instance.chassis_id:
+                    instance.chassis_id.state = "waiting"
+                    instance.chassis_id.save()
+
+                if instance.container_id:
+                    instance.container_id.state = "waiting"
+                    instance.container_id.save()
+
+                if instance.trailer_id:
+                    instance.trailer_id.state = "waiting"
+                    instance.trailer_id.save()
+
+                # Driver의 division_id를 None으로 변경
+                if instance.driver_id:
+                    instance.driver_id.state = "responding"
+                    instance.driver_id.save()
+
+            elif instance.transaction_status == 'canceled':
+                # 'waiting' 트랜잭션 처리
+                if instance.truck_id:
+                    instance.truck_id.state = "parked"
+                    instance.truck_id.save()
+
+                if instance.chassis_id:
+                    instance.chassis_id.state = "parked"
+                    instance.chassis_id.save()
+
+                if instance.container_id:
+                    instance.container_id.state = "parked"
+                    instance.container_id.save()
+
+                if instance.trailer_id:
+                    instance.trailer_id.state = "parked"
+                    instance.trailer_id.save()
+
+                # Driver의 division_id를 None으로 변경
+                if instance.driver_id:
+                    instance.driver_id.state = "ready"
+                    instance.driver_id.save()
+
+            elif instance.transaction_status == 'accepted':
+                # 'accepted' 트랜잭션 처리
+
+                if instance.driver_id:
+                    instance.driver_id.state = "waiting"
+                    instance.driver_id.save()
+
+            elif instance.transaction_status == 'moving':
+                # 'moving' 트랜잭션 처리
+                if instance.truck_id:
+                    # slot = ParkingSlots.objects.get(pk=instance.truck_id.parked_place)
+                    # slot.is_occupied = False
+                    # slot.save()
+                    instance.truck_id.parked_place.is_occupied = False
+                    instance.truck_id.parked_place.save()
+                    instance.truck_id.state = "moving"
+                    instance.truck_id.parked_place = None
+                    instance.truck_id.save()
+
+                if instance.chassis_id:
+                    instance.chassis_id.parked_place.is_occupied = False
+                    instance.chassis_id.parked_place.save()
+                    instance.chassis_id.state = "moving"
+                    instance.chassis_id.parked_place = None
+                    instance.chassis_id.save()
+
+                if instance.container_id:
+                    instance.container_id.parked_place.is_occupied = False
+                    instance.container_id.parked_place.save()
+                    instance.container_id.state = "moving"
+                    instance.container_id.parked_place = None
+                    instance.container_id.save()
+
+                if instance.trailer_id:
+                    instance.trailer_id.parked_place.is_occupied = False
+                    instance.trailer_id.parked_place.save()
+                    instance.trailer_id.state = "moving"
+                    instance.trailer_id.parked_place = None
+                    instance.trailer_id.save()
+
+                # Driver의 division_id를 None으로 변경
+                if instance.driver_id:
+                    instance.driver_id.state = "moving"
+                    instance.driver_id.division_id = None
+                    instance.driver_id.save()
+
+                instance.departure_time_real = now()
+
+
+            elif instance.transaction_status == 'arrive':
+                # 'arrive' 트랜잭션 처리
+                if instance.truck_id:
+                    instance.truck_id.state = "arrive"
+                    instance.truck_id.save()
+
+                if instance.chassis_id:
+                    instance.chassis_id.state = "arrive"
+                    instance.chassis_id.save()
+
+                if instance.container_id:
+                    instance.container_id.state = "arrive"
+                    instance.container_id.save()
+
+                if instance.trailer_id:
+                    instance.trailer_id.state = "arrive"
+                    instance.trailer_id.save()
+
+                # Driver의 division_id를 None으로 변경
+                if instance.driver_id:
+                    instance.driver_id.state = "arrive"
+                    instance.driver_id.division_id = instance.destination_yard_id.division_id
+                    instance.driver_id.save()
+
+                instance.arrival_time_real = now()
+                # instance.save()
+
+            elif instance.transaction_status == 'finished':
+                # 'moving' 트랜잭션 처리
+                if instance.truck_id:
+                    slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "truck")
+                    if slot:
+                        instance.truck_id.state = "parked"
+                        instance.truck_id.parked_place = slot
+                        instance.truck_id.save()
+                        slot.is_occupied = True
+                        slot.save()
+
+                        # a = Trucks.objects.get(id=instance.truck_id)
+                        # data = {"state": "parked"}
+                        # serializer = TrucksSerializer(a, data=data, partial=True)
+                        # if serializer.is_valid():
+                        #     serializer.save()
+                        #     slot.is_occupied = True
+                        #     slot.save()
+
+
+                if instance.chassis_id:
+                    slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "chassis")
+                    if slot:
+                        instance.chassis_id.state = "parked"
+                        instance.chassis_id.parked_place = slot
+                        instance.chassis_id.save()
+                        slot.is_occupied = True
+                        slot.save()
+
+                if instance.container_id:
+                    slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "container")
+                    if slot:
+                        instance.container_id.state = "parked"
+                        instance.container_id.parked_place = slot
+                        instance.container_id.save()
+                        slot.is_occupied = True
+                        slot.save()
+
+                if instance.trailer_id:
+                    slot = services.get_available_parking_slot(instance.destination_yard_id.yard_id, "trailer")
+                    if slot:
+                        instance.trailer_id.state = "parked"
+                        instance.trailer_id.parked_place = slot
+                        instance.trailer_id.save()
+                        slot.is_occupied = True
+                        slot.save()
+
+                # Driver의 division_id를 None으로 변경
+                if instance.driver_id:
+                    instance.driver_id.state = "ready"
+                    instance.driver_id.division_id = instance.destination_yard_id.division_id
+                    instance.driver_id.save()
+
+                instance.arrival_time_real = now()
+                # instance.save()
+
+
+            else:
+                # transaction_type이 유효하지 않으면 예외 발생
+                raise ValidationError(f"Invalid transaction_status: {instance.transaction_status}")
+    except Exception as e:
+            # 에러가 발생하면 트랜잭션 롤백
+            print(f"Error processing transaction: {e}")
+            raise  # 예외를 상위로 전달하여 Transactions 저장 차단
+

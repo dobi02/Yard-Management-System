@@ -41,11 +41,11 @@ class DriverDetailView(APIView):
 
     def put(self, request, pk):
         try:
-            driver = Drivers.objects.get(pk=pk)
+            driver = Drivers.objects.get(user__username=pk)
         except Drivers.DoesNotExist:
             return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = DriversSerializer(driver, data=request.data)
+        serializer = DriversSerializer(driver, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

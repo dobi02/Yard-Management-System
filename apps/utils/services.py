@@ -12,7 +12,7 @@ def get_available_parking_slot(yard_id, asset_type):
     Returns:
         ParkingSlots: 사용 가능한 주차 슬롯 객체. 없을 경우 None.
     """
-    print(yard_id, asset_type)
+    # print(yard_id, asset_type)
     try:
         # Yards -> Sites -> ParkingSlots 탐색
         site = Sites.objects.filter(yard_id=yard_id) & Sites.objects.filter(asset_type=asset_type)

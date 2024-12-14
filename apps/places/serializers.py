@@ -25,8 +25,11 @@ class YardsSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"division_id": "Division not found."})
 
         last_yard = Yards.objects.filter(division_id=division_id).order_by('-yard_id').first()
-        counts = last_yard.yard_id[-2:]
-        count = int(counts)+1
+        if last_yard is None:
+            count = 1
+        else:
+            counts = last_yard.yard_id[-2:]
+            count = int(counts) + 1
         yard_id = f"{division_id}_{count:02d}"
 
         # Yards 생성

@@ -45,10 +45,18 @@ class TransactionDetailView(APIView):
         except Transactions.DoesNotExist:
             return Response({"error": "Transaction not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = TransactionsSerializer(transaction, data=request.data)
+        serializer = TransactionsSerializer(transaction, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
+            try:
+                serializer.save()
+                return Response(serializer.data)
+            except Exception as e:
+                if request.data['transaction_status'] == "finished":
+                    serializer = TransactionsSerializer(transaction, data={"transaction_status": "finished"}, partial=True)
+                    if serializer.is_valid:
+                        serializer.save()
+                        return Response(serializer.data)
+                print(e)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
