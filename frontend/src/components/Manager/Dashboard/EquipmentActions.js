@@ -8,7 +8,7 @@ const EquipmentActions = ({ modals, setModals, isDisabled }) => {
                 type="primary"
                 onClick={() => setModals({ ...modals, add: true })}
                 disabled={isDisabled}
-                style={{ width: '150px' }} // Select와 동일한 크기
+                style={{ width: '150px', marginLeft: '10px' }} // Select와 동일한 크기
             >
                 Add Equipment
             </Button>
@@ -16,7 +16,7 @@ const EquipmentActions = ({ modals, setModals, isDisabled }) => {
                 type="danger"
                 onClick={() => setModals({ ...modals, delete: true })}
                 disabled={isDisabled}
-                style={{ width: '150px' }} // Select와 동일한 크기
+                style={{ width: '150px', marginLeft: '10px' }} // Select와 동일한 크기
             >
                 Delete Equipment
             </Button>
