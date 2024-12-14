@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Card, Button, Space, Toast } from 'antd-mobile';
 import DriverLayout from "./DriverLayout";
 import './DriverTransaction.css';
-import {useParams} from "react-router-dom";
+
 
 const API_BASE_URL = 'http://localhost:8000';
 
@@ -119,10 +119,16 @@ const DriverTransaction = () => {
                 return (
                     <Button
                         color="primary"
-                        className="finished-button"
+                        className="arrive-button"
                         onClick={() => handleStatusChange('finished')}
                     >
-                        Confirm Arrival
+                        Finish
+                    </Button>
+                );
+            case 'arrive' :
+                return (
+                    <Button color="default" className="arrive-button" disabled>
+                        wait
                     </Button>
                 );
             case 'finished':
@@ -161,7 +167,7 @@ const DriverTransaction = () => {
                             <p>Status: {transaction.status}</p>
                             <Space direction="horizontal" className="transaction-buttons">
                                 {renderActionButtons()}
-                                {transaction.status !== 'canceled' && transaction.status !== 'finished' && (
+                                {transaction.status !== 'canceled' && transaction.status !== 'finished' && transaction.status !== 'arrive' && (
                                     <Button
                                         color="danger"
                                         onClick={() => handleStatusChange('canceled')}
