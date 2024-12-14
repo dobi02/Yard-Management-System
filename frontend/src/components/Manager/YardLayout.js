@@ -28,7 +28,7 @@ const YardLayout = () => {
     const [trailers, setTrailers] = useState([]); // 트레일러 목록
     const [parkingSlots, setParkingSlots] = useState([]);
     const [selectedChassis, setSelectedChassis] = useState(null);
-    const [selectedTrailer, setSelectedTrailer] = useState(false);
+    const [selectedTrailer, setSelectedTrailer] = useState(null);
     const [form] = Form.useForm();
     const [selectedDriver, setSelectedDriver] = useState(null);
     const [selectedTruck, setSelectedTruck] = useState(null);
@@ -97,6 +97,8 @@ const YardLayout = () => {
         form.resetFields();
         setSelectedDriver(null); // 드라이버 상태 초기화
         setSelectedTruck(null); // 트럭 상태 초기화
+        setSelectedChassis(null);
+        setSelectedTrailer(null);
     };
 
 
@@ -595,7 +597,12 @@ const YardLayout = () => {
                             label="Truck"
                             // rules={[{ required: true, message: 'Please select a truck!' }]}
                         >
-                            <Select placeholder="Select a truck">
+                            <Select placeholder="Select a truck"
+                                onChange={(value) => {
+                                    setSelectedTruck(value); // 트럭 상태 업데이트
+                                    setSelectedChassis(null); // 샤시 초기화
+                                }}
+                            >
                                 {trucks.map((truck) => (
                                     <Option key={truck.truck_id} value={truck.truck_id}>
                                         {truck.truck_id}
@@ -610,6 +617,7 @@ const YardLayout = () => {
                             <Select
                                 placeholder="Select a chassis"
                                 allowClear
+                                disabled={!selectedTruck || selectedTrailer}
                                 onChange={(value) => setSelectedChassis(value)}
                             >
                                 {chassis.map((item) => (
@@ -642,7 +650,8 @@ const YardLayout = () => {
                             <Select
                                 placeholder="Select a trailer"
                                 allowClear
-                                disabled={selectedChassis || selectedTrailer}
+                                disabled={!selectedTruck || selectedChassis}
+                                onChange={(value) => setSelectedTrailer(value)}
                             >
                                 {trailers.map((item) => (
                                     <Option key={item.trailer_id} value={item.trailer_id}>
