@@ -21,24 +21,31 @@ def handle_transaction(sender, instance, **kwargs):
     """
     Transactions 추가 전에 유효성 검사를 진행하고, 실패 시 예외를 발생시켜 롤백
     """
-    a = instance.truck_id
     try:
         with transaction.atomic():
-            if instance.transaction_status == 'waiting':
+            if instance.transaction_status == 'waiting' or True:
                 # 'waiting' 트랜잭션 처리
                 if instance.truck_id:
+                    if instance.truck_id.state != "parked":
+                        raise ValidationError("Truck is not parked.")
                     instance.truck_id.state = "waiting"
                     instance.truck_id.save()
 
                 if instance.chassis_id:
+                    if instance.chassis_id.state != "parked":
+                        raise ValidationError("Chassis is not parked.")
                     instance.chassis_id.state = "waiting"
                     instance.chassis_id.save()
 
                 if instance.container_id:
+                    if instance.container_id.state != "parked":
+                        raise ValidationError("Container is not parked.")
                     instance.container_id.state = "waiting"
                     instance.container_id.save()
 
                 if instance.trailer_id:
+                    if instance.trailer_id.state != "parked":
+                        raise ValidationError("Trailer is not parked.")
                     instance.trailer_id.state = "waiting"
                     instance.trailer_id.save()
 
