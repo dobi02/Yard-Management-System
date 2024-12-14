@@ -212,10 +212,10 @@ const YardLayout = () => {
         const getSlotColor = (slot) => {
             if (!slot.is_occupied) {
             // 슬롯이 비어 있는 경우
-                if (slot.site_id.includes("truck")) return "#e6f7ff"; // 트럭용 슬롯 - 연한 파란색
-                if (slot.site_id.includes("trailer")) return "#f6ffed"; // 트레일러용 슬롯 - 연한 녹색
-                if (slot.site_id.includes("container")) return "#fffbe6"; // 컨테이너용 슬롯 - 연한 노란색
-                if (slot.site_id.includes("chassis")) return "#f9f0ff"; // 샤시용 슬롯 - 연한 보라색
+                if (slot.site_id.includes("truck")) return '#6bb36d'; // 트럭용 슬롯 - 연한 파란색
+                if (slot.site_id.includes("trailer")) return '#ffbb4e'; // 트레일러용 슬롯 - 연한 녹색
+                if (slot.site_id.includes("container")) return '#519cea'; // 컨테이너용 슬롯 - 연한 노란색
+                if (slot.site_id.includes("chassis")) return '#80c1cc'; // 샤시용 슬롯 - 연한 보라색
                 return "#ffffff"; // 기본 색상
             } else {
                 // 슬롯에 장비가 주차된 경우
@@ -247,7 +247,7 @@ const YardLayout = () => {
                     padding: "50px",
                     display: "flex",
                     flexDirection: "column",
-                    gap: "50px", // 사이트 그룹 간 간격
+                    gap: "30px", // 사이트 그룹 간 간격
                 }}
             >
                 {/* 첫 번째 사이트 */}
@@ -363,13 +363,13 @@ const YardLayout = () => {
             >
                 {selectedSlot ? (
                     <>
-                        <h3>슬롯 상세 정보</h3>
-                        <p><strong>슬롯 ID:</strong> {selectedSlot.slot_id}</p>
-                        <p><strong>장비 유형:</strong> {selectedSlot.site_id}</p>
-                        <p><strong>점유 상태:</strong> {selectedSlot.is_occupied ? "점유됨" : "비어 있음"}</p>
+                        <h3>Slot Details</h3>
+                        <p><strong>Slot ID:</strong> {selectedSlot.slot_id}</p>
+                        <p><strong>Equipment Type:</strong> {selectedSlot.site_id}</p>
+                        <p><strong>Occupancy Status:</strong> {selectedSlot.is_occupied ? "Occupied" : "Empty"}</p>
                     </>
                 ) : (
-                    <p>슬롯을 클릭하면 정보가 표시됩니다.</p>
+                    <p>Click a slot to view details.</p>
                 )}
             </div>
         </div>
