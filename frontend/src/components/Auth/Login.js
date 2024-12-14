@@ -50,10 +50,9 @@ const Login = () => {
 
             // 유저 타입에 따라 페이지 이동
             if (userType === 'manager') {
-                //navigate(`/manager/${values.username}/`);
                 navigate(`/manager/`);
             } else if (userType === 'driver') {
-                navigate(`/driver/${values.username}/`);
+                navigate(`/driver/`);
             }
         } catch (error) {
             if (error.response && error.response.data) {
