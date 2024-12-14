@@ -19,16 +19,16 @@ class Transactions(models.Model):
     departure_time_real = models.DateTimeField(null=True)
     arrival_time = models.DateTimeField(null=True)  # 예상
     arrival_time_real = models.DateTimeField(null=True)
-    manager_id = models.ForeignKey(Managers, on_delete=models.DO_NOTHING, null=True)
-    driver_id = models.ForeignKey(Drivers, on_delete=models.DO_NOTHING, null=True)
-    origin_yard_id = models.ForeignKey(Yards, on_delete=models.DO_NOTHING,
-                                null=False, related_name='origin_yard_id')
-    destination_yard_id = models.ForeignKey(Yards, on_delete=models.DO_NOTHING,
+    manager_id = models.ForeignKey(Managers, on_delete=models.SET_NULL, null=True)
+    driver_id = models.ForeignKey(Drivers, on_delete=models.SET_NULL, null=True)
+    origin_yard_id = models.ForeignKey(Yards, on_delete=models.SET_NULL,
+                                null=True, related_name='origin_yard_id')
+    destination_yard_id = models.ForeignKey(Yards, on_delete=models.SET_NULL,
                                             null=True, related_name='destination_yard_id')
-    truck_id = models.ForeignKey(Trucks, on_delete=models.DO_NOTHING, null=True)
-    chassis_id = models.ForeignKey(Chassis, on_delete=models.DO_NOTHING, null=True)
-    container_id = models.ForeignKey(Containers, on_delete=models.DO_NOTHING, null=True)
-    trailer_id = models.ForeignKey(Trailers, on_delete=models.DO_NOTHING, null=True)
+    truck_id = models.ForeignKey(Trucks, on_delete=models.SET_NULL, null=True)
+    chassis_id = models.ForeignKey(Chassis, on_delete=models.SET_NULL, null=True)
+    container_id = models.ForeignKey(Containers, on_delete=models.SET_NULL, null=True)
+    trailer_id = models.ForeignKey(Trailers, on_delete=models.SET_NULL, null=True)
 
     class Meta:
         db_table = 'transactions'

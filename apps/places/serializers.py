@@ -24,13 +24,16 @@ class YardsSerializer(serializers.ModelSerializer):
         except Divisions.DoesNotExist:
             raise serializers.ValidationError({"division_id": "Division not found."})
 
+        yard_id = ''
+        count = 1
+        while True:
+            potential_id = f"{division_id}_{count:02d}"
+            if not Yards.objects.filter(pk=potential_id).exists():
+                yard_id = potential_id
+                break
+            count += 1
+
         last_yard = Yards.objects.filter(division_id=division_id).order_by('-yard_id').first()
-        if last_yard is None:
-            count = 1
-        else:
-            counts = last_yard.yard_id[-2:]
-            count = int(counts) + 1
-        yard_id = f"{division_id}_{count:02d}"
 
         # Yards 생성
         yard = Yards.objects.create(
