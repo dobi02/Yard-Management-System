@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { TabBar, NavBar } from "antd-mobile";
 import {useLocation, useNavigate} from "react-router-dom";
 import {
@@ -13,6 +13,7 @@ import {HomeOutlined} from "@ant-design/icons";
 const DriverLayout = ({ children }) => {
     const location = useLocation();
     const navigate = useNavigate();
+    const username = localStorage.getItem('username');
 
     return (
         <div className="driver-layout">
@@ -36,19 +37,19 @@ const DriverLayout = ({ children }) => {
                 onChange={(key) => navigate(key)}
             >
                 <TabBar.Item
-                    key="/driver/dashboard"
+                    key={`/driver/dashboard`}
                     icon={<HomeOutlined />}
                     title="Dashboard"
                 />
                 <TabBar.Item
-                    key="/driver/transaction"
+                    key={`/driver/transaction`}
                     icon={<FileOutline />}
                     title="Transaction"
                 />
                 <TabBar.Item
-                    key="/driver/settings"
+                    key={`/driver/account`}
                     icon={<UserCircleOutline />}
-                    title="settings"
+                    title={`${username}`}
                 />
             </TabBar>
         </div>

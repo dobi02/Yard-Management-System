@@ -4,60 +4,57 @@ import { useNavigate  } from 'react-router-dom';
 import './Login.css'
 import axios from 'axios';
 
+const API_BASE_URL = 'http://localhost:8000';
+
 // 로그인
 const Login = () => {
     const [userType, setUserType] = useState(null); // 유저 타입 변수
     const navigate = useNavigate (); //
-    const API_URLS = {
-        manager: 'http://localhost:8000/managers/api/login/',
-        driver: 'http://localhost:8000/drivers/api/login/',
-    };
 
     // 사용자 유형 번경
     const handleUserTypeChange = (e) => {
         setUserType(e.target.value);
     };
 
-
-    // 공통 API 호출 함수
-    const loginUser = async (userType, username, password) => {
-        if (!API_URLS[userType]) {
-            throw new Error('Invalid user type');
-        }
-        const response = await axios.post(API_URLS[userType], {
-            username,
-            password,
-        });
-        return response.data;
-    };
-
     const handleSubmit = async (values) => {
         // 서버로 로그인 요청 보내는 곳
         try {
-            // 사용자 유형 확인
-            if (!userType) {
+            let response; // 변수 선언
+
+            // manager or driver 분리
+            if (userType === 'manager') {
+                response = await axios.post(`${API_BASE_URL}/managers/api/login/`, {
+                    username: values.username,
+                    password: values.password,
+                });
+            } else if (userType === 'driver') {
+                response = await axios.post(`${API_BASE_URL}/drivers/api/login/`, {
+                    username: values.username,
+                    password: values.password,
+                });
+            } else {
                 message.error('Please select a user type.');
                 return;
             }
 
-            // 사용자 로그인
-            const data = await loginUser(userType, values.username, values.password);
+            const { access, refresh } = response.data;
 
-            // 토큰 저장
-            localStorage.setItem('authToken', data.access);
-            localStorage.setItem('refreshToken', data.refresh);
+            // 성공, 토큰 로컬 스토리지 저장
+            localStorage.setItem('authToken', access);
+            localStorage.setItem('refreshToken', refresh);
+            // 유저 네임, 타입 저장
             localStorage.setItem('username', values.username);
+            localStorage.setItem('userType', userType);
+            message.success('Login successful!');
 
-            // 성공 메시지
-            message.success(data.message);
 
-            // 사용자 유형에 따라 리다이렉트
+            // 유저 타입에 따라 페이지 이동
             if (userType === 'manager') {
-                window.location.href = '/manager/dashboard';
+                //navigate(`/manager/${values.username}/`);
+                navigate(`/manager/`);
             } else if (userType === 'driver') {
-                window.location.href = '/driver/dashboard';
+                navigate(`/driver/${values.username}/`);
             }
-
         } catch (error) {
             if (error.response && error.response.data) {
                 message.error(error.response.data.message);
