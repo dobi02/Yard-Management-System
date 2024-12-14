@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from 'antd-mobile';
-import { EnvironmentOutline } from "antd-mobile-icons";
+import { LocationFill} from "antd-mobile-icons";
 
 import '../DriverDashboard.css'
 
@@ -32,25 +32,24 @@ const DriverTransactionCard = ({ transaction }) => {
     return (
             <Card>
                     <h3>Ongoing Trip</h3>
-                    <div className="list-item">
-                        <span className="list-item-icon">
-                            <EnvironmentOutline/>
+                <div className="list-item">
+                        <span className="list-item-icon" style={{color: "blue"}}>
+                            <LocationFill/>
                         </span>
-                        <span className="list-item-key">From:</span>
-                        <span className="list-item-text">{transaction.originYard}</span>
-                    </div>
-                    <div className="list-item">
-                        <span className="list-item-icon">
-                            <EnvironmentOutline/>
+                    <span className="list-item-key">From:</span>
+                    <span className="list-item-text">{transaction.originYard}</span>
+                    <span className="list-item-icon" style={{color: "red"}}>
+                            <LocationFill/>
                         </span>
-                        <span className="list-item-key">To:</span>
-                        <span className="list-item-text">{transaction.destination}</span>
-                    </div>
-                    <div className="list-item">
-                        <StatusIcon className="list-item-icon" status={transaction.status} />
-                        <span className="list-item-key">Status:</span>
-                        <span className="list-item-text">{transaction.status}</span>
-                    </div>
+                    <span className="list-item-key">To:</span>
+                    <span className="list-item-text">{transaction.destination}</span>
+                </div>
+
+                <div className="list-item">
+                    <StatusIcon className="list-item-icon" status={transaction.status} />
+                    <span className="list-item-key">Status:</span>
+                    <span className="list-item-text">{transaction.status}</span>
+                </div>
                 </Card>
     );
 };

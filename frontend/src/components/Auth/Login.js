@@ -4,6 +4,8 @@ import { useNavigate  } from 'react-router-dom';
 import './Login.css'
 import axios from 'axios';
 
+const API_BASE_URL = 'http://localhost:8000';
+
 // 로그인
 const Login = () => {
     const [userType, setUserType] = useState(null); // 유저 타입 변수
@@ -21,13 +23,12 @@ const Login = () => {
 
             // manager or driver 분리
             if (userType === 'manager') {
-                response = await axios.post('http://localhost:8000/managers/api/login/', {
+                response = await axios.post(`${API_BASE_URL}/managers/api/login/`, {
                     username: values.username,
                     password: values.password,
                 });
             } else if (userType === 'driver') {
-                // 아직 없음
-                response = await axios.post('http://localhost:8000/drivers/api/login/', {
+                response = await axios.post(`${API_BASE_URL}/drivers/api/login/`, {
                     username: values.username,
                     password: values.password,
                 });
@@ -35,16 +36,24 @@ const Login = () => {
                 message.error('Please select a user type.');
                 return;
             }
+
+            const { access, refresh } = response.data;
+
             // 성공, 토큰 로컬 스토리지 저장
-            localStorage.setItem('authToken', response.data.access);
-            localStorage.setItem('refreshToken', response.data.refresh);
-            message.success(response.data.message);
+            localStorage.setItem('authToken', access);
+            localStorage.setItem('refreshToken', refresh);
+            // 유저 네임, 타입 저장
+            localStorage.setItem('username', values.username);
+            localStorage.setItem('userType', userType);
+            message.success('Login successful!');
+
 
             // 유저 타입에 따라 페이지 이동
             if (userType === 'manager') {
-                navigate('/manager/dashboard/');
+                //navigate(`/manager/${values.username}/`);
+                navigate(`/manager/`);
             } else if (userType === 'driver') {
-                navigate(('/driver/dashboard/'))
+                navigate(`/driver/${values.username}/`);
             }
         } catch (error) {
             if (error.response && error.response.data) {
