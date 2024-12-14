@@ -8,6 +8,11 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
     const [equipmentOptions, setEquipmentOptions] = useState([]);
     const [selectedEquipmentType, setSelectedEquipmentType] = React.useState(null);
 
+    const resetForm = () => {
+      form.resetFields();
+      setSelectedEquipmentType(null); // 장비 유형 상태 초기화
+    };
+
     // 장비 선택 옵션 업데이트 (삭제 모드에서 사용)
     useEffect(() => {
         if (type === 'delete' && yardAssets && equipmentType) {
@@ -121,7 +126,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
     const handleSubmit = async (values) => {
         try {
             await onFinish(values);
-            form.resetFields();
+            resetForm();
         } catch (error) {
             message.error('Failed to process the request.');
         }
@@ -132,7 +137,7 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
             title={type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
             visible={visible}
             onCancel={() => {
-                form.resetFields();
+                resetForm();
                 onCancel();
             }}
             footer={null}
@@ -169,9 +174,15 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
                 )}
 
                 <Form.Item>
-                    <Button type="primary" htmlType="submit" block>
-                        {type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
-                    </Button>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                        {/* **[추가] Reset 버튼** */}
+                        <Button onClick={resetForm} style={{ width: '48%' }}>
+                            Reset
+                        </Button>
+                        <Button type="primary" htmlType="submit" style={{ width: '48%' }}>
+                            {type === 'add' ? 'Add Equipment' : 'Delete Equipment'}
+                        </Button>
+                    </div>
                 </Form.Item>
             </Form>
         </Modal>

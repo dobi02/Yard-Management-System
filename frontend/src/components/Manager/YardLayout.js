@@ -28,6 +28,9 @@ const YardLayout = () => {
     const [selectedChassis, setSelectedChassis] = useState(null);
     const [selectedTrailer, setSelectedTrailer] = useState(false);
     const [form] = Form.useForm();
+    const [selectedDriver, setSelectedDriver] = useState(null);
+    const [selectedTruck, setSelectedTruck] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // 야드 세부 정보 가져오기
     useEffect(() => {
@@ -73,6 +76,13 @@ const YardLayout = () => {
         fetchEquipment();
     }, [yardId]);
 
+    // **[추가] resetForm 함수**: 폼의 필드를 초기화합니다.
+    const resetForm = () => {
+        form.resetFields();
+        setSelectedDriver(null); // 드라이버 상태 초기화
+        setSelectedTruck(null); // 트럭 상태 초기화
+    };
+
     // 장비 추가 처리
     const handleAddEquipment = async (values) => {
         const { equipmentType, type, quantity, size } = values;
@@ -95,12 +105,14 @@ const YardLayout = () => {
                 yard: yardId,
                 type,
                 quantity,
-                ...(equipmentType === 'container' && { size }), // 컨테이너에만 사이즈 포함
+                ...(equipmentType === 'container' || 'trailer' && { size }), // 컨테이너에만 사이즈 포함
             };
             await axios.post(`${API_BASE_URL}${endpoint}`, payload);
             message.success(`${equipmentType.toUpperCase()} added successfully.`);
             setIsAddModalOpen(false);
             form.resetFields();
+
+            await fetchYardDetails();
         } catch (error) {
             message.error(`Failed to add ${equipmentType}.`);
         }
@@ -130,6 +142,8 @@ const YardLayout = () => {
             await axios.delete(`${API_BASE_URL}${apiEndpoints[equipmentType]}${equipmentId}/`);
             message.success('Equipment deleted successfully.');
             setIsDeleteModalOpen(false);
+
+            await fetchYardDetails();
         } catch (error) {
             message.error('Failed to delete equipment.');
         }
@@ -153,6 +167,7 @@ const YardLayout = () => {
             };
             await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
             message.success('Order added successfully.');
+            resetForm();
             setIsOrderModalOpen(false);
             form.resetFields();
             setSelectedChassis(null);
@@ -195,6 +210,18 @@ const YardLayout = () => {
             pagination={false}
         />
     );
+
+    const fetchYardDetails = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`${API_BASE_URL}/places/api/sites/${yardId}/`);
+            setYardDetails(response.data);
+        } catch (error) {
+            message.error('Failed to load yard details.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <ManagerLayout>
@@ -260,7 +287,10 @@ const YardLayout = () => {
                 <Modal
                     title="Add Order"
                     visible={isOrderModalOpen}
-                    onCancel={() => setIsOrderModalOpen(false)}
+                    onCancel={() => {
+                        resetForm(); // **[변경] onCancel 시에도 폼 초기화**
+                        setIsOrderModalOpen(false);
+                    }}
                     footer={null}
                 >
                     <Form form={form} layout="vertical" onFinish={handleAddOrder}>
@@ -355,9 +385,15 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" block>
-                                Submit
-                            </Button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                {/* **[추가] Reset 버튼** */}
+                                <Button onClick={resetForm} style={{ width: '48%' }}>
+                                    Reset
+                                </Button>
+                                <Button type="primary" htmlType="submit" style={{ width: '48%' }}>
+                                    Submit
+                                </Button>
+                            </div>
                         </Form.Item>
                     </Form>
                 </Modal>
