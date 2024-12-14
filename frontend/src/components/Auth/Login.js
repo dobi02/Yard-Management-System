@@ -34,35 +34,30 @@ const Login = () => {
     const handleSubmit = async (values) => {
         // 서버로 로그인 요청 보내는 곳
         try {
-            let response; // 변수 선언
-
-            // manager or driver 분리
-            if (userType === 'manager') {
-                response = await axios.post('http://localhost:8000/managers/api/login/', {
-                    username: values.username,
-                    password: values.password,
-                });
-            } else if (userType === 'driver') {
-                // 아직 없음
-                response = await axios.post('http://localhost:8000/drivers/api/login/', {
-                    username: values.username,
-                    password: values.password,
-                });
-            } else {
+            // 사용자 유형 확인
+            if (!userType) {
                 message.error('Please select a user type.');
                 return;
             }
-            // 성공, 토큰 로컬 스토리지 저장
-            localStorage.setItem('authToken', response.data.access);
-            localStorage.setItem('refreshToken', response.data.refresh);
-            message.success(response.data.message);
 
-            // 유저 타입에 따라 페이지 이동
+            // 사용자 로그인
+            const data = await loginUser(userType, values.username, values.password);
+
+            // 토큰 저장
+            localStorage.setItem('authToken', data.access);
+            localStorage.setItem('refreshToken', data.refresh);
+            localStorage.setItem('username', values.username);
+
+            // 성공 메시지
+            message.success(data.message);
+
+            // 사용자 유형에 따라 리다이렉트
             if (userType === 'manager') {
-                navigate('/manager/dashboard/');
+                window.location.href = '/manager/dashboard';
             } else if (userType === 'driver') {
-                navigate(('/driver/dashboard/'))
+                window.location.href = '/driver/dashboard';
             }
+
         } catch (error) {
             if (error.response && error.response.data) {
                 message.error(error.response.data.message);
