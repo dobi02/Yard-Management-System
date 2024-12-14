@@ -15,7 +15,7 @@ function App() {
             <Route path="/" element={<Navigate to="/login" replace/>} />
             <Route path="/login" element={<Login />} />
             <Route path="/manager/*" element={<Manager />} />
-            <Route path="/driver/:username/*" element={<Driver />} />
+            <Route path="/driver/*" element={<Driver />} />
         </Routes>
     </Router>
   );

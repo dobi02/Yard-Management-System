@@ -1,13 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import DriverLayout from "./DriverLayout";
-import {useParams} from "react-router-dom";
 import {message, Button} from "antd";
 import axios from "axios";
 
 const API_BASE_URL = 'http://localhost:8000';
 
-const DriverSettings = () => {
-    const { username } = useParams();
+const DriverAccount = () => {
+    const username = localStorage.getItem('username');
     const [userInfo, setUserInfo] = useState(null);
 
         useEffect(() => {
@@ -75,4 +74,4 @@ const DriverSettings = () => {
     );
 };
 
-export default DriverSettings;
+export default DriverAccount;

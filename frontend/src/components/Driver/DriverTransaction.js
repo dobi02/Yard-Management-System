@@ -11,7 +11,7 @@ const DriverTransaction = () => {
     const [transaction, setTransaction] = useState(null);
     const [transaction_id, setTransactionId] = useState(null);
     const [driverState, setDriverState] = useState(null);
-    const {username} = useParams();
+    const username = localStorage.getItem('username');
 
     useEffect(() => {
     const fetchInfo = async () => {
@@ -73,7 +73,7 @@ const DriverTransaction = () => {
         setTransaction((prev) => ({ ...prev, status: newStatus }));
         Toast.show({
             icon: 'success',
-            content: `Transaction status updated to: ${newStatus}`,
+            content: `${newStatus}`,
         });
     } catch (error) {
         console.error(error.response?.data || error.message);
@@ -161,7 +161,7 @@ const DriverTransaction = () => {
                             <p>Status: {transaction.status}</p>
                             <Space direction="horizontal" className="transaction-buttons">
                                 {renderActionButtons()}
-                                {transaction.status !== 'canceled' && (
+                                {transaction.status !== 'canceled' && transaction.status !== 'finished' && (
                                     <Button
                                         color="danger"
                                         onClick={() => handleStatusChange('canceled')}

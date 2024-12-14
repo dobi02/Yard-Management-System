@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 import './DriverDashboard.css'
 import DriverLayout from "./DriverLayout";
 
-import {useParams} from "react-router-dom";
 import {Card, Toast} from "antd-mobile";
 import axios from "axios";
 
@@ -13,7 +12,7 @@ const API_BASE_URL = 'http://localhost:8000';
 
 const DriverDashboard = () => {
 
-    const { username } = useParams();
+    const username = localStorage.getItem('username');
     const [userInfo, setUserInfo] = useState(null); // 유저 정보
     const [transaction, setTransaction] = useState(null); // 주문 정보
     const [loading, setLoading] = useState(true); // 로딩
