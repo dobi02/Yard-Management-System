@@ -5,7 +5,7 @@ const EquipmentActions = ({ modals, setModals, isDisabled }) => {
     return (
         <>
             <Button
-                type="primary"
+                type="default"
                 onClick={() => setModals({ ...modals, add: true })}
                 disabled={isDisabled}
                 style={{ width: '150px', marginLeft: '10px' }} // Select와 동일한 크기
