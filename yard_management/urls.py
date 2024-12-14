@@ -30,4 +30,5 @@ urlpatterns = [
     path('', include('apps.transactions.urls')),
     path('managers/', include('apps.managers.urls')),
     path('drivers/', include('apps.drivers.urls')),
+    path('transactions/', include('apps.transactions.urls')),
 ]

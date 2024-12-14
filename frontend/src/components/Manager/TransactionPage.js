@@ -40,19 +40,19 @@ const TransactionsPage = () => {
         },
         {
             title: 'Driver',
-            dataIndex: ['driver_id', 'user', 'username'],
+            dataIndex: 'driver_id',
             key: 'driver',
             render: (driver) => driver || 'N/A',
         },
         {
             title: 'Origin Yard',
-            dataIndex: ['origin_yard_id', 'yard_id'],
+            dataIndex: 'origin_yard_id',
             key: 'origin_yard',
             render: (yard) => yard || 'N/A',
         },
         {
             title: 'Destination Yard',
-            dataIndex: ['destination_yard_id', 'yard_id'],
+            dataIndex: 'destination_yard_id',
             key: 'destination_yard',
             render: (yard) => yard || 'N/A',
         },
