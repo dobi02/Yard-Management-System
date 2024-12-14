@@ -128,3 +128,34 @@
     color: white; /* 마우스 오버 시 글자색 */
     background-color: #ff4d4f; /* 마우스 오버 시 배경색 */
 }
+
+.equipment-summary {
+    display: flex;
+    justify-content: space-around; /* 카드 간 간격 자동 분배 */
+    gap: 20px; /* 카드 간격 */
+    margin-bottom: 20px; /* 하단 여백 */
+}
+
+.equipment-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px; /* 모서리 둥글게 */
+    min-width: 120px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.equipment-count {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.equipment-label {
+    font-size: 1rem;
+    font-weight: 500;
+}

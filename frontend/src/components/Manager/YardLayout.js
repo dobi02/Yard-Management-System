@@ -32,7 +32,12 @@ const YardLayout = () => {
     const [selectedDriver, setSelectedDriver] = useState(null);
     const [selectedTruck, setSelectedTruck] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [equipmentCounts, setEquipmentCounts] = useState({
+        trucks: 0,
+        chassis: 0,
+        containers: 0,
+        trailers: 0,
+    });
 
 
 
@@ -62,6 +67,13 @@ const YardLayout = () => {
                 setContainers(response.data.containers_list);
                 setTrailers(response.data.trailers_list);
                 setParkingSlots(response.data.parking_slots);
+
+                setEquipmentCounts({
+                    trucks: response.data.trucks_list.length,
+                    chassis: response.data.chassis_list.length,
+                    containers: response.data.containers_list.length,
+                    trailers: response.data.trailers_list.length,
+                });
 
                 } catch(error)  {
                     console.error("Error fetching data:", error);
@@ -326,6 +338,13 @@ const YardLayout = () => {
         </div>
     );
 
+    const equipmentData = [
+        { label: 'Trucks', count: equipmentCounts.trucks, color: '#4CAF50' },
+        { label: 'Chassis', count: equipmentCounts.chassis, color: '#00BCD4' },
+        { label: 'Containers', count: equipmentCounts.containers, color: '#2196F3' },
+        { label: 'Trailers', count: equipmentCounts.trailers, color: '#FF9800' },
+    ];
+
     const fetchYardDetails = async () => {
         setIsLoading(true);
         try {
@@ -350,6 +369,13 @@ const YardLayout = () => {
                 setTrailers(response.data.trailers_list);
                 setParkingSlots(response.data.parking_slots);
 
+                setEquipmentCounts({
+                    trucks: response.data.trucks_list.length,
+                    chassis: response.data.chassis_list.length,
+                    containers: response.data.containers_list.length,
+                    trailers: response.data.trailers_list.length,
+                });
+
 
         } catch (error) {
             message.error('Failed to fetch equipment.');
@@ -363,6 +389,18 @@ const YardLayout = () => {
             ) : (
                 <div className="yard-layout">
                 <h2>Yard Layout: {yardId}</h2>
+                <div className="equipment-summary">
+                    {equipmentData.map((item, index) => (
+                        <div
+                            key={index}
+                            className="equipment-card"
+                            style={{ backgroundColor: item.color }}
+                        >
+                            <div className="equipment-count">{item.count}</div>
+                            <div className="equipment-label">{item.label}</div>
+                        </div>
+                    ))}
+                </div>
                 <div className="view-mode-buttons">
                     <Button
                         type="default"
