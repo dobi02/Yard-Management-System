@@ -545,7 +545,7 @@ const YardLayout = () => {
                             <Select placeholder="Select a yard">
                                 {yards.map((yard) => (
                                     <Option key={yard.yard_id} value={yard.yard_id}>
-                                        {yard.yard_id} ({yard.division_id})
+                                        {yard.yard_id}
                                     </Option>
                                 ))}
                             </Select>
