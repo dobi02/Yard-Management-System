@@ -413,7 +413,7 @@ class ContainerMovingView(APIView):
                     if destination_chassis.state == 'combined':
                         raise ValidationError("destination chassis is already combined.")
 
-                    destination_chassis = 'combined'
+                    destination_chassis.state = 'combined'
                     container.state = 'combined'
                     destination_chassis.save()
                 else:
