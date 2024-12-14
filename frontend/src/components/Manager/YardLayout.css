@@ -4,14 +4,22 @@
 
 .view-actions-container {
     display: flex;
-    justify-content: flex-start;
-    gap: 10px;
+    justify-content: space-evenly; /* 버튼 간 동일한 간격 */
+    gap: 20px; /* 버튼 간격 */
     margin-bottom: 20px;
+}
+
+.view-actions-container button {
+    width: 160px; /* 버튼 너비 동일 */
+    height: 45px; /* 버튼 높이 동일 */
+    margin: 0; /* 간격 초기화 */
+    border-radius: 8px; /* 모서리를 약간 둥글게 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* 버튼 그림자 */
 }
 
 .yard-map {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 각 맵 타일 크기 */
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 맵 타일의 유연한 크기 */
     gap: 20px; /* 맵 타일 간 간격 */
 }
 
@@ -55,22 +63,67 @@
 }
 
 .list-view {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4개의 열로 구성 */
+    gap: 20px; /* 각 열 간격 */
     margin-top: 20px;
-    list-style-type: none;
-    padding: 0;
+    padding: 20px;
 }
 
-.list-item {
-    padding: 10px;
+.asset-section {
+    margin-bottom: 20px;
+}
+
+.asset-column {
+    display: flex;
+    flex-direction: column; /* 카드들이 세로로 정렬 */
+    gap: 10px; /* 카드 간의 간격 */
+}
+
+.asset-card {
+    position: relative; /* Delete 버튼을 절대 위치로 배치하기 위한 기준 */
     border: 1px solid #ddd;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    background-color: #fdfdfd; /* 리스트 항목 배경색 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 리스트 항목 그림자 */
+    border-radius: 8px; /* 모서리를 더 부드럽게 */
+    background-color: #f9f9f9; /* 카드 배경색 */
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15); /* 그림자 강조 */
+    text-align: left;
+    display: flex; /* 수평 정렬 */
+    flex-direction: column; /* 카드 내의 요소를 세로로 정렬 */
+    gap: 8px; /* 카드 내부 요소 간의 간격 */
 }
 
-.view-actions-container button {
-    width: 150px; /* 버튼 너비 */
-    height: 40px; /* 버튼 높이 */
-    border-radius: 5px; /* 버튼 모서리 둥글게 */
+.asset-card p {
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.asset-card p strong {
+    color: #000;
+}
+
+.asset-section h3 {
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+    font-weight: bold; /* 강조 */
+    color: #333;
+    text-align: center;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: #ff4d4f; /* Danger 색상 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #ff7875; /* Hover 시 더 밝은 빨간색 */
 }

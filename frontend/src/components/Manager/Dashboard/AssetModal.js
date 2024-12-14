@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Form, Select, Input, Button, message } from 'antd';
 
 const { Option } = Select;
+const { OptionGroup } = Select; // 장비 그룹화에 사용
 
 const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, equipmentType }) => {
     const [form] = Form.useForm();
@@ -9,42 +10,12 @@ const AssetModal = ({ type, visible, onCancel, onFinish, siteList, yardAssets, e
     const [selectedEquipmentType, setSelectedEquipmentType] = React.useState(null);
 
     const resetForm = () => {
-      form.resetFields();
-      setSelectedEquipmentType(null); // 장비 유형 상태 초기화
+        form.resetFields();
+        setSelectedEquipmentType(null); // 장비 유형 상태 초기화
     };
 
-    // 장비 선택 옵션 업데이트 (삭제 모드에서 사용)
-    useEffect(() => {
-        if (type === 'delete' && yardAssets && equipmentType) {
-            // 야드 데이터에서 특정 장비 유형만 필터링하여 옵션 설정
-            setEquipmentOptions(yardAssets[equipmentType] || []);
-        }
-    }, [type, yardAssets, equipmentType]);
 
-    const renderDynamicFields = () => {
-        if (type === 'delete') {
-            // 삭제 모드: 장비 선택 필드만 렌더링
-            return (
-                <Form.Item
-                    name="equipmentId"
-                    label="Select Equipment to Delete"
-                    rules={[{ required: true, message: 'Please select an equipment ID to delete!' }]}
-                >
-                    <Select
-                        placeholder="Select equipment"
-                        showSearch
-                        optionFilterProp="children"
-                    >
-                        {equipmentOptions.map((item) => (
-                            <Option key={item.id || item.truck_id} value={item.id || item.truck_id}>
-                                {item.id || item.truck_id} ({item.type})
-                            </Option>
-                        ))}
-                    </Select>
-                </Form.Item>
-            );
-        }
-
+const renderDynamicFields = () => {
         // 추가 모드: 장비 유형 및 세부 필드 렌더링
         switch (selectedEquipmentType) {
             case 'truck':
