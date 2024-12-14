@@ -28,12 +28,15 @@ const YardLayout = () => {
     const [selectedChassis, setSelectedChassis] = useState(null);
     const [selectedTrailer, setSelectedTrailer] = useState(false);
     const [form] = Form.useForm();
+    const [selectedDriver, setSelectedDriver] = useState(null);
+    const [selectedTruck, setSelectedTruck] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // 야드 세부 정보 가져오기
     useEffect(() => {
         const fetchYardDetails = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/places/api/yards/${yardId}/details`);
+                const response = await axios.get(`${API_BASE_URL}/places/api/sites/${yardId}/`);
                 setYardDetails(response.data);
             } catch (error) {
                 message.error('Failed to load yard details.');
@@ -73,15 +76,22 @@ const YardLayout = () => {
         fetchEquipment();
     }, [yardId]);
 
+    // **[추가] resetForm 함수**: 폼의 필드를 초기화합니다.
+    const resetForm = () => {
+        form.resetFields();
+        setSelectedDriver(null); // 드라이버 상태 초기화
+        setSelectedTruck(null); // 트럭 상태 초기화
+    };
+
     // 장비 추가 처리
     const handleAddEquipment = async (values) => {
         const { equipmentType, type, quantity, size } = values;
 
         const apiEndpoints = {
-            truck: '/api/trucks/',
-            chassis: '/api/chassis/',
-            trailer: '/api/trailers/',
-            container: '/api/containers/',
+            truck: '/assets/api/trucks/',
+            chassis: '/assets/api/chassis/',
+            trailer: '/assets/api/trailers/',
+            container: '/assets/api/containers/',
         };
 
         const endpoint = apiEndpoints[equipmentType];
@@ -95,12 +105,14 @@ const YardLayout = () => {
                 yard: yardId,
                 type,
                 quantity,
-                ...(equipmentType === 'container' && { size }), // 컨테이너에만 사이즈 포함
+                ...(equipmentType === 'container' || 'trailer' && { size }), // 컨테이너에만 사이즈 포함
             };
             await axios.post(`${API_BASE_URL}${endpoint}`, payload);
             message.success(`${equipmentType.toUpperCase()} added successfully.`);
             setIsAddModalOpen(false);
             form.resetFields();
+
+            await fetchYardDetails();
         } catch (error) {
             message.error(`Failed to add ${equipmentType}.`);
         }
@@ -108,27 +120,32 @@ const YardLayout = () => {
 
     // 장비 삭제 처리
     const handleDeleteEquipment = async (values) => {
-        const { equipmentId, equipmentType } = values;
+        const { equipmentId } = values;
 
-        const apiEndpoints = {
-            truck: '/api/trucks/',
-            chassis: '/api/chassis/',
-            trailer: '/api/trailers/',
-            container: '/api/containers/',
-        };
+        const equipmentType = Object.keys(yardDetails).find((key) =>
+            yardDetails[key].some((item) => item.id === equipmentId)
+        );
 
-        const endpoint = apiEndpoints[equipmentType];
-        if (!endpoint) {
-            message.error('Invalid equipment type.');
+        if (!equipmentType) {
+            message.error('Invalid equipment selection.');
             return;
         }
 
+        const apiEndpoints = {
+            truck: '/assets/api/trucks/',
+            chassis: '/assets/api/chassis/',
+            trailer: '/assets/api/trailers/',
+            container: '/assets/api/containers/',
+        };
+
         try {
-            await axios.delete(`${API_BASE_URL}${endpoint}${equipmentId}/`);
-            message.success(`${equipmentType.toUpperCase()} deleted successfully.`);
+            await axios.delete(`${API_BASE_URL}${apiEndpoints[equipmentType]}${equipmentId}/`);
+            message.success('Equipment deleted successfully.');
             setIsDeleteModalOpen(false);
+
+            await fetchYardDetails();
         } catch (error) {
-            message.error(`Failed to delete ${equipmentType}.`);
+            message.error('Failed to delete equipment.');
         }
     };
 
@@ -150,6 +167,7 @@ const YardLayout = () => {
             };
             await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
             message.success('Order added successfully.');
+            resetForm();
             setIsOrderModalOpen(false);
             form.resetFields();
             setSelectedChassis(null);
@@ -161,22 +179,28 @@ const YardLayout = () => {
 
     const renderMapView = () => (
         <div className="yard-map">
-            {yardDetails &&
-                yardDetails.equipment.map((equip, index) => (
-                    <div
-                        key={index}
-                        className={`equipment-box ${equip.type.toLowerCase()}`}
-                        style={{ backgroundColor: equip.color }}
-                    >
-                        {equip.type} - {equip.id}
+            {yardDetails?.sites?.map((site, index) => (
+                <div key={index} className="map-site">
+                    <h3 className="site-title">{site.site_name}</h3>
+                    <div className="site-slots">
+                        {site.slots.map((slot, slotIndex) => (
+                            <div
+                                key={slotIndex}
+                                className={`map-tile ${slot.isOccupied ? 'occupied' : 'empty'}`}
+                            >
+                                {slot.isOccupied ? slot.equipmentType : 'Empty'}
+                            </div>
+                        ))}
                     </div>
-                ))}
+                </div>
+            ))}
         </div>
     );
 
+    // 리스트 뷰 렌더링
     const renderListView = () => (
         <Table
-            dataSource={yardDetails?.equipment || []}
+            dataSource={yardDetails.equipment || []}
             columns={[
                 { title: 'Type', dataIndex: 'type', key: 'type' },
                 { title: 'ID', dataIndex: 'id', key: 'id' },
@@ -186,6 +210,18 @@ const YardLayout = () => {
             pagination={false}
         />
     );
+
+    const fetchYardDetails = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`${API_BASE_URL}/places/api/sites/${yardId}/`);
+            setYardDetails(response.data);
+        } catch (error) {
+            message.error('Failed to load yard details.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     return (
         <ManagerLayout>
@@ -245,11 +281,16 @@ const YardLayout = () => {
                     visible={isDeleteModalOpen}
                     onCancel={() => setIsDeleteModalOpen(false)}
                     onFinish={handleDeleteEquipment}
+                    yardAssets={yardDetails || {}} // 현재 야드 데이터 전달
+                    equipmentType="equipment" // 필터링할 장비 유형 전달
                 />
                 <Modal
                     title="Add Order"
                     visible={isOrderModalOpen}
-                    onCancel={() => setIsOrderModalOpen(false)}
+                    onCancel={() => {
+                        resetForm(); // **[변경] onCancel 시에도 폼 초기화**
+                        setIsOrderModalOpen(false);
+                    }}
                     footer={null}
                 >
                     <Form form={form} layout="vertical" onFinish={handleAddOrder}>
@@ -344,9 +385,15 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item>
-                            <Button type="primary" htmlType="submit" block>
-                                Submit
-                            </Button>
+                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                {/* **[추가] Reset 버튼** */}
+                                <Button onClick={resetForm} style={{ width: '48%' }}>
+                                    Reset
+                                </Button>
+                                <Button type="primary" htmlType="submit" style={{ width: '48%' }}>
+                                    Submit
+                                </Button>
+                            </div>
                         </Form.Item>
                     </Form>
                 </Modal>

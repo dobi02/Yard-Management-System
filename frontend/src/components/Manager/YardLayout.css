@@ -1,20 +1,57 @@
+.yard-layout {
+    padding: 20px;
+}
+
+.view-actions-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
 .yard-map {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 10px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* 각 맵 타일 크기 */
+    gap: 20px; /* 맵 타일 간 간격 */
+}
+
+.map-site {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    padding: 10px; /* 사이트별 내부 여백 */
+}
+
+.site-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px; /* 사이트 이름과 슬롯 간격 */
+}
+
+.site-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); /* 슬롯 크기 */
+    gap: 5px; /* 슬롯 간격 */
 }
 
 .map-tile {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 14px;
-    background-color: #f9f9f9; /* 시각적 구분을 위한 배경색 추가 */
+    height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 0.9rem;
+    background-color: #fdfdfd; /* 기본 슬롯 배경색 */
+}
+
+.map-tile.occupied {
+    background-color: #ffcccb; /* 장비가 있는 슬롯 배경색 */
+}
+
+.map-tile.empty {
+    background-color: #d4edda; /* 빈 슬롯 배경색 */
 }
 
 .list-view {
@@ -28,19 +65,12 @@
     border: 1px solid #ddd;
     border-radius: 5px;
     margin-bottom: 10px;
-    background-color: #fdfdfd; /* 배경색 추가 */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 시각적으로 떠 있는 느낌 추가 */
-}
-
-.view-actions-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    background-color: #fdfdfd; /* 리스트 항목 배경색 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 리스트 항목 그림자 */
 }
 
 .view-actions-container button {
-    width: 150px; /* 버튼 크기 통일 */
-    height: 40px; /* 버튼 높이 통일 */
+    width: 150px; /* 버튼 너비 */
+    height: 40px; /* 버튼 높이 */
     border-radius: 5px; /* 버튼 모서리 둥글게 */
 }

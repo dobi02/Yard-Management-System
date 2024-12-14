@@ -125,13 +125,13 @@ class TrailersView(APIView):
 
     def post(self, request):
         yard = request.data.get('yard')
-        typ = request.data.get('size')
+        size = request.data.get('size')
         quantity = int(request.data.get('quantity'))
 
         for i in range(quantity):
             slot = services.get_available_parking_slot(yard, "trailer")
             if slot:
-                serializer = TrailersSerializer(data={"size": typ, "parked_place": slot.slot_id})
+                serializer = TrailersSerializer(data={"size": size, "parked_place": slot.slot_id})
                 if serializer.is_valid():
                     serializer.save()
                     slot.is_occupied = True

@@ -16,12 +16,6 @@ const items = [
     icon: <DashboardOutlined />,
     label: (<Link to="/manager/dashboard">Dashboard</Link>),
   },
-    // yard layout
-  {
-    key: '/manager/yardlayout',
-    icon: <EnvironmentOutlined />,
-    label: (<Link to="/manager/yardlayout">Yard Layout</Link>),
-  },
   // transaction layout
    {
     key: '/manager/transactions',
@@ -51,11 +45,12 @@ const ManagerLayout = ({ children }) => {
         <div className="manager-logo">YMS</div> {/* 로고 영역 */}
         <Menu mode="inline" items={items} selectedKeys={[location.pathname]} /> {/* 사이드 메뉴 */}
       </Sider>
-      <Layout className="site-layout">
-        <Header className="site-layout-background" > {/* 헤더 영역 */}
-          <div className="site-header-title">
+      <Layout className="manager-site-layout">
+        <Header className="manager-site-layout-background" > {/* 헤더 영역 */}
+          <div className="manager-site-header-title">
             {location.pathname === '/manager/transactions' ? 'In/Out Transactions' :
             location.pathname === '/manager/yardlayout' ? 'Yard Layout' :
+            location.pathname === '/manager/dashboard' ? 'Dashboard':
             'Manager Page'}
           </div>
         </Header>
