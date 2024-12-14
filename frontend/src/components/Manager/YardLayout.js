@@ -126,36 +126,38 @@ const YardLayout = () => {
         }
     };
 
-    // 장비 삭제 처리
-    const handleDeleteEquipment = async (values) => {
-        const { equipmentId } = values;
-
-        const equipmentType = Object.keys(yardDetails).find((key) =>
-            yardDetails[key].some((item) => item.id === equipmentId)
-        );
-
-        if (!equipmentType) {
-            message.error('Invalid equipment selection.');
+    const handleDeleteEquipment = async (equipmentId, equipmentType) => {
+        if (!equipmentId || !equipmentType) {
+            message.error('Invalid equipment ID or type.');
             return;
         }
 
+        // API Endpoint 매핑
         const apiEndpoints = {
-            truck: '/assets/api/trucks/',
+            trucks: '/assets/api/trucks/',
             chassis: '/assets/api/chassis/',
-            trailer: '/assets/api/trailers/',
-            container: '/assets/api/containers/',
+            containers: '/assets/api/containers/',
+            trailers: '/assets/api/trailers/',
         };
 
-        try {
-            await axios.delete(`${API_BASE_URL}${apiEndpoints[equipmentType]}${equipmentId}/`);
-            message.success('Equipment deleted successfully.');
-            setIsDeleteModalOpen(false);
+        const endpoint = apiEndpoints[equipmentType];
+        if (!endpoint) {
+            message.error('Invalid equipment type.');
+            return;
+        }
 
+        try {
+            // 장비 삭제 요청
+            await axios.delete(`${API_BASE_URL}${endpoint}${equipmentId}/`);
+            message.success('Equipment deleted successfully.');
+
+            // 최신 장비 데이터를 다시 가져옴
             await fetchYardDetails();
         } catch (error) {
             message.error('Failed to delete equipment.');
         }
     };
+
 
     // 주문 추가 처리
     const handleAddOrder = async (values) => {
@@ -216,6 +218,13 @@ const YardLayout = () => {
                 <h3>Trucks</h3>
                 {trucks.map((truck, index) => (
                     <div key={`truck-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(truck.truck_id, trucks)}
+                        >
+                            Delete
+                        </Button>
                         <p><strong>ID:</strong> {truck.truck_id}</p>
                         <p><strong>Type:</strong> {truck.type}</p>
                         <p><strong>Status:</strong> {truck.state}</p>
@@ -227,6 +236,13 @@ const YardLayout = () => {
                 <h3>Chassis</h3>
                 {chassis.map((ch, index) => (
                     <div key={`chassis-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(ch.chassis_id, 'chassis')}
+                        >
+                            Delete
+                        </Button>
                         <p><strong>ID:</strong> {ch.chassis_id}</p>
                         <p><strong>Type:</strong> {ch.type}</p>
                         <p><strong>Status:</strong> {ch.state}</p>
@@ -238,6 +254,13 @@ const YardLayout = () => {
                 <h3>Containers</h3>
                 {containers.map((container, index) => (
                     <div key={`container-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(container.container_id, 'containers')}
+                        >
+                            Delete
+                        </Button>
                         <p><strong>ID:</strong> {container.container_id}</p>
                         <p><strong>Type:</strong> {container.type}</p>
                         <p><strong>Size:</strong> {container.size}</p>
@@ -250,6 +273,13 @@ const YardLayout = () => {
                 <h3>Trailers</h3>
                 {trailers.map((trailer, index) => (
                     <div key={`trailer-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(trailer.trailer_id, 'trailers')}
+                        >
+                            Delete
+                        </Button>
                         <p><strong>ID:</strong> {trailer.trailer_id}</p>
                         <p><strong>Size:</strong> {trailer.size}</p>
                         <p><strong>Status:</strong> {trailer.state}</p>
@@ -323,14 +353,6 @@ const YardLayout = () => {
                     visible={isAddModalOpen}
                     onCancel={() => setIsAddModalOpen(false)}
                     onFinish={handleAddEquipment}
-                />
-                <AssetModal
-                    type="delete"
-                    visible={isDeleteModalOpen}
-                    onCancel={() => setIsDeleteModalOpen(false)}
-                    onFinish={handleDeleteEquipment}
-                    yardAssets={yardDetails || {}} // 현재 야드 데이터 전달
-                    equipmentType="equipment" // 필터링할 장비 유형 전달
                 />
                 <Modal
                     title="Add Order"
