@@ -33,7 +33,7 @@ const YardLayout = () => {
     useEffect(() => {
         const fetchYardDetails = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/places/api/yards/${yardId}/details`);
+                const response = await axios.get(`${API_BASE_URL}/places/api/sites/${yardId}/`);
                 setYardDetails(response.data);
             } catch (error) {
                 message.error('Failed to load yard details.');
@@ -78,10 +78,10 @@ const YardLayout = () => {
         const { equipmentType, type, quantity, size } = values;
 
         const apiEndpoints = {
-            truck: '/api/trucks/',
-            chassis: '/api/chassis/',
-            trailer: '/api/trailers/',
-            container: '/api/containers/',
+            truck: '/assets/api/trucks/',
+            chassis: '/assets/api/chassis/',
+            trailer: '/assets/api/trailers/',
+            container: '/assets/api/containers/',
         };
 
         const endpoint = apiEndpoints[equipmentType];
@@ -108,27 +108,30 @@ const YardLayout = () => {
 
     // 장비 삭제 처리
     const handleDeleteEquipment = async (values) => {
-        const { equipmentId, equipmentType } = values;
+        const { equipmentId } = values;
 
-        const apiEndpoints = {
-            truck: '/api/trucks/',
-            chassis: '/api/chassis/',
-            trailer: '/api/trailers/',
-            container: '/api/containers/',
-        };
+        const equipmentType = Object.keys(yardDetails).find((key) =>
+            yardDetails[key].some((item) => item.id === equipmentId)
+        );
 
-        const endpoint = apiEndpoints[equipmentType];
-        if (!endpoint) {
-            message.error('Invalid equipment type.');
+        if (!equipmentType) {
+            message.error('Invalid equipment selection.');
             return;
         }
 
+        const apiEndpoints = {
+            truck: '/assets/api/trucks/',
+            chassis: '/assets/api/chassis/',
+            trailer: '/assets/api/trailers/',
+            container: '/assets/api/containers/',
+        };
+
         try {
-            await axios.delete(`${API_BASE_URL}${endpoint}${equipmentId}/`);
-            message.success(`${equipmentType.toUpperCase()} deleted successfully.`);
+            await axios.delete(`${API_BASE_URL}${apiEndpoints[equipmentType]}${equipmentId}/`);
+            message.success('Equipment deleted successfully.');
             setIsDeleteModalOpen(false);
         } catch (error) {
-            message.error(`Failed to delete ${equipmentType}.`);
+            message.error('Failed to delete equipment.');
         }
     };
 
@@ -182,7 +185,7 @@ const YardLayout = () => {
     // 리스트 뷰 렌더링
     const renderListView = () => (
         <Table
-            dataSource={yardDetails?.equipment || []}
+            dataSource={yardDetails.equipment || []}
             columns={[
                 { title: 'Type', dataIndex: 'type', key: 'type' },
                 { title: 'ID', dataIndex: 'id', key: 'id' },
@@ -251,6 +254,8 @@ const YardLayout = () => {
                     visible={isDeleteModalOpen}
                     onCancel={() => setIsDeleteModalOpen(false)}
                     onFinish={handleDeleteEquipment}
+                    yardAssets={yardDetails || {}} // 현재 야드 데이터 전달
+                    equipmentType="equipment" // 필터링할 장비 유형 전달
                 />
                 <Modal
                     title="Add Order"
