@@ -17,7 +17,22 @@ class Divisions(models.Model):
 
 class Yards(models.Model):
     yard_id = models.CharField(max_length=7, primary_key=True)
-    division_id = models.ForeignKey(Divisions, on_delete=models.CASCADE, null=False)
+    division_id = models.ForeignKey(Divisions, on_delete=models.CASCADE, null=True)
+    is_deleted = models.BooleanField(default=False)
+
+    def delete(self):
+        self.division_id = None
+        self.is_deleted = True
+        self.save()
+
+        # 관련 Sites와 ParkingSlots를 Hard Delete
+        related_sites = Sites.objects.filter(yard_id=self)
+        for site in related_sites:
+            # 각 Site와 연결된 ParkingSlots 삭제
+            ParkingSlots.objects.filter(site_id=site).delete()
+            # Site 삭제
+            site.delete()
+
 
     def save(self, *args, **kwargs):
         if not self.yard_id:  # yard_id가 없는 경우에만 생성

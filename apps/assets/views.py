@@ -394,11 +394,13 @@ class ContainerMovingView(APIView):
                     raise ValidationError("yards are not equal.")
 
                 if container.state == 'combined':
-                    origin_chassis = get_object_or_404(Chassis, parked_place=origin_slot.parked_place)
+                    origin_chassis = get_object_or_404(Chassis, parked_place=origin_slot)
                     origin_chassis.state = "parked"
                     origin_chassis.save()
-                else:
+                elif container.state == 'parked':
                     origin_slot.is_occupied = False
+                else:
+                    raise ValidationError("container state is invalid.")
 
                 if destination_slot.site_id.asset_type == "container":
                     if destination_slot.is_occupied:
@@ -407,10 +409,11 @@ class ContainerMovingView(APIView):
                     container.state = 'parked'
                     destination_slot.is_occupied = True
                 elif destination_slot.site_id.asset_type == "chassis":
-                    destination_chassis = get_object_or_404(Chassis, parked_place=destination_slot.parked_place) #Chassis가 있을때만 올릴 수 있음
+                    destination_chassis = get_object_or_404(Chassis, parked_place=destination_slot) #Chassis가 있을때만 올릴 수 있음
                     if destination_chassis.state == 'combined':
                         raise ValidationError("destination chassis is already combined.")
 
+                    destination_chassis = 'combined'
                     container.state = 'combined'
                     destination_chassis.save()
                 else:
