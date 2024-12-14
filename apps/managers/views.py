@@ -24,6 +24,38 @@ class ManagersView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class ManagerDetailView(APIView):
+    # permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            driver = Managers.objects.get(pk=pk)
+        except Managers.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ManagersSerializer(driver)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        try:
+            driver = Managers.objects.get(user__username=pk)
+        except Managers.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ManagersSerializer(driver, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            driver = Managers.objects.get(pk=pk)
+        except Managers.DoesNotExist:
+            return Response({"error": "Driver not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        driver.delete()
+        return Response({"message": "Driver deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 @api_view(['POST'])
 def login_manager(request):

@@ -5,6 +5,7 @@ from .models import Transactions
 from .serializers import TransactionsSerializer
 from rest_framework.permissions import IsAuthenticated
 from apps.drivers.models import Drivers
+from ..managers.models import Managers
 
 
 class TransactionsView(APIView):
@@ -16,6 +17,7 @@ class TransactionsView(APIView):
 
     def post(self, request):
         request.data['driver_id'] = Drivers.objects.get(user__username=request.data['driver_id']).id
+        request.data['manager_id'] = Managers.objects.get(user__username=request.data['manager_id']).id
         request.data['status'] = "waiting"
         serializer = TransactionsSerializer(data=request.data)
         if serializer.is_valid():
@@ -87,6 +89,7 @@ class TransactionsDriverView(APIView):
     def put(self, request, pk, driver_id):
         try:
             transactions = Transactions.objects.get(pk=pk)
+            current_status = transactions.transaction_status
         except Transactions.DoesNotExist:
             return Response({"message": "Transaction not found."}, status=status.HTTP_404_NOT_FOUND)
 
@@ -98,12 +101,15 @@ class TransactionsDriverView(APIView):
                     return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
             except Exception as e:
                 if request.data['transaction_status'] == "finished":
-                    request.data['transaction_status'] = "arrive"
-                    serializer = TransactionsSerializer(transactions, data=request.data, partial=True)
-                    if serializer.is_valid():
-                        serializer.save()
-                        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-                print(e)
+                    if current_status != "arrive":
+                        request.data['transaction_status'] = "arrive"
+                        serializer = TransactionsSerializer(transactions, data=request.data, partial=True)
+                        if serializer.is_valid():
+                            serializer.save()
+                            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+                    else:
+                        return Response({"error": "No Parking Slots"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+                    print(e)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 

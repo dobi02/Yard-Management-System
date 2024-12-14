@@ -179,6 +179,7 @@ const YardLayout = () => {
                 chassis_id: values.chassis_id,
                 container_id: values.container_id,
                 trailer_id: values.trailer_id,
+                manager_id: localStorage.getItem('username')
             };
             await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
             message.success('Order added successfully.');

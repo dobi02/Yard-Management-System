@@ -3,6 +3,7 @@ import { Table, Tag, Select, Input, message } from 'antd';
 import ManagerLayout from './ManagerLayout';
 import './TransactionPage.css';
 import axios from 'axios';
+import {useNavigate} from "react-router-dom";
 
 const {Option} = Select;
 
@@ -15,6 +16,7 @@ const TransactionsPage = () => {
     const [filters, setFilters] = useState({}); // 필터 상태
     const [searchText, setSearchText] = useState(''); // 검색 텍스트
     const [sorter, setSorter] = useState({}); // 정렬 상태
+    const navigate = useNavigate();
 
     const fetchAllDrivers = async () => {
         try {
@@ -197,6 +199,10 @@ const TransactionsPage = () => {
                     loading={loading}
                     pagination={{ pageSize: 10 }}
                     onChange={handleTableChange}
+                    onRow={(record) => ({
+                    onClick: () =>  navigate(`/manager/transactionlog/${record.transaction_id}`,
+                        { state: {"driver": record.driver_name} }), // Attach onClick to rows
+                    })}
                 />
             </div>
         </ManagerLayout>
