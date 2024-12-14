@@ -388,7 +388,7 @@ const YardLayout = () => {
                 <div className="loading-container">Loading details...</div>
             ) : (
                 <div className="yard-layout">
-                <h2>Yard Layout: {yardId}</h2>
+                <h2 className="yard-title">{yardId}</h2>
                 <div className="equipment-summary">
                     {equipmentData.map((item, index) => (
                         <div

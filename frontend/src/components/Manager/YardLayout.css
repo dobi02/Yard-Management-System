@@ -1,5 +1,15 @@
 .yard-layout {
     padding: 20px;
+    text-align: center; /* 텍스트를 중앙 정렬 */
+}
+
+.yard-title {
+    font-size: 2rem; /* 글씨 크기 */
+    font-weight: bold; /* 굵게 */
+    margin-bottom: 20px; /* 아래 간격 */
+    margin-top: -10px; /* 위로 올리기 */
+    position: relative; /* 위치 조정을 위한 relative */
+    top: -20px; /* 더 위로 올리기 */
 }
 
 .view-actions-container {
@@ -158,4 +168,20 @@
 .equipment-label {
     font-size: 1rem;
     font-weight: 500;
+}
+
+.view-mode-buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.view-mode-buttons button {
+    width: 150px;
+    height: 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
