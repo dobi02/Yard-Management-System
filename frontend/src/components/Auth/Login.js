@@ -8,10 +8,27 @@ import axios from 'axios';
 const Login = () => {
     const [userType, setUserType] = useState(null); // 유저 타입 변수
     const navigate = useNavigate (); //
+    const API_URLS = {
+        manager: 'http://localhost:8000/managers/api/login/',
+        driver: 'http://localhost:8000/drivers/api/login/',
+    };
 
     // 사용자 유형 번경
     const handleUserTypeChange = (e) => {
         setUserType(e.target.value);
+    };
+
+
+    // 공통 API 호출 함수
+    const loginUser = async (userType, username, password) => {
+        if (!API_URLS[userType]) {
+            throw new Error('Invalid user type');
+        }
+        const response = await axios.post(API_URLS[userType], {
+            username,
+            password,
+        });
+        return response.data;
     };
 
     const handleSubmit = async (values) => {
