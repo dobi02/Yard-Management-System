@@ -221,7 +221,7 @@ const YardLayout = () => {
                         <Button
                             type="danger"
                             className="delete-btn"
-                            onClick={() => handleDeleteEquipment(truck.truck_id, trucks)}
+                            onClick={() => handleDeleteEquipment(truck.truck_id, 'trucks' )}
                         >
                             Delete
                         </Button>
