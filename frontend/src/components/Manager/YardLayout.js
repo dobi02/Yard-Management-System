@@ -158,12 +158,13 @@ const YardLayout = () => {
 
         try {
             const payload = {
-                driver: values.driver,
+                driver_id: values.driver_id,
                 truck: values.truck,
                 chassis: selectedChassis,
                 container: values.container || null,
                 trailer: selectedTrailer ? values.trailer : null,
-                to_yard: values.to_yard,
+                destination_yard_id: values.destination_yard_id,
+                origin_yard_id: yardId,
             };
             await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
             message.success('Order added successfully.');
@@ -295,7 +296,7 @@ const YardLayout = () => {
                 >
                     <Form form={form} layout="vertical" onFinish={handleAddOrder}>
                         <Form.Item
-                            name="driver"
+                            name="driver_id"
                             label="Driver"
                             rules={[{ required: true, message: 'Please select a driver!' }]}
                         >
@@ -303,7 +304,7 @@ const YardLayout = () => {
                                 {drivers.map((driver) => (
                                     <Option
                                         key={driver.user.username}
-                                        value={`${driver.user.first_name} ${driver.user.last_name}`}
+                                        value={`${driver.user.username}`}
                                     >
                                         {driver.user.first_name} {driver.user.last_name}
                                     </Option>
@@ -313,7 +314,7 @@ const YardLayout = () => {
                         <Form.Item
                             name="truck"
                             label="Truck"
-                            rules={[{ required: true, message: 'Please select a truck!' }]}
+                            // rules={[{ required: true, message: 'Please select a truck!' }]}
                         >
                             <Select placeholder="Select a truck">
                                 {trucks.map((truck) => (
@@ -372,7 +373,7 @@ const YardLayout = () => {
                             </Select>
                         </Form.Item>
                         <Form.Item
-                            name="to_yard"
+                            name="destination_yard_id"
                             label="Destination Yard"
                             rules={[{ required: true, message: 'Please select a yard!' }]}
                         >
