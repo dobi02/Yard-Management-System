@@ -240,27 +240,65 @@ const YardLayout = () => {
 
 
     const updateAssetLocation = async (asset, newSlotId, oldSlotId) => {
-        console.log(asset);
             try {
+                let endpoint = "";
+                let payload = {};
+
+                // 새로운 슬롯 정보 가져오기
+                const newSlot = parkingSlots.flat().find(slot => slot.slot_id === newSlotId);
+                if (!newSlot) {
+                    throw new Error("Invalid newSlotId: Slot not found");
+                }
+
+                switch (asset.assetType) {
+                    case "trucks" :
+                        endpoint = `${API_BASE_URL}/assets/api/moving/trucks/`;
+                        payload = {
+                            truck: asset.id,
+                            destination_slot: newSlotId, // 목적지 슬롯 ID
+                            slot_id: oldSlotId,
+                            site_id: newSlot.site_id, // 슬롯의 site_id 가져오기
+                        };
+                        break;
+                    case "trailers" :
+                        endpoint = `${API_BASE_URL}/assets/api/moving/trailers/`;
+                        payload = {
+                            trailer: asset.id,
+                            destination_slot: newSlotId,
+                            slot_id: oldSlotId,
+                            site_id: newSlot.site_id, // 슬롯의 site_id 가져오기
+                        };
+                        break;
+                    case "chassis":
+                        endpoint = `${API_BASE_URL}/assets/api/moving/chassis/`;
+                        payload = {
+                            chassis: asset.id,
+                            destination_slot: newSlotId,
+                            slot_id: oldSlotId,
+                            site_id: newSlot.site_id, // 슬롯의 site_id 가져오기
+                        };
+                        break;
+                    case "containers":
+                        endpoint = `${API_BASE_URL}/assets/api/moving/containers/`;
+                        payload = {
+                            container: asset.id, // 컨테이너 ID
+                            destination_slot: newSlotId,
+                            slot_id: oldSlotId,
+                            site_id: newSlot.site_id, // 슬롯의 site_id 가져오기
+                        };
+                        break;
+                    default:
+                        throw new Error("Unknown asset type");
+                }
                 // 장비 업데이트
-                const assetResponse = await axios.put(`${API_BASE_URL}/assets/api/${asset.assetType}/${asset.id}`, {
-                    parked_place: newSlotId,
-                });
+                const assetResponse = await axios.patch(endpoint, payload);
                 console.log("Asset update:", assetResponse.data);
 
-                // 새로운 슬롯 업데이트
-                const newSlotResponse = await axios.put(`${API_BASE_URL}/api/parking-slots/${newSlotId}/`, {
-                    is_occupied: true,
-                });
-                console.log("New slot updated:", newSlotResponse.data)
 
-                // 이전 슬롯 비우기
-                const oldSlotResponse = await axios.put(`${API_BASE_URL}/api/parking-slots/${oldSlotId}/`, {
-                    is_occupied: false,
-                });
-                console.log("Old slot cleared:", oldSlotResponse.data);
+                await fetchEquipment();
 
             } catch (error) {
+                console.error("Error updating asset or slot:", error.response?.data || error.message);
                 console.error("Error updating asset or slot:", error);
                 message.error("Failed to update asset or slot. Please try again.");
             }
