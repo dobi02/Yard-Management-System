@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import {Button, Table, Modal, Form, Select, Input, message, Spin} from 'antd';
+import {Button, Modal, Form, Select, message,} from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import ManagerLayout from './ManagerLayout';
 import AssetModal from './YardLayout/AssetModal';
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 import EquipmentActions from './Dashboard/EquipmentActions';
 import './YardLayout.css';
 import './ParkingLot.css';
 import axios from 'axios';
+
 
 const { Option } = Select;
 
@@ -206,18 +209,19 @@ const YardLayout = () => {
     };
     const [selectedSlot, setSelectedSlot] = useState(null);
 
-    const normalizeAssets = (assets, idkey) => {
+    const normalizeAssets = (assets, idkey, assetType) => {
         return assets.map((asset) => ({
             ...asset,
             id:asset[idkey],
+            assetType, // 장비 유형
         }));
     };
 
     // 장비 합치기
-    const normalizedTrucks = normalizeAssets(trucks, "truck_id");
-    const normalizedChassis = normalizeAssets(chassis, "chassis_id");
-    const normalizedContainers = normalizeAssets(containers, "container_id");
-    const normalizedTrailers = normalizeAssets(trailers, "trailer_id");
+    const normalizedTrucks = normalizeAssets(trucks, "truck_id", "trucks");
+    const normalizedChassis = normalizeAssets(chassis, "chassis_id", "chassis");
+    const normalizedContainers = normalizeAssets(containers, "container_id","containers");
+    const normalizedTrailers = normalizeAssets(trailers, "trailer_id","trailers");
 
     const allAssets = [
         ...normalizedTrucks,
@@ -233,23 +237,123 @@ const YardLayout = () => {
         }
     });
 
+
+
+    const updateAssetLocation = async (asset, newSlotId, oldSlotId) => {
+        console.log(asset);
+            try {
+                // 장비 업데이트
+                const assetResponse = await axios.put(`${API_BASE_URL}/assets/api/${asset.assetType}/${asset.id}`, {
+                    parked_place: newSlotId,
+                });
+                console.log("Asset update:", assetResponse.data);
+
+                // 새로운 슬롯 업데이트
+                const newSlotResponse = await axios.put(`${API_BASE_URL}/api/parking-slots/${newSlotId}/`, {
+                    is_occupied: true,
+                });
+                console.log("New slot updated:", newSlotResponse.data)
+
+                // 이전 슬롯 비우기
+                const oldSlotResponse = await axios.put(`${API_BASE_URL}/api/parking-slots/${oldSlotId}/`, {
+                    is_occupied: false,
+                });
+                console.log("Old slot cleared:", oldSlotResponse.data);
+
+            } catch (error) {
+                console.error("Error updating asset or slot:", error);
+                message.error("Failed to update asset or slot. Please try again.");
+            }
+        };
+
+
+
+
+
+    // 슬롯
+    const Slot = ({ slot, onClick, assetsLookup, updateAssetLocation }) => {
+  // 슬롯에 연결된 에셋 확인
+  const asset = assetsLookup[slot.slot_id];
+
+  const [{ isOver }, dropRef] = useDrop({
+    accept: "ASSET",
+    drop: async (draggedAsset) => {
+      const newSlotId = slot.slot_id;
+      const oldSlotId = draggedAsset.parked_place;
+
+      // 드래그된 에셋의 위치 업데이트
+      await updateAssetLocation(draggedAsset, newSlotId, oldSlotId);
+    },
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  });
+
+  const [{ isDragging }, dragRef] = useDrag({
+    type: "ASSET",
+    item: { ...asset, parked_place: slot.slot_id },
+    canDrag: !!asset, // 에셋이 있을 때만 드래그 가능
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  });
+
+  // 슬롯 색상 결정 로직
+  const getSlotColor = () => {
+    if (!slot.is_occupied) {
+      if (slot.site_id.includes("truck")) return "#6bb36d";
+      if (slot.site_id.includes("trailer")) return "#ffbb4e";
+      if (slot.site_id.includes("container")) return "#519cea";
+      if (slot.site_id.includes("chassis")) return "#80c1cc";
+      return "#ffffff";
+    } else {
+      return "#ff8080";
+    }
+  };
+
+  return (
+    <div
+      ref={dropRef}
+      style={{
+        width: "40px",
+        height: "60px",
+        backgroundColor: getSlotColor(),
+        border: "1px solid #ccc",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+      }}
+      onClick={() => onClick(slot)}
+    >
+      {/* 에셋이 있으면 렌더링 */}
+      {asset && (
+        <div
+          ref={dragRef}
+          style={{
+            width: "40px",
+            height: "60px",
+            border: "1px solid #000",
+            textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "move",
+          }}
+        >
+          {asset.id}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
     const renderMapView = () => {
 
 
 
-        const getSlotColor = (slot) => {
-            if (!slot.is_occupied) {
-            // 슬롯이 비어 있는 경우
-                if (slot.site_id.includes("truck")) return '#6bb36d'; // 트럭용 슬롯
-                if (slot.site_id.includes("trailer")) return '#ffbb4e'; // 트레일러용 슬롯
-                if (slot.site_id.includes("container")) return '#519cea'; // 컨테이너용 슬롯
-                if (slot.site_id.includes("chassis")) return '#80c1cc'; // 샤시용 슬롯
-                return "#ffffff"; // 기본 색상
-            } else {
-                // 슬롯에 장비가 주차된 경우
-                return "#ff8080"; // 점유된 슬롯 - 연한 빨간색
-            }
-        };
+
 
         const handleSlotClick = (slot) => {
             setSelectedSlot(slot);
@@ -258,6 +362,7 @@ const YardLayout = () => {
 
 
         return (
+
         <div
             style={{
                 display: "flex", // 슬롯과 정보란을 옆으로 배치
@@ -288,17 +393,14 @@ const YardLayout = () => {
                     }}
                 >
                     {parkingSlots[0]?.map((slot) => (
-                        <div
+                        <Slot
                             key={slot.slot_id}
-                            style={{
-                                width: "40px",
-                                height: "60px",
-                                border: "1px solid #ccc",
-                                backgroundColor: getSlotColor(slot),
-                                cursor: "pointer", // 클릭 가능 표시
-                            }}
-                            onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
-                        ></div>
+                            slot={slot}
+                            onClick={handleSlotClick}
+                            assetsLookup={assetsLookup} // 에셋 정보를 전달
+                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                        />
+
                     ))}
                 </div>
 
@@ -318,17 +420,13 @@ const YardLayout = () => {
                         }}
                     >
                         {parkingSlots[1]?.map((slot) => (
-                            <div
-                                key={slot.slot_id}
-                                style={{
-                                    width: "40px",
-                                    height: "60px",
-                                    border: "1px solid #ccc",
-                                    backgroundColor: getSlotColor(slot),
-                                    cursor: "pointer", // 클릭 가능 표시
-                                }}
-                                onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
-                            ></div>
+                            <Slot
+                            key={slot.slot_id}
+                            slot={slot}
+                            onClick={handleSlotClick}
+                            assetsLookup={assetsLookup} // 에셋 정보를 전달
+                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                            />
                         ))}
                     </div>
 
@@ -341,17 +439,13 @@ const YardLayout = () => {
                         }}
                     >
                         {parkingSlots[2]?.map((slot) => (
-                            <div
-                                key={slot.slot_id}
-                                style={{
-                                    width: "40px",
-                                    height: "60px",
-                                    border: "1px solid #ccc",
-                                    backgroundColor: getSlotColor(slot),
-                                    cursor: "pointer", // 클릭 가능 표시
-                                }}
-                                onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
-                            ></div>
+                            <Slot
+                            key={slot.slot_id}
+                            slot={slot}
+                            onClick={handleSlotClick}
+                            assetsLookup={assetsLookup} // 에셋 정보를 전달
+                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                            />
                         ))}
                     </div>
                 </div>
@@ -365,17 +459,13 @@ const YardLayout = () => {
                     }}
                 >
                     {parkingSlots[3]?.map((slot) => (
-                        <div
+                        <Slot
                             key={slot.slot_id}
-                            style={{
-                                width: "40px",
-                                height: "60px",
-                                border: "1px solid #ccc",
-                                backgroundColor: getSlotColor(slot),
-                                cursor: "pointer", // 클릭 가능 표시
-                            }}
-                            onClick={() => handleSlotClick(slot)} // 슬롯 클릭 핸들러
-                        ></div>
+                            slot={slot}
+                            onClick={handleSlotClick}
+                            assetsLookup={assetsLookup} // 에셋 정보를 전달
+                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                            />
                     ))}
                 </div>
             </div>
@@ -400,6 +490,9 @@ const YardLayout = () => {
                         {assetsLookup[selectedSlot.slot_id] ? (
                             <>
                                 <h3>Asset Details</h3>
+                                <p>
+                                    <strong>{assetsLookup[selectedSlot.slot_id].assetType}</strong>{" "}
+                                </p>
                                 <p>
                                     <strong>ID:</strong>{" "}
                                     {assetsLookup[selectedSlot.slot_id].id || "N/A"}
@@ -561,6 +654,7 @@ const YardLayout = () => {
             {isLoading ? (
                 <div className="loading-container">Loading details...</div>
             ) : (
+                <DndProvider backend={HTML5Backend}>
                 <div className="yard-layout">
                 <h2 className="yard-title">{yardId}</h2>
                 <div className="equipment-summary">
@@ -745,9 +839,10 @@ const YardLayout = () => {
                     </Form>
                 </Modal>
             </div>
+                    </DndProvider>
                 )}
         </ManagerLayout>
     );
 };
 
-                    export default YardLayout;
+export default YardLayout;
