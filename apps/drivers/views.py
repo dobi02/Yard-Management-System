@@ -12,7 +12,7 @@ from apps.places.models import Yards, Divisions
 
 
 class DriversView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         drivers = Drivers.objects.all()
@@ -28,7 +28,7 @@ class DriversView(APIView):
 
 
 class DriverDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -61,7 +61,7 @@ class DriverDetailView(APIView):
         return Response({"message": "Driver deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 class DriverIdDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:

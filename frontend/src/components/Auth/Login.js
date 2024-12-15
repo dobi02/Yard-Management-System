@@ -5,6 +5,8 @@ import './Login.css'
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000';
+axios.defaults.baseURL = 'http://localhost:8000'; // Django API의 기본 URL
+axios.defaults.headers.common['Content-Type'] = 'application/json';
 
 // 로그인
 const Login = () => {
@@ -45,8 +47,8 @@ const Login = () => {
             // 유저 네임, 타입 저장
             localStorage.setItem('username', values.username);
             localStorage.setItem('userType', userType);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${access}`;
             message.success('Login successful!');
-
 
             // 유저 타입에 따라 페이지 이동
             if (userType === 'manager') {

@@ -10,11 +10,12 @@ from apps.utils import services
 from django.db import transaction
 from django.core.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
+from apps.utils.permissions import *
 
 
 # Trucks View
 class TrucksView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         trucks = Trucks.objects.all()
@@ -46,7 +47,7 @@ class TrucksView(APIView):
 
 
 class TruckDetailView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request, pk):
         truck = get_object_or_404(Trucks, pk=pk)
@@ -77,7 +78,7 @@ class TruckDetailView(APIView):
 
 # Chassis View
 class ChassisView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         chassis = Chassis.objects.all()
@@ -105,7 +106,7 @@ class ChassisView(APIView):
 
 
 class ChassisDetailView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
     def get(self, request, pk):
         try:
             chassis = Chassis.objects.get(pk=pk)
@@ -138,7 +139,7 @@ class ChassisDetailView(APIView):
 
 # Trailers View
 class TrailersView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         trailers = Trailers.objects.all()
@@ -166,7 +167,7 @@ class TrailersView(APIView):
 
 
 class TrailerDetailView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, pk):
         try:
@@ -199,7 +200,7 @@ class TrailerDetailView(APIView):
 
 # Containers View
 class ContainersView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         containers = Containers.objects.all()
@@ -228,7 +229,7 @@ class ContainersView(APIView):
 
 
 class ContainerDetailView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request, pk):
         try:
@@ -261,6 +262,8 @@ class ContainerDetailView(APIView):
 
 
 class YardContainerView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
@@ -270,6 +273,8 @@ class YardContainerView(APIView):
 
 
 class YardTruckView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
@@ -278,6 +283,8 @@ class YardTruckView(APIView):
 
 
 class YardChassisView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
@@ -287,6 +294,8 @@ class YardChassisView(APIView):
 
 
 class YardTrailerView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 
@@ -296,6 +305,8 @@ class YardTrailerView(APIView):
 
 
 class TruckMovingView(APIView):
+    permission_classes = [IsManager]
+
     def patch(self, request):
         try:
             with transaction.atomic():
@@ -337,6 +348,8 @@ class TruckMovingView(APIView):
             return Response({"error": "An unexpected error occurred."}, status=500)
 
 class TrailerMovingView(APIView):
+    permission_classes = [IsManager]
+
     def patch(self, request):
         try:
             with transaction.atomic():
@@ -379,6 +392,8 @@ class TrailerMovingView(APIView):
 
 
 class ChassisMovingView(APIView):
+    permission_classes = [IsManager]
+
     def patch(self, request):
         try:
             with transaction.atomic():
@@ -426,6 +441,8 @@ class ChassisMovingView(APIView):
 
 
 class ContainerMovingView(APIView):
+    permission_classes = [IsManager]
+
     def patch(self, request):
         try:
             with transaction.atomic():

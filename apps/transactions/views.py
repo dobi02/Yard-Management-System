@@ -12,7 +12,7 @@ from apps.assets.serializers import *
 
 
 class TransactionsView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         transactions = Transactions.objects.all()
         serializer = TransactionsSerializer(transactions, many=True)
@@ -33,7 +33,7 @@ class TransactionsView(APIView):
 
 
 class TransactionDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:

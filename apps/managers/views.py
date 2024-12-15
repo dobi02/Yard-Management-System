@@ -7,10 +7,12 @@ from django.contrib.auth import authenticate
 from .models import Managers
 from .serializers import ManagersSerializer
 from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 
 class ManagersView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         managers = Managers.objects.all()
@@ -25,7 +27,7 @@ class ManagersView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ManagerDetailView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, pk):
         try:
@@ -85,3 +87,28 @@ def login_manager(request):
         return Response({"message": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Add custom claims to the access token
+        user = self.user
+        refresh = self.get_token(user)
+        data['username'] = user.username
+        data['role'] = user.managers.access_rigths if hasattr(user, 'managers') else 'driver'
+
+        return data
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims to the refresh token
+        token['username'] = user.username
+        token['role'] = user.managers.access_rigths if hasattr(user, 'managers') else 'driver'
+
+        return token
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer

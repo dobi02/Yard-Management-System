@@ -4,6 +4,7 @@ import { Descriptions, Spin, Button, Tag, message } from 'antd';
 import axios from 'axios';
 
 const API_BASE_URL = 'http://localhost:8000';
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
 
 const TransactionDetailPage = () => {
     const { transactionId } = useParams(); // Get transactionId from the URL

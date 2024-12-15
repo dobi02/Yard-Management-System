@@ -8,11 +8,12 @@ from .serializers import DivisionsSerializer, YardsSerializer, SitesSerializer, 
 from rest_framework.permissions import IsAuthenticated
 from apps.assets.models import *
 from apps.assets.serializers import *
+from apps.utils.permissions import *
 
 
 # Divisions Views
 class DivisionsView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         divisions = Divisions.objects.all()
@@ -28,7 +29,7 @@ class DivisionsView(APIView):
 
 
 class DivisionDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request, pk):
         try:
@@ -54,7 +55,7 @@ class DivisionDetailView(APIView):
 
 # Yards Views
 class YardsView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         yards = Yards.objects.all()
@@ -71,7 +72,7 @@ class YardsView(APIView):
 
 
 class YardDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request, pk):
         try:
@@ -118,7 +119,7 @@ class YardDetailView(APIView):
 
 # Sites Views
 class SitesView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         sites = Sites.objects.all()
@@ -127,7 +128,7 @@ class SitesView(APIView):
 
 
 class SiteDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request, pk):
         try:
@@ -152,7 +153,7 @@ class SiteDetailView(APIView):
 
 
 class ParkingSlotsView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request):
         parking_slots = ParkingSlots.objects.all()
@@ -161,7 +162,7 @@ class ParkingSlotsView(APIView):
 
 
 class ParkingSlotDetailView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsManager]
 
     def get(self, request, pk):
         try:
@@ -186,6 +187,8 @@ class ParkingSlotDetailView(APIView):
 
 
 class AvailableSlotsBySiteTypeView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, pk):
         yard_id = pk
         if not Yards.objects.filter(pk=pk).exists():
@@ -255,6 +258,8 @@ class AvailableSlotsBySiteTypeView(APIView):
 
 
 class AssetCountView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, yard_id):
         # Get the specified yard
         yard = get_object_or_404(Yards, yard_id=yard_id)
@@ -285,6 +290,8 @@ class AssetCountView(APIView):
         return Response(data, status=200)
 
 class YardAssetView(APIView):
+    permission_classes = [IsManager]
+
     def get(self, request, yard_id):
         yard = get_object_or_404(Yards, yard_id=yard_id)
 

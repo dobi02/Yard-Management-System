@@ -8,6 +8,7 @@ import {useNavigate} from "react-router-dom";
 const {Option} = Select;
 
 const API_BASE_URL = 'http://localhost:8000';
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
 
 const TransactionsPage = () => {
     const [transactions, setTransactions] = useState([]);

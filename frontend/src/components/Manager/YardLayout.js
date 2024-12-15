@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {Button, Modal, Form, Select, message,} from 'antd';
+import {Button, Modal, Form, Select, message, DatePicker} from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import ManagerLayout from './ManagerLayout';
 import AssetModal from './YardLayout/AssetModal';
@@ -14,6 +14,7 @@ import axios from 'axios';
 const { Option } = Select;
 
 const API_BASE_URL = 'http://localhost:8000';
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('authToken')}`;
 
 const YardLayout = () => {
     const { yardId } = useParams(); // URL에서 yardId 읽기
@@ -136,6 +137,7 @@ const YardLayout = () => {
             form.resetFields();
 
             await fetchEquipment();
+            window.location.reload();
         } catch (error) {
             message.error(`Failed to add ${equipmentType}.`);
         }
@@ -194,7 +196,8 @@ const YardLayout = () => {
                 chassis_id: values.chassis_id,
                 container_id: values.container_id,
                 trailer_id: values.trailer_id,
-                manager_id: localStorage.getItem('username')
+                manager_id: localStorage.getItem('username'),
+                departure_time: values.departure_time,
             };
             await axios.post(`${API_BASE_URL}/api/transactions/`, payload);
             message.success('Order added successfully.');
@@ -957,6 +960,18 @@ const YardLayout = () => {
                                     </Option>
                                 ))}
                             </Select>
+                        </Form.Item>
+                        <Form.Item
+                            name="departure_time"
+                            label="Departure Date"
+                            rules={[{ required: true, message: 'Please select a departure date and time!' }]}
+                        >
+                            <DatePicker
+                                showTime
+                                format="YYYY-MM-DD HH:mm:ss"
+                                placeholder="Select delivery date and time"
+                                style={{ width: '100%' }}
+                            />
                         </Form.Item>
                         <Form.Item>
                             <div style={{display: 'flex', justifyContent: 'space-between'}}>
