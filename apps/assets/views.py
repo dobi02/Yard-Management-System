@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # Trucks View
 class TrucksView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         trucks = Trucks.objects.all()
@@ -44,6 +44,15 @@ class TrucksView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+class TruckDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        truck = get_object_or_404(Trucks, pk=pk)
+        serializer = TrucksSerializer(truck)
+        return Response(serializer.data)
+
     def put(self, request, pk):
         try:
             truck = Trucks.objects.get(pk=pk)
@@ -68,7 +77,7 @@ class TrucksView(APIView):
 
 # Chassis View
 class ChassisView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         chassis = Chassis.objects.all()
@@ -94,6 +103,17 @@ class ChassisView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+class ChassisDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request, pk):
+        try:
+            chassis = Chassis.objects.get(pk=pk)
+        except Chassis.DoesNotExist:
+            return Response({"error": "Chassis not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ChassisSerializer(chassis)
+        return Response(serializer.data)
+
     def put(self, request, pk):
         try:
             chassis = Chassis.objects.get(pk=pk)
@@ -118,7 +138,7 @@ class ChassisView(APIView):
 
 # Trailers View
 class TrailersView(APIView):
-    #permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
         trailers = Trailers.objects.all()
@@ -144,12 +164,23 @@ class TrailersView(APIView):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+
+class TrailerDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, pk):
+        try:
+            trailer = Trailers.objects.get(pk=pk)
+        except Trailers.DoesNotExist:
+            return Response({"error": "Trailer not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = TrailersSerializer(trailer)
+        return Response(serializer.data)
+
     def put(self, request, pk):
         try:
             trailer = Trailers.objects.get(pk=pk)
         except Trailers.DoesNotExist:
             return Response({"error": "Trailer not found"}, status=status.HTTP_404_NOT_FOUND)
-
         serializer = TrailersSerializer(trailer, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -168,7 +199,7 @@ class TrailersView(APIView):
 
 # Containers View
 class ContainersView(APIView):
-    #permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         containers = Containers.objects.all()
@@ -194,6 +225,18 @@ class ContainersView(APIView):
                     return Response(serializer.data, status=status.HTTP_201_CREATED)
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ContainerDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        try:
+            container = Containers.objects.get(pk=pk)
+        except Containers.DoesNotExist:
+            return Response({"error": "Container not found"}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ContainersSerializer(container)
+        return Response(serializer.data)
 
     def put(self, request, pk):
         try:
