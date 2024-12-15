@@ -417,167 +417,222 @@ const YardLayout = () => {
 
         return (
 
-        <div
-            style={{
-                display: "flex", // 슬롯과 정보란을 옆으로 배치
-                gap: "20px", // 슬롯 영역과 정보 영역 간 간격
-                padding: "20px",
-            }}
-        >
-            {/* 슬롯 영역 */}
             <div
                 style={{
-                    marginTop: "30px",
-                    position: "relative",
-                    width: "1000px", // 슬롯 그룹의 너비
-                    backgroundColor: "#ddd",
-                    borderRadius: "10px",
-                    padding: "50px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "30px", // 사이트 그룹 간 간격
-                }}
-            >
-                {/* 첫 번째 사이트 */}
-                <div
-                    style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "5px", // 슬롯 간 간격
-                    }}
-                >
-                    {parkingSlots[0]?.map((slot) => (
-                        <Slot
-                            key={slot.slot_id}
-                            slot={slot}
-                            onClick={handleSlotClick}
-                            assetsLookup={assetsLookup} // 에셋 정보를 전달
-                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
-                        />
-
-                    ))}
-                </div>
-
-                {/* 두 번째와 세 번째 사이트 */}
-                <div
-                    style={{
-                        display: "flex",
-                        gap: "50px", // 두 사이트 간 간격
-                    }}
-                >
-                    {/* 두 번째 사이트 */}
-                    <div
-                        style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "5px",
-                        }}
-                    >
-                        {parkingSlots[1]?.map((slot) => (
-                            <Slot
-                            key={slot.slot_id}
-                            slot={slot}
-                            onClick={handleSlotClick}
-                            assetsLookup={assetsLookup} // 에셋 정보를 전달
-                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
-                            />
-                        ))}
-                    </div>
-
-                    {/* 세 번째 사이트 */}
-                    <div
-                        style={{
-                            display: "flex",
-                            flexWrap: "wrap",
-                            gap: "5px",
-                        }}
-                    >
-                        {parkingSlots[2]?.map((slot) => (
-                            <Slot
-                            key={slot.slot_id}
-                            slot={slot}
-                            onClick={handleSlotClick}
-                            assetsLookup={assetsLookup} // 에셋 정보를 전달
-                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* 네 번째 사이트 */}
-                <div
-                    style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "5px",
-                    }}
-                >
-                    {parkingSlots[3]?.map((slot) => (
-                        <Slot
-                            key={slot.slot_id}
-                            slot={slot}
-                            onClick={handleSlotClick}
-                            assetsLookup={assetsLookup} // 에셋 정보를 전달
-                            updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
-                            />
-                    ))}
-                </div>
-            </div>
-
-            {/* 선택된 슬롯 정보란 */}
-            <div
-                style={{
-                    width: "300px",
-                    backgroundColor: "#fff",
-                    borderRadius: "10px",
+                    display: "flex", // 슬롯과 정보란을 옆으로 배치
+                    gap: "20px", // 슬롯 영역과 정보 영역 간 간격
                     padding: "20px",
-                    boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
                 }}
             >
-                {selectedSlot ? (
-                    <>
-                        <h3>Slot Details</h3>
-                        <p><strong>Slot ID:</strong> {selectedSlot.slot_id}</p>
-                        <p><strong>Equipment Type:</strong> {selectedSlot.site_id}</p>
-                        <p><strong>Occupancy Status:</strong> {selectedSlot.is_occupied ? "Occupied" : "Empty"}</p>
+                {/* 슬롯 영역 */}
+                <div
+                    style={{
+                        marginTop: "30px",
+                        position: "relative",
+                        width: "1000px", // 슬롯 그룹의 너비
+                        backgroundColor: "#ddd",
+                        borderRadius: "10px",
+                        padding: "50px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "30px", // 사이트 그룹 간 간격
+                    }}
+                >
+                    {/* 첫 번째 사이트 */}
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "5px", // 슬롯 간 간격
+                        }}
+                    >
+                        {parkingSlots[0]?.map((slot) => (
+                            <Slot
+                                key={slot.slot_id}
+                                slot={slot}
+                                onClick={handleSlotClick}
+                                assetsLookup={assetsLookup} // 에셋 정보를 전달
+                                updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                            />
 
-                        {assetsLookup[selectedSlot.slot_id] ? (
-                            <>
-                                <h3>Asset Details</h3>
-                                <p>
-                                    <strong>{assetsLookup[selectedSlot.slot_id].assetType}</strong>{" "}
-                                </p>
-                                <p>
-                                    <strong>ID:</strong>{" "}
-                                    {assetsLookup[selectedSlot.slot_id].id || "N/A"}
-                                </p>
-                                {assetsLookup[selectedSlot.slot_id].type && (
-                                    <p>
-                                        <strong>Asset Type:</strong> {assetsLookup[selectedSlot.slot_id].type}
-                                    </p>
-                                )}
-                                {assetsLookup[selectedSlot.slot_id].size && (
-                                    <p>
-                                        <strong>Asset size:</strong>{" "}
-                                        {assetsLookup[selectedSlot.slot_id].size || "N/A"}
-                                    </p>
-                                )}
+                        ))}
+                    </div>
 
-                                <p>
-                                    <strong>Status:</strong>{" "}
-                                    {assetsLookup[selectedSlot.slot_id].state || "N/A"}
-                                </p>
+                    {/* 두 번째와 세 번째 사이트 */}
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "50px", // 두 사이트 간 간격
+                        }}
+                    >
+                        {/* 두 번째 사이트 */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "5px",
+                            }}
+                        >
+                            {parkingSlots[1]?.map((slot) => (
+                                <Slot
+                                    key={slot.slot_id}
+                                    slot={slot}
+                                    onClick={handleSlotClick}
+                                    assetsLookup={assetsLookup} // 에셋 정보를 전달
+                                    updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                                />
+                            ))}
+                        </div>
 
-                            </>
-                        ) : (
-                            <p>No asset parked here.</p>
-                        )}
-                    </>
-                ) : (
-                    <p>Click a slot to view details.</p>
-                )}
+                        {/* 세 번째 사이트 */}
+                        <div
+                            style={{
+                                display: "flex",
+                                flexWrap: "wrap",
+                                gap: "5px",
+                            }}
+                        >
+                            {parkingSlots[2]?.map((slot) => (
+                                <Slot
+                                    key={slot.slot_id}
+                                    slot={slot}
+                                    onClick={handleSlotClick}
+                                    assetsLookup={assetsLookup} // 에셋 정보를 전달
+                                    updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 네 번째 사이트 */}
+                    <div
+                        style={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: "5px",
+                        }}
+                    >
+                        {parkingSlots[3]?.map((slot) => (
+                            <Slot
+                                key={slot.slot_id}
+                                slot={slot}
+                                onClick={handleSlotClick}
+                                assetsLookup={assetsLookup} // 에셋 정보를 전달
+                                updateAssetLocation={updateAssetLocation} // 에셋 위치 업데이트 함수 전달
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* 선택된 슬롯 정보란 */}
+                <div
+                    style={{
+                        width: "300px",
+                        backgroundColor: "#fff",
+                        borderRadius: "10px",
+                        padding: "20px",
+                        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                    }}
+                >
+                    {selectedSlot ? (
+                        <>
+                            <h2>Slot Details</h2>
+                            <p><strong>Slot ID:</strong> {selectedSlot.slot_id}</p>
+                            <p><strong>Equipment Type:</strong> {selectedSlot.site_id}</p>
+                            <p><strong>Occupancy Status:</strong> {selectedSlot.is_occupied ? "Occupied" : "Empty"}</p>
+
+                            {assetsLookup[selectedSlot.slot_id] ? (
+                                <>
+                                    <h2>Asset Details</h2>
+                                    {assetsLookup[selectedSlot.slot_id].assetType === "containers" &&
+                                    assetsLookup[selectedSlot.slot_id].state === "combined" ? (
+                                        <>
+                                            {/* 샤시 정보 */}
+                                            {(() => {
+                                                const combinedChassis = chassis.find(
+                                                    ch => ch.parked_place === selectedSlot.slot_id
+                                                );
+                                                return combinedChassis ? (
+                                                    <>
+                                                        <p>
+                                                            <h3>chassis</h3>
+                                                        </p>
+                                                        <p>
+                                                            <strong>ID:</strong> {combinedChassis.chassis_id}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Asset Type:</strong> {combinedChassis.type}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Status:</strong> {combinedChassis.state || "N/A"}
+                                                        </p>
+                                                    </>
+                                                ) : (
+                                                    <p>No chassis found.</p>
+                                                );
+                                            })()}
+
+                                            {/* 기본 Asset 정보 출력 */}
+                                            <p>
+                                                <h3>{assetsLookup[selectedSlot.slot_id].assetType}</h3>{" "}
+                                            </p>
+                                            <p>
+                                                <strong>ID:</strong>{" "}
+                                                {assetsLookup[selectedSlot.slot_id].id || "N/A"}
+                                            </p>
+                                            {assetsLookup[selectedSlot.slot_id].type && (
+                                                <p>
+                                                    <strong>Asset Type:</strong>{" "}
+                                                    {assetsLookup[selectedSlot.slot_id].type}
+                                                </p>
+                                            )}
+                                            {assetsLookup[selectedSlot.slot_id].size && (
+                                                <p>
+                                                    <strong>Asset Size:</strong>{" "}
+                                                    {assetsLookup[selectedSlot.slot_id].size || "N/A"}
+                                                </p>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <>
+                                            {/* 컨테이너가 아닌 장비 기본 출력 */}
+                                            <p>
+                                                <h3>{assetsLookup[selectedSlot.slot_id].assetType}</h3>{" "}
+                                            </p>
+                                            <p>
+                                                <strong>ID:</strong>{" "}
+                                                {assetsLookup[selectedSlot.slot_id].id || "N/A"}
+                                            </p>
+                                            {assetsLookup[selectedSlot.slot_id].type && (
+                                                <p>
+                                                    <strong>Asset Type:</strong>{" "}
+                                                    {assetsLookup[selectedSlot.slot_id].type}
+                                                </p>
+                                            )}
+                                            {assetsLookup[selectedSlot.slot_id].size && (
+                                                <p>
+                                                    <strong>Asset Size:</strong>{" "}
+                                                    {assetsLookup[selectedSlot.slot_id].size || "N/A"}
+                                                </p>
+                                            )}
+                                            <p>
+                                                <strong>Status:</strong>{" "}
+                                                {assetsLookup[selectedSlot.slot_id].state || "N/A"}
+                                            </p>
+                                        </>
+                                    )}
+                                </>
+                            ) : (
+                                <p>No asset parked here.</p>
+                            )}
+                        </>
+                    ) : (
+                        <p>Click a slot to view details.</p>
+                    )}
+                </div>
+
+
             </div>
-        </div>
         );
     };
 
@@ -591,79 +646,79 @@ const YardLayout = () => {
                         <Button
                             type="danger"
                             className="delete-btn"
-                                        onClick={() => handleDeleteEquipment(truck.truck_id, 'trucks')}
-                                    >
-                                        Delete
-                                    </Button>
-                                    <p><strong>ID:</strong> {truck.truck_id}</p>
-                                    <p><strong>Type:</strong> {truck.type}</p>
-                                    <p><strong>Status:</strong> {truck.state}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="asset-column">
-                            <h3>Chassis</h3>
-                            {chassis.map((ch, index) => (
-                                <div key={`chassis-${index}`} className="asset-card">
-                                    <Button
-                                        type="danger"
-                                        className="delete-btn"
-                                        onClick={() => handleDeleteEquipment(ch.chassis_id, 'chassis')}
-                                    >
-                                        Delete
-                                    </Button>
-                                    <p><strong>ID:</strong> {ch.chassis_id}</p>
-                                    <p><strong>Type:</strong> {ch.type}</p>
-                                    <p><strong>Status:</strong> {ch.state}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="asset-column">
-                            <h3>Containers</h3>
-                            {containers.map((container, index) => (
-                                <div key={`container-${index}`} className="asset-card">
-                                    <Button
-                                        type="danger"
-                                        className="delete-btn"
-                                        onClick={() => handleDeleteEquipment(container.container_id, 'containers')}
-                                    >
-                                        Delete
-                                    </Button>
-                                    <p><strong>ID:</strong> {container.container_id}</p>
-                                    <p><strong>Type:</strong> {container.type}</p>
-                                    <p><strong>Size:</strong> {container.size}</p>
-                                    <p><strong>Status:</strong> {container.state}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="asset-column">
-                            <h3>Trailers</h3>
-                            {trailers.map((trailer, index) => (
-                                <div key={`trailer-${index}`} className="asset-card">
-                                    <Button
-                                        type="danger"
-                                        className="delete-btn"
-                                        onClick={() => handleDeleteEquipment(trailer.trailer_id, 'trailers')}
-                                    >
-                                        Delete
-                                    </Button>
-                                    <p><strong>ID:</strong> {trailer.trailer_id}</p>
-                                    <p><strong>Size:</strong> {trailer.size}</p>
-                                    <p><strong>Status:</strong> {trailer.state}</p>
-                                </div>
-                            ))}
-                        </div>
+                            onClick={() => handleDeleteEquipment(truck.truck_id, 'trucks')}
+                        >
+                            Delete
+                        </Button>
+                        <p><strong>ID:</strong> {truck.truck_id}</p>
+                        <p><strong>Type:</strong> {truck.type}</p>
+                        <p><strong>Status:</strong> {truck.state}</p>
                     </div>
-                    );
+                ))}
+            </div>
+
+            <div className="asset-column">
+                <h3>Chassis</h3>
+                {chassis.map((ch, index) => (
+                    <div key={`chassis-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(ch.chassis_id, 'chassis')}
+                        >
+                            Delete
+                        </Button>
+                        <p><strong>ID:</strong> {ch.chassis_id}</p>
+                        <p><strong>Type:</strong> {ch.type}</p>
+                        <p><strong>Status:</strong> {ch.state}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="asset-column">
+                <h3>Containers</h3>
+                {containers.map((container, index) => (
+                    <div key={`container-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(container.container_id, 'containers')}
+                        >
+                            Delete
+                        </Button>
+                        <p><strong>ID:</strong> {container.container_id}</p>
+                        <p><strong>Type:</strong> {container.type}</p>
+                        <p><strong>Size:</strong> {container.size}</p>
+                        <p><strong>Status:</strong> {container.state}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div className="asset-column">
+                <h3>Trailers</h3>
+                {trailers.map((trailer, index) => (
+                    <div key={`trailer-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
+                            onClick={() => handleDeleteEquipment(trailer.trailer_id, 'trailers')}
+                        >
+                            Delete
+                        </Button>
+                        <p><strong>ID:</strong> {trailer.trailer_id}</p>
+                        <p><strong>Size:</strong> {trailer.size}</p>
+                        <p><strong>Status:</strong> {trailer.state}</p>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
 
     const equipmentData = [
-        { label: 'Trucks', count: equipmentCounts.trucks, color: '#4CAF50' },
-        { label: 'Chassis', count: equipmentCounts.chassis, color: '#00BCD4' },
-        { label: 'Containers', count: equipmentCounts.containers, color: '#2196F3' },
-        { label: 'Trailers', count: equipmentCounts.trailers, color: '#FF9800' },
+        {label: 'Trucks', count: equipmentCounts.trucks, color: '#4CAF50'},
+        {label: 'Chassis', count: equipmentCounts.chassis, color: '#00BCD4'},
+        {label: 'Containers', count: equipmentCounts.containers, color: '#2196F3'},
+        {label: 'Trailers', count: equipmentCounts.trailers, color: '#FF9800'},
     ];
 
     const fetchYardDetails = async () => {
