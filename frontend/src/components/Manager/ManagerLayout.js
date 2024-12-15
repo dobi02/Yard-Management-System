@@ -3,7 +3,7 @@
 
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
-import { DashboardOutlined, SettingOutlined, EnvironmentOutlined, RetweetOutlined } from '@ant-design/icons';
+import { DashboardOutlined, SettingOutlined, EnvironmentOutlined, RetweetOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { Link, useLocation } from 'react-router-dom';
 import './ManagerLayout.css';
 
@@ -16,11 +16,17 @@ const items = [
     icon: <DashboardOutlined />,
     label: (<Link to="/manager/dashboard">Dashboard</Link>),
   },
-  // transaction layout
+    // transaction layout
    {
     key: '/manager/transactions',
     icon: <RetweetOutlined />,
     label: (<Link to="/manager/transactions">In/Out Transactions</Link>),
+  },
+    // manage driver
+   {
+    key: '/manager/drivermanagement',
+    icon: <UnorderedListOutlined />,
+    label: (<Link to="/manager/drivermanagement">Driver Management</Link>),
   },
     // settting
   {
@@ -51,6 +57,7 @@ const ManagerLayout = ({ children }) => {
             {location.pathname === '/manager/transactions' ? 'In/Out Transactions' :
             location.pathname === '/manager/yardlayout' ? 'Yard Layout' :
             location.pathname === '/manager/dashboard' ? 'Dashboard':
+            location.pathname === '/manager/drivermanagement' ? 'Driver Management':
             'Manager Page'}
           </div>
         </Header>

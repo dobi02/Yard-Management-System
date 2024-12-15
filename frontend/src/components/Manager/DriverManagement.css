@@ -1,0 +1,34 @@
+.driver-stats {
+    display: flex;
+    justify-content: space-between; /* 각 항목 간 간격 균등 분배 */
+    align-items: center;
+    margin: 20px 10px; /* 양 끝 여백 추가 */
+    padding: 10px 20px; /* 위아래/좌우 여백 */
+    background-color: #f9f9f9; /* 배경색 */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+    border: 1px solid #ddd; /* 테두리 추가 */
+}
+
+.stat-item {
+    flex: 1; /* 각 항목이 동일한 공간을 차지하도록 설정 */
+    font-size: 0.9rem;
+    color: #333;
+    text-align: center; /* 텍스트와 수량을 가운데 정렬 */
+    padding: 10px 0; /* 위아래 여백 */
+    border-right: 1px solid #ddd; /* 구분선 추가 */
+    box-sizing: border-box; /* 패딩과 크기 포함 계산 */
+}
+
+.stat-item:last-child {
+    border-right: none; /* 마지막 항목은 구분선 제거 */
+}
+
+/* 양 끝 여백 조정 */
+.driver-stats:first-child {
+    margin-left: 15px;
+}
+
+.driver-stats:last-child {
+    margin-right: 15px;
+}

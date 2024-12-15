@@ -97,9 +97,9 @@ const ManagerDashboard = () => {
                             ))}
                         </Select>
                         <Button
-                            type="primary"
+                            type="default"
                             onClick={handleAddYard}
-                            style={{ width: '150px', height: '40px', marginLeft: '10px' }}
+                            style={{ width: '150px', height: '40px', marginLeft: '10px', marginTop: '0px' }}
                         >
                             Add Yard
                         </Button>
@@ -134,16 +134,26 @@ const ManagerDashboard = () => {
                     </div>
                 </div>
 
-                {/* 우측: 드라이버 목록 */}
-                <div className="driver-list">
-                    <h3>Driver List</h3>
-                    {drivers.map((driver) => (
-                        <div key={driver.id} className="driver-item">
-                            <div>{driver.user.first_name} {driver.user.last_name}</div>
-                            <div>{driver.state}</div>
-                            <div>{driver.phone_number}</div>
+                {/* 드라이버 리스트 섹션 */}
+                <div className="driver-section">
+                    {/* 드라이버 수 표시 */}
+                    <div className="driver-summary">
+                        <div className="summary-item">
+                            <h4>Driver List</h4>
+                            <p>Number of drivers: {selectedDivision ? drivers.length : ''}</p>
                         </div>
-                    ))}
+                    </div>
+
+                    {/* 드라이버 카드 리스트 */}
+                    <div className="driver-list">
+                        {drivers.map((driver) => (
+                            <div key={driver.id} className="driver-card">
+                                <h4>{driver.user.first_name} {driver.user.last_name}</h4>
+                                <p><strong>State:</strong> {driver.state}</p>
+                                <p><strong>Phone:</strong> {driver.phone_number}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </ManagerLayout>
