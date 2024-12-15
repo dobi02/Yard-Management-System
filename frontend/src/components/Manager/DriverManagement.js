@@ -102,9 +102,7 @@ const DriverManagement = () => {
         },
         {
             title: 'Division',
-            dataIndex: ['division_id', 'division_name'],
-            key: 'division',
-            render: (division) => division || 'N/A',
+            render: (_, record) => record.division_id || 'N/A',
         },
         {
             title: 'State',
