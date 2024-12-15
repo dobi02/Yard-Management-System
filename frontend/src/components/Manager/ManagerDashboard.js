@@ -140,7 +140,7 @@ const ManagerDashboard = () => {
                     <div className="driver-summary">
                         <div className="summary-item">
                             <h4>Driver List</h4>
-                            <p>Number of drivers: {drivers.length}</p>
+                            <p>Number of drivers: {selectedDivision ? drivers.length : ''}</p>
                         </div>
                     </div>
 
