@@ -13,6 +13,18 @@ class Drivers(models.Model):
     state = models.CharField(max_length=10, null=False, default="off_work")  #ready, waiting, moving, off_work
     phone_number = models.CharField(max_length=20)
 
+    def delete(self):
+        if self.division_id:
+            self.division_id = None
+        self.state = "deleted"
+        self.save()
+
+    def hard_delete(self, *args, **kwargs):
+        """
+        Permanently delete the trailer from the database.
+        """
+        super().delete(*args, **kwargs)
+
     class Meta:
         db_table = 'drivers'
 
