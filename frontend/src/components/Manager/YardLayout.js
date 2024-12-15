@@ -338,16 +338,32 @@ const YardLayout = () => {
 
   // 슬롯 색상 결정 로직
   const getSlotColor = () => {
+    // 슬롯이 비어 있는 경우
     if (!slot.is_occupied) {
-      if (slot.site_id.includes("truck")) return "#6bb36d";
-      if (slot.site_id.includes("trailer")) return "#ffbb4e";
-      if (slot.site_id.includes("container")) return "#519cea";
-      if (slot.site_id.includes("chassis")) return "#80c1cc";
-      return "#ffffff";
-    } else {
-      return "#ff8080";
+        if (slot.site_id.includes("truck")) return "#6bb36d"; // 트럭용 슬롯
+        if (slot.site_id.includes("trailer")) return "#ffbb4e"; // 트레일러용 슬롯
+        if (slot.site_id.includes("container")) return "#519cea"; // 컨테이너용 슬롯
+        if (slot.site_id.includes("chassis")) return "#80c1cc"; // 샤시용 슬롯
+        return "#ffffff"; // 기본 색상
     }
-  };
+
+    // 슬롯이 점유된 경우: 에셋 상태별 색상
+    if (asset) {
+        switch (asset.state) {
+            case "parked":
+                return "#ff8080";
+            case "waiting":
+                return "#c00cd5";
+            case "moving":
+                return "#4b1dc3";
+            default:
+                return "#ff8080";
+        }
+    }
+
+    return "#ff8080"; // 기본 점유 색상
+};
+
 
   return (
     <div
