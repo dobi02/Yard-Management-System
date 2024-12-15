@@ -150,12 +150,30 @@ const DriverManagement = () => {
                         style={{ width: '300px' }}
                     />
                     <Button
-                        type="primary"
+                        type="default"
                         onClick={() => setIsModalOpen(true)}
                         style={{ width: '120px' }}
                     >
                         Add Driver
                     </Button>
+                </div>
+                {/* 상태별 통계 표시 */}
+                <div className="driver-stats">
+                    <div className="stat-item">
+                        <strong>Total Drivers:</strong> {drivers.length}
+                    </div>
+                    <div className="stat-item">
+                        <strong>Ready:</strong> {drivers.filter(d => d.state === 'ready').length}
+                    </div>
+                    <div className="stat-item">
+                        <strong>Moving:</strong> {drivers.filter(d => d.state === 'moving').length}
+                    </div>
+                    <div className="stat-item">
+                        <strong>Waiting:</strong> {drivers.filter(d => d.state === 'waiting').length}
+                    </div>
+                    <div className="stat-item">
+                        <strong>Off Work:</strong> {drivers.filter(d => d.state === 'off_work').length}
+                    </div>
                 </div>
                 <Table
                     dataSource={filteredDrivers}
