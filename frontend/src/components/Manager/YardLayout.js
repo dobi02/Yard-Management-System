@@ -310,8 +310,8 @@ const YardLayout = () => {
 
     // 슬롯
     const Slot = ({ slot, onClick, assetsLookup, updateAssetLocation }) => {
-  // 슬롯에 연결된 에셋 확인
-  const asset = assetsLookup[slot.slot_id];
+        // 슬롯에 연결된 에셋 확인
+        const asset = assetsLookup[slot.slot_id];
 
   const [{ isOver }, dropRef] = useDrop({
     accept: "ASSET",
@@ -380,6 +380,7 @@ const YardLayout = () => {
       }}
       onClick={() => onClick(slot)}
     >
+
       {/* 에셋이 있으면 렌더링 */}
       {asset && (
         <div
@@ -392,10 +393,33 @@ const YardLayout = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
+            flexDirection: "column",
             cursor: "move",
           }}
         >
-          {asset.id}
+          {asset.assetType === "containers" && asset.state === "combined" ? (
+            <>
+                <p style={{ fontSize: "10px", margin: "0" }}>
+                    <strong>ID:</strong> {asset.id}
+                </p>
+                {(() => {
+                    const combinedchassis = chassis.find(
+                        ch => ch.parked_place === slot.slot_id
+                    );
+                    return combinedchassis ? (
+                        <p style={{ fontSize: "10px", margin: "0" }}>
+                            {combinedchassis.chassis_id}
+                        </p>
+                    ) : (
+                        <p style={{ fontSize: "10px", margin: "0" }}>No chassis found</p>
+                    );
+                })()}
+            </>
+        ) : (
+            <p style={{ fontSize: "10px", margin: "0" }}>
+                <strong>ID:</strong> {asset.id}
+            </p>
+        )}
         </div>
       )}
     </div>
