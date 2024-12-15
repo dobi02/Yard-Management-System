@@ -206,7 +206,35 @@ const YardLayout = () => {
     };
     const [selectedSlot, setSelectedSlot] = useState(null);
 
+    const normalizeAssets = (assets, idkey) => {
+        return assets.map((asset) => ({
+            ...asset,
+            id:asset[idkey],
+        }));
+    };
+
+    // 장비 합치기
+    const normalizedTrucks = normalizeAssets(trucks, "truck_id");
+    const normalizedChassis = normalizeAssets(chassis, "chassis_id");
+    const normalizedContainers = normalizeAssets(containers, "container_id");
+    const normalizedTrailers = normalizeAssets(trailers, "trailer_id");
+
+    const allAssets = [
+        ...normalizedTrucks,
+        ...normalizedChassis,
+        ...normalizedContainers,
+        ...normalizedTrailers,
+    ];
+
+    const assetsLookup = {};
+    allAssets.forEach((asset) => {
+        if (asset.parked_place) {
+            assetsLookup[asset.parked_place] = asset;
+        }
+    });
+
     const renderMapView = () => {
+
 
 
         const getSlotColor = (slot) => {
@@ -226,6 +254,7 @@ const YardLayout = () => {
         const handleSlotClick = (slot) => {
             setSelectedSlot(slot);
         };
+
 
 
         return (
@@ -367,25 +396,54 @@ const YardLayout = () => {
                         <p><strong>Slot ID:</strong> {selectedSlot.slot_id}</p>
                         <p><strong>Equipment Type:</strong> {selectedSlot.site_id}</p>
                         <p><strong>Occupancy Status:</strong> {selectedSlot.is_occupied ? "Occupied" : "Empty"}</p>
+
+                        {assetsLookup[selectedSlot.slot_id] ? (
+                            <>
+                                <h3>Asset Details</h3>
+                                <p>
+                                    <strong>ID:</strong>{" "}
+                                    {assetsLookup[selectedSlot.slot_id].id || "N/A"}
+                                </p>
+                                {assetsLookup[selectedSlot.slot_id].type && (
+                                    <p>
+                                        <strong>Asset Type:</strong> {assetsLookup[selectedSlot.slot_id].type}
+                                    </p>
+                                )}
+                                {assetsLookup[selectedSlot.slot_id].size && (
+                                    <p>
+                                        <strong>Asset size:</strong>{" "}
+                                        {assetsLookup[selectedSlot.slot_id].size || "N/A"}
+                                    </p>
+                                )}
+
+                                <p>
+                                    <strong>Status:</strong>{" "}
+                                    {assetsLookup[selectedSlot.slot_id].state || "N/A"}
+                                </p>
+
+                            </>
+                        ) : (
+                            <p>No asset parked here.</p>
+                        )}
                     </>
                 ) : (
                     <p>Click a slot to view details.</p>
                 )}
             </div>
         </div>
-    );
-};
+        );
+    };
 
 
-                    const renderListView = () => (
-                    <div className="list-view">
-                        <div className="asset-column">
-                            <h3>Trucks</h3>
-                            {trucks.map((truck, index) => (
-                                <div key={`truck-${index}`} className="asset-card">
-                                    <Button
-                                        type="danger"
-                                        className="delete-btn"
+    const renderListView = () => (
+        <div className="list-view">
+            <div className="asset-column">
+                <h3>Trucks</h3>
+                {trucks.map((truck, index) => (
+                    <div key={`truck-${index}`} className="asset-card">
+                        <Button
+                            type="danger"
+                            className="delete-btn"
                                         onClick={() => handleDeleteEquipment(truck.truck_id, 'trucks')}
                                     >
                                         Delete
