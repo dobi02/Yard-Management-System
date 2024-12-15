@@ -5,6 +5,7 @@ import YardLayout from '../components/Manager/YardLayout';
 import Settings from "../components/Auth/Setting";
 import TransactionPage from "../components/Manager/TransactionPage";
 import TransactionDetailPage from "../components/Manager/TransactionLog";
+import DriverManagement from "../components/Manager/DriverManagement";
 
 
 const Manager = () => {
@@ -19,7 +20,7 @@ const Manager = () => {
                 <Route path="/transactions" element={<TransactionPage />} /> {/* In/Out 트랜잭션 페이지 */}
                 <Route path="/settings" element={<Settings />} /> {/* 설정 페이지 */}
                 <Route path="/transactionlog/:transactionId" element={<TransactionDetailPage />} />
-
+                <Route path="/drivermanagement" element={<DriverManagement />} />
             </Routes>
         </div>
     );
